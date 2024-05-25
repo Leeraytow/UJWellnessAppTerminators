@@ -69,7 +69,7 @@ export default function StudentLoginScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F2F4F8', // Soft, calming background
+    backgroundColor: '#F2F4F8', 
   },
   background: {
     flex: 1,
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 5, // Android shadow
+    elevation: 5, 
   },
   logoContainer: {
     alignItems: 'center',
@@ -98,13 +98,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    color: '#333', // Dark text for contrast
+    color: '#333', 
     fontWeight: 'bold',
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: '#555', // Slightly lighter text
+    color: '#555', 
     textAlign: 'center',
   },
   inputContainer: {
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   loginButton: {
-    backgroundColor: '#FFA500', // Orange color
+    backgroundColor: '#FFA500', 
     paddingVertical: 15,
     borderRadius: 10,
     marginBottom: 15,
@@ -151,13 +151,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   createAccountWrapper: {
-    borderTopColor: 'rgba(255, 165, 0, 0.5)', // Orange with 50% opacity
+    borderTopColor: 'rgba(255, 165, 0, 0.5)', 
     borderTopWidth: 1,
     paddingTop: 20,
     marginTop: 15,
   },
   createAccountText: {
-    color: '#FFA500', // Orange color
+    color: '#FFA500', 
     fontSize: 16,
     textAlign: 'center',
   },

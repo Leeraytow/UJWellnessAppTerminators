@@ -1,16 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ImageBackground,
-  Image,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+import {View,Text,TextInput,TouchableOpacity,StyleSheet,ImageBackground,Image,ScrollView,KeyboardAvoidingView,Platform,} from 'react-native';
 
 // -- Components --
 const Header = () => (

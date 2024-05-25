@@ -11,7 +11,7 @@ export default function WelcomeScreen() {
       fadeAnim,
       {
         toValue: 1,
-        duration: 1000,
+        duration: 2000,
         useNativeDriver: true,
       }
     ).start();
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.4)', // Overlay to make text readable
+    backgroundColor: 'rgba(0,0,0,0.4)', 
     paddingHorizontal: 20,
   },
   logo: {
