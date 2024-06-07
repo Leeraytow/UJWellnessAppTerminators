@@ -11,6 +11,8 @@ import SplashScreen2 from './src/SplashPages/Splash2';
 import SplashScreen3 from './src/SplashPages/Splash3';
 import Homepage from './src/Menu/Homepage';
 import PasswordResetScreen from './src/Logins/PasswordResetScreen';
+import TherapyType from './src/Therapy/Therapytype';
+import DigitalDiary from './src/Therapy/DiaryEntry';
 
 const Stack = createStackNavigator();
 
@@ -28,6 +30,8 @@ export default function App() {
         <Stack.Screen name="SplashScreen2" component={SplashScreen2} options={{ headerShown: false }} />
         <Stack.Screen name="SplashScreen3" component={SplashScreen3} options={{ headerShown: false }} />
         <Stack.Screen name="Homepage" component={Homepage} options={{ headerShown: false }} />
+        <Stack.Screen name="TherapyType" component={TherapyType} options={{ headerShown: false }} />
+        <Stack.Screen name="DigitalDiary" component={DigitalDiary} options={{ headerShown: false }} />
 
       
 
