@@ -1,5 +1,10 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Image, ActivityIndicator } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { signInWithEmailAndPassword} from "firebase/auth";
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { auth, db } from '../Configuration/firebase'
+
 
 const Header = () => (
   <View>
@@ -14,8 +19,73 @@ const Header = () => (
 );
 
 export default function StudentLoginScreen({ navigation }) {
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
+  const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+
+  const validateEmail = (inputText) => {
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    return emailPattern.test(inputText.trim());
+  };
+
+  const validatePassword = (inputText) => {
+    return inputText.length >= 6;
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
+  };
+  
+
+  const handleLogin = async () => {
+    const Email = email.trim();
+
+    if (!Email || !password) {
+      setError('All fields are required');
+      setTimeout(() => setError(''), 12000);
+      return;
+    } else if (!validateEmail(Email)) {
+      setError('Invalid email address');
+      setTimeout(() => setError(''), 12000);
+      return;
+    } else if (!validatePassword(password)) {
+      setError('Password must be at least 6 characters');
+      setTimeout(() => setError(''), 12000);
+      return;
+    }
+    setLoading(true);
+     try {
+      await signInWithEmailAndPassword(auth, Email, password)
+      const usersCollection = collection(db, 'Students');
+      const q = query(usersCollection, where('email', '==', Email));
+      const querySnapshot = await getDocs(q);
+  
+      if (querySnapshot.size === 1) {
+        querySnapshot.forEach((doc) => {
+          const userName = doc.data().name;
+  
+          navigation.navigate('Homepage', { userName: userName, userEmail: Email });
+
+        });
+      }
+    } catch (error){
+      setError(error.message);
+      setTimeout(() => setError(''), 12000);
+    } finally {
+      setLoading(false);
+    }
+  };
   const handleRegisterPress = () => {
     navigation.navigate('StudentRegister');
+  };
+
+  const handleForgotPasswordPress = () => {
+      navigation.navigate('PasswordResetScreen', { userEmail: email });
   };
 
   return (
@@ -28,10 +98,12 @@ export default function StudentLoginScreen({ navigation }) {
             <TextInput
               style={styles.input}
               placeholder="Email"
+              onChangeText={(text) => setEmail(text)}
             />
             <Image
               source={require('../images/email.png')}
               style={styles.inputIcon}
+             
             />
           </View>
 
@@ -39,24 +111,29 @@ export default function StudentLoginScreen({ navigation }) {
             <TextInput
               style={styles.input}
               placeholder="Password"
-              secureTextEntry={true}
+            secureTextEntry={!showPassword}
+            onChangeText={(text) => setPassword(text)}
             />
-            <Image
-              source={require('../images/password.png')}
-              style={styles.inputIcon}
-            />
+             <TouchableOpacity onPress={togglePasswordVisibility} style={styles.inputIcon}>
+            <Icon name={showPassword ? 'eye' : 'eye-slash'} size={20} color="black" />
+          </TouchableOpacity>
+           
           </View>
 
           <View style={styles.rememberForgotContainer}>
-            <TouchableOpacity style={styles.forgotPasswordButton}>
+            <TouchableOpacity style={styles.forgotPasswordButton} onPress={handleForgotPasswordPress}>
               <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={styles.loginButton}>
+          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
             <Text style={styles.loginButtonText}>Sign in</Text>
           </TouchableOpacity>
 
+          {loading && <ActivityIndicator size="large" color="#FFA500" />}
+
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+          
           <TouchableOpacity style={styles.createAccountWrapper} onPress={handleRegisterPress}>
             <Text style={styles.createAccountText}>Don't have an account? Create one</Text>
           </TouchableOpacity>
@@ -160,5 +237,9 @@ const styles = StyleSheet.create({
     color: '#FFA500', 
     fontSize: 16,
     textAlign: 'center',
+  },
+  errorText: {
+    color: 'red',
+    
   },
 });

@@ -1,5 +1,10 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Image, ActivityIndicator } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { collection, addDoc } from 'firebase/firestore';
+import {auth, db} from '../Configuration/firebase';
+
 
 const Header = () => (
   <View>
@@ -14,18 +19,86 @@ const Header = () => (
 );
 
 export default function StudentRegisterScreen() {
+
+  const navigation = useNavigation();
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+
+
+  const validatePassword = (inputText) => {
+    const passwordPattern = /^(?=.*[A-Za-z])(?=.*[A-Z]).{6,}$/;
+    return passwordPattern.test(inputText);
+  };
+
+  let validateAndSet = (value, valueToCompare, setValue) => {
+    if (value !== valueToCompare) {
+      setError('Passwords do not match');
+    } else {
+      setError('');
+    }
+    setValue(value);
+  };
+
+  async function createAccount() {
+    if (email === '' || password === '' || username === '') {
+      setError('Required fields are missing');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+    if (!validatePassword(password)) {
+      setError('Password must be at least 6 characters long, contain at least one uppercase letter, and one lowercase letter.');
+      return;
+    }
+    setLoading(true);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const uid = userCredential.user.uid;
+      const usersCollection = collection(db, 'Students');
+      const newUser = {
+        name: username,
+        email: email,
+      };
+
+      await addDoc(usersCollection, newUser);
+
+      alert('Account created successfully');
+      
+
+      navigation.navigate('Homepage', { userName: username, userEmail: email });
+   
+    } catch (error) {
+      setError(error.message);
+    }finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <View style={styles.container}>
       <ImageBackground source={require('../images/mental.png')} style={styles.background}>
         <View style={styles.registerContainer}>
           <Header />
 
-          <TextInput style={styles.input} placeholder="Username" />
-          <TextInput style={styles.input} placeholder="Email Address" />
-          <TextInput style={styles.input} placeholder="Password" secureTextEntry={true} />
-          <TextInput style={styles.input} placeholder="Confirm Password" secureTextEntry={true} />
+          <TextInput style={styles.input} placeholder="Username"  onChangeText={(text) => setUsername(text)}
+            onFocus={() => setUsername('')}/>
+          <TextInput style={styles.input} placeholder="Email Address" onChangeText={(text) => setEmail(text)}
+            onFocus={() => setEmail('')}/>
+         <TextInput style={styles.input} placeholder="Password" value={password} secureTextEntry onChangeText={(value) => validateAndSet(value, confirmPassword, setPassword)} onFocus={() => setPassword('')} />
+          <TextInput style={styles.input} placeholder="Confirm Password" value={confirmPassword} secureTextEntry onChangeText={(value) => validateAndSet(value, password, setConfirmPassword)} onFocus={() => setConfirmPassword('')} />
 
-          {/* Radio buttons for "Do you want to be anonymous?" */}
+          {loading && <ActivityIndicator size="large" color="#FFA500" />}
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+
           <View style={styles.radioContainer}>
             <Text style={styles.radioLabel}>Do you want to be anonymous?</Text>
             <View style={styles.radioOption}>
@@ -41,7 +114,7 @@ export default function StudentRegisterScreen() {
          
 
           <TouchableOpacity style={styles.registerButton}>
-            <Text style={styles.registerButtonText}>Sign up</Text>
+            <Text style={styles.registerButtonText} onPress={createAccount}>Sign up</Text>
           </TouchableOpacity>
            {/* Social media icons */}
           <View style={styles.socialIconsContainer}>
@@ -165,5 +238,11 @@ const styles = StyleSheet.create({
   icon: {
     width: 30,
     height: 30,
+  },
+
+  errorText: {
+    color: 'red',
+    marginTop: 10,
+    textAlign: 'center',
   },
 });

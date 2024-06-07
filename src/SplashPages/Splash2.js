@@ -111,6 +111,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#CC5500',
         padding: 10,
         borderRadius: 5,
+        marginTop: 2,
     },
     skip: {
         position: 'absolute',
