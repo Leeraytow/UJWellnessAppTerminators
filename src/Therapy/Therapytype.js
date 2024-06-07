@@ -15,7 +15,7 @@ const TherapyType = () => {
         <View style={styles.container}>
             <View style={styles.header}>
                 <View style={styles.logoContainer}>
-                    <Image source={require('./images/Icon.png')} style={styles.logo} />
+                    <Image source={require('../images/Icon.png')} style={styles.logo} />
                     <Text style={styles.logoText}>UJ WELLNESS</Text>
                 </View>
                 <TouchableOpacity style={styles.menuIcon}>
@@ -31,7 +31,7 @@ const TherapyType = () => {
                             <Text style={styles.buttonTitle}>Digital Diary</Text>
                             <Text style={styles.buttonSubtitle}>write on Journal</Text>
                         </View>
-                        <Image source={require('./images/MainPage.png')} style={styles.buttonIcon} />
+                        <Image source={require('../images/MainPage.png')} style={styles.buttonIcon} />
                     </TouchableOpacity>
                 </View>
                 <View style={styles.buttonWrapper}>
@@ -41,7 +41,7 @@ const TherapyType = () => {
                             <Text style={styles.buttonSubtitle}>Meet with a professional </Text>
                             <Text style={styles.buttonSubtitle}>on a meeting</Text>
                         </View>
-                        <Image source={require('./images/EntryDiary.png')} style={styles.buttonIcon} />
+                        <Image source={require('../images/EntryDiary.png')} style={styles.buttonIcon} />
                     </TouchableOpacity>
                 </View>
                 <View style={styles.buttonWrapper}>
@@ -51,7 +51,7 @@ const TherapyType = () => {
                             <Text style={styles.buttonSubtitle}>Meet with your peer mate</Text>
                             <Text style={styles.buttonSubtitle}>have a casual Conversation</Text>
                         </View>
-                        <Image source={require('./images/TherapyPage.png')} style={styles.buttonIcon} />
+                        <Image source={require('../images/TherapyPage.png')} style={styles.buttonIcon} />
                     </TouchableOpacity>
                 </View>
             </ScrollView>
