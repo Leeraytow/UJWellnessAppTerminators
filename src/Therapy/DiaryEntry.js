@@ -27,7 +27,7 @@ const DiaryEntry = () => {
                     <Icon name="check" size={24} color="#000" />
                 </TouchableOpacity>
             </View>
-            <Image source={require('./images/coffee.jpeg')} style={styles.image} />
+            <Image source={require('../images/coffee.jpeg')} style={styles.image} />
             <TouchableOpacity style={styles.closeButton}>
                 <Icon name="close" size={24} color="#000" />
             </TouchableOpacity>
