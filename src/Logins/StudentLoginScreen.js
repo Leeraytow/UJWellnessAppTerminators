@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, I
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { signInWithEmailAndPassword} from "firebase/auth";
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import { auth, db } from '../Configuration/firebase'
+import { auth, db } from '../Configuration/firebase';
 
 
 const Header = () => (
@@ -19,14 +19,11 @@ const Header = () => (
 );
 
 export default function StudentLoginScreen({ navigation }) {
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-
 
   const validateEmail = (inputText) => {
     const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
@@ -40,7 +37,6 @@ export default function StudentLoginScreen({ navigation }) {
   const togglePasswordVisibility = () => {
     setShowPassword((prevShowPassword) => !prevShowPassword);
   };
-  
 
   const handleLogin = async () => {
     const Email = email.trim();
@@ -58,34 +54,44 @@ export default function StudentLoginScreen({ navigation }) {
       setTimeout(() => setError(''), 12000);
       return;
     }
+
     setLoading(true);
-     try {
-      await signInWithEmailAndPassword(auth, Email, password)
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, Email, password);
+      const user = userCredential.user;
+
+      if (!user.emailVerified) {
+        setError('Please verify your email before logging in.');
+        setLoading(false); // Set loading to false here
+        return navigation.navigate('EmailVerification', { userEmail: Email }); // Navigate to VerifyEmailScreen
+      }
+
       const usersCollection = collection(db, 'Students');
       const q = query(usersCollection, where('email', '==', Email));
       const querySnapshot = await getDocs(q);
-  
+
       if (querySnapshot.size === 1) {
         querySnapshot.forEach((doc) => {
           const userName = doc.data().name;
-  
           navigation.navigate('Homepage', { userName: userName, userEmail: Email });
-
         });
+      } else {
+        setError('User not found');
       }
-    } catch (error){
+    } catch (error) {
       setError(error.message);
-      setTimeout(() => setError(''), 12000);
     } finally {
       setLoading(false);
+      setTimeout(() => setError(''), 12000);
     }
   };
+
   const handleRegisterPress = () => {
     navigation.navigate('StudentRegister');
   };
 
   const handleForgotPasswordPress = () => {
-      navigation.navigate('PasswordResetScreen', { userEmail: email });
+    navigation.navigate('PasswordResetScreen', { userEmail: email });
   };
 
   return (
@@ -103,7 +109,6 @@ export default function StudentLoginScreen({ navigation }) {
             <Image
               source={require('../images/email.png')}
               style={styles.inputIcon}
-             
             />
           </View>
 
@@ -111,13 +116,12 @@ export default function StudentLoginScreen({ navigation }) {
             <TextInput
               style={styles.input}
               placeholder="Password"
-            secureTextEntry={!showPassword}
-            onChangeText={(text) => setPassword(text)}
+              secureTextEntry={!showPassword}
+              onChangeText={(text) => setPassword(text)}
             />
-             <TouchableOpacity onPress={togglePasswordVisibility} style={styles.inputIcon}>
-            <Icon name={showPassword ? 'eye' : 'eye-slash'} size={20} color="black" />
-          </TouchableOpacity>
-           
+            <TouchableOpacity onPress={togglePasswordVisibility} style={styles.inputIcon}>
+              <Icon name={showPassword ? 'eye' : 'eye-slash'} size={20} color="black" />
+            </TouchableOpacity>
           </View>
 
           <View style={styles.rememberForgotContainer}>
@@ -132,8 +136,9 @@ export default function StudentLoginScreen({ navigation }) {
 
           {loading && <ActivityIndicator size="large" color="#FFA500" />}
 
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+          <Text> {error} </Text>
           
+
           <TouchableOpacity style={styles.createAccountWrapper} onPress={handleRegisterPress}>
             <Text style={styles.createAccountText}>Don't have an account? Create one</Text>
           </TouchableOpacity>
@@ -146,7 +151,7 @@ export default function StudentLoginScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F2F4F8', 
+    backgroundColor: '#F2F4F8',
   },
   background: {
     flex: 1,
@@ -162,7 +167,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 5, 
+    elevation: 5,
   },
   logoContainer: {
     alignItems: 'center',
@@ -175,13 +180,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    color: '#333', 
+    color: '#333',
     fontWeight: 'bold',
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: '#555', 
+    color: '#555',
     textAlign: 'center',
   },
   inputContainer: {
@@ -216,7 +221,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   loginButton: {
-    backgroundColor: '#FFA500', 
+    backgroundColor: '#FFA500',
     paddingVertical: 15,
     borderRadius: 10,
     marginBottom: 15,
@@ -228,18 +233,19 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   createAccountWrapper: {
-    borderTopColor: 'rgba(255, 165, 0, 0.5)', 
+    borderTopColor: 'rgba(255, 165, 0, 0.5)',
     borderTopWidth: 1,
     paddingTop: 20,
     marginTop: 15,
   },
   createAccountText: {
-    color: '#FFA500', 
+    color: '#FFA500',
     fontSize: 16,
     textAlign: 'center',
   },
   errorText: {
     color: 'red',
-    
+    marginTop: 13,
   },
+ 
 });

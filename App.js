@@ -11,7 +11,8 @@ import SplashScreen2 from './src/SplashPages/Splash2';
 import SplashScreen3 from './src/SplashPages/Splash3';
 import Homepage from './src/Menu/Homepage';
 import PasswordResetScreen from './src/Logins/PasswordResetScreen';
-
+import EmailVerification from './src/Logins/EmailVerificationScreen';
+import RegEmailVerification from './src/Logins/RegEmailVerificationScreen';
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -24,10 +25,12 @@ export default function App() {
         <Stack.Screen name="TherapistScreen" component={TherapistScreen} options={{ headerShown: false }} />
         <Stack.Screen name="TherapistRegisterScreen" component={TherapistRegisterScreen} options={{ headerShown: false }} />
         <Stack.Screen name="PasswordResetScreen" component={PasswordResetScreen} options={{ headerShown: false }}/>
+        <Stack.Screen name="EmailVerification" component={EmailVerification} options={{ headerShown: false }}/>
         <Stack.Screen name="SplashScreen1" component={SplashScreen1} options={{ headerShown: false }} />
         <Stack.Screen name="SplashScreen2" component={SplashScreen2} options={{ headerShown: false }} />
         <Stack.Screen name="SplashScreen3" component={SplashScreen3} options={{ headerShown: false }} />
         <Stack.Screen name="Homepage" component={Homepage} options={{ headerShown: false }} />
+        <Stack.Screen name="RegEmailVerification" component={RegEmailVerification} options={{ headerShown: false }} />
 
       
 
