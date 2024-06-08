@@ -26,12 +26,13 @@ export default function StudentLoginScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
 
   const validateEmail = (inputText) => {
-    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    const emailPattern = /^[0-9]{9,}@student\.uj\.ac\.za$/;
     return emailPattern.test(inputText.trim());
   };
 
   const validatePassword = (inputText) => {
-    return inputText.length >= 6;
+    const passwordPattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/;
+    return passwordPattern.test(inputText);
   };
 
   const togglePasswordVisibility = () => {
@@ -50,7 +51,7 @@ export default function StudentLoginScreen({ navigation }) {
       setTimeout(() => setError(''), 12000);
       return;
     } else if (!validatePassword(password)) {
-      setError('Password must be at least 6 characters');
+      setError('Password must be at least 8 characters long, contain at least one uppercase letter, special character and a number.');
       setTimeout(() => setError(''), 12000);
       return;
     }
@@ -62,8 +63,8 @@ export default function StudentLoginScreen({ navigation }) {
 
       if (!user.emailVerified) {
         setError('Please verify your email before logging in.');
-        setLoading(false); // Set loading to false here
-        return navigation.navigate('EmailVerification', { userEmail: Email }); // Navigate to VerifyEmailScreen
+        setLoading(false); 
+        return navigation.navigate('EmailVerification', { userEmail: Email }); 
       }
 
       const usersCollection = collection(db, 'Students');
@@ -136,8 +137,7 @@ export default function StudentLoginScreen({ navigation }) {
 
           {loading && <ActivityIndicator size="large" color="#FFA500" />}
 
-          <Text> {error} </Text>
-          
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
           <TouchableOpacity style={styles.createAccountWrapper} onPress={handleRegisterPress}>
             <Text style={styles.createAccountText}>Don't have an account? Create one</Text>
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
   inputIcon: {
     width: 20,
     height: 20,
-    marginRight: 10,
+    marginRight: 10
   },
   rememberForgotContainer: {
     flexDirection: 'row',
@@ -213,6 +213,7 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 20,
   },
+  
   forgotPasswordButton: {
     alignSelf: 'flex-end',
   },

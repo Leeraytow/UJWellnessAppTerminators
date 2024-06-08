@@ -27,8 +27,13 @@ export default function StudentRegisterScreen() {
   const [loading, setLoading] = useState(false);
 
   const validatePassword = (inputText) => {
-    const passwordPattern = /^(?=.*[A-Za-z])(?=.*[A-Z]).{6,}$/;
+    const passwordPattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/;
     return passwordPattern.test(inputText);
+  };
+
+  const validateEmail = (email) => {
+    const emailPattern = /^[0-9]{9,}@student\.uj\.ac\.za$/;
+    return emailPattern.test(email);
   };
 
   let validateAndSet = (value, valueToCompare, setValue) => {
@@ -46,13 +51,18 @@ export default function StudentRegisterScreen() {
       return;
     }
 
+    if (!validateEmail(email)) {
+      setError('Please Enter Your Student Email');
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
     }
 
     if (!validatePassword(password)) {
-      setError('Password must be at least 6 characters long, contain at least one uppercase letter, and one lowercase letter.');
+      setError('Password must be at least 8 characters long, contain at least one uppercase letter, special character and a number.');
       return;
     }
 
@@ -74,7 +84,6 @@ export default function StudentRegisterScreen() {
         // verified: false, 
       });
 
-     
       navigation.navigate('RegEmailVerification', { userEmail: email, userName: username, uid: user.uid });
 
     } catch (error) {
@@ -96,7 +105,7 @@ export default function StudentRegisterScreen() {
           />
           <TextInput
             style={styles.input}
-            placeholder="Email Address"
+            placeholder="Student Email"
             onChangeText={(text) => setEmail(text)}
           />
           <TextInput
