@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#E0DCC8',
   },
   deleteButtonStyle: {
-    backgroundColor: '#F44336',
+    backgroundColor: 'black',
   },
   sendButtonStyle: {
     backgroundColor: '#E0DCC8',
