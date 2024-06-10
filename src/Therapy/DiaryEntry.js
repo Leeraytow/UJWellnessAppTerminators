@@ -69,12 +69,10 @@ const DiaryEntry = () => {
         <Icon name="close" size={24} color="#000" />
       </TouchableOpacity>
       <View style={styles.content}>
-        <Text style={styles.title}>Journaling Techniques for Gratitude</Text>
+          <Text style={styles.title}>Journaling Techniques for Effective DigitalTherapy </Text>
         <Text style={styles.subtitle}>
-          A gratitude journal offers a simple yet effective way to cultivate positivity and improve your overall well-being.
-          By regularly reflecting on what you are grateful for, you can shift your perspective to focus on all the good things
-          in your life.
-        </Text>
+ When writing about your emotions, be honest and specific. Describe your feelings in detail, and try to connect them to specific events or thoughts. This practice can help you better understand your emotions and lead to a deeper sense of self-awareness.
+</Text>
         <TextInput
           style={styles.input}
           multiline
