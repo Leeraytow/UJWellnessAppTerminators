@@ -18,14 +18,14 @@ const EntryReceived = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.logoContainer}>
-          <Image source={require('../assets/Icon.png')} style={styles.logo} />
+          <Image source={require('../images/Icon.png')} style={styles.logo} />
           <Text style={styles.headerText}>UJ WELLNESS</Text>
         </View>
         <Icon name="menu" size={30} color="#000" />
       </View>
       <View style={styles.content}>
         <View style={styles.imageContainer}>
-          <Image source={require('../assets/EntryDiary.png')} style={styles.image} />
+          <Image source={require('../images/EntryDiary.png')} style={styles.image} />
         </View>
         <Text style={styles.message}>We are Here For YOU</Text>
         <TouchableOpacity style={styles.button}>
