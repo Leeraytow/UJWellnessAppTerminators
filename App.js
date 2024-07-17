@@ -17,6 +17,7 @@ import TherapyType from './src/Therapy/Therapytype';
 import DigitalDiary from './src/Therapy/DiaryEntry';
 import EntryReceivedPage from './src/EntryReceived';
 
+
 const Stack = createStackNavigator();
 
 export default function App() {
