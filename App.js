@@ -15,8 +15,6 @@ import EmailVerification from './src/Logins/EmailVerificationScreen';
 import RegEmailVerification from './src/Logins/RegEmailVerificationScreen';
 import TherapyType from './src/Therapy/Therapytype';
 import DigitalDiary from './src/Therapy/DiaryEntry';
-import EntryReceivedPage from './src/EntryReceived';
-
 
 const Stack = createStackNavigator();
 
@@ -38,8 +36,7 @@ export default function App() {
         <Stack.Screen name="RegEmailVerification" component={RegEmailVerification} options={{ headerShown: false }} />
         <Stack.Screen name="TherapyType" component={TherapyType} options={{ headerShown: false }} />
         <Stack.Screen name="DigitalDiary" component={DigitalDiary} options={{ headerShown: false }} />
-        <Stack.Screen name="EntryReceivedPage" component={EntryReceivedPage} options={{ headerShown: false }}  />
-        
+
       
 
       </Stack.Navigator>
