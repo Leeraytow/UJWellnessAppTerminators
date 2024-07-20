@@ -15,7 +15,15 @@ import EmailVerification from './src/Logins/EmailVerificationScreen';
 import RegEmailVerification from './src/Logins/RegEmailVerificationScreen';
 import TherapyType from './src/Therapy/Therapytype';
 import DigitalDiary from './src/Therapy/DiaryEntry';
-import EntryReceivedPage from './src/EntryReceived';
+import GroupChatApp from './src/Chat/GroupChat';
+import AccessibilitySettings from './src/Profiles/AccessibilitySettings';
+import CustomizableSettings from './src/Profiles/CustomizableSettings';
+import Emergency from './src/Profiles/EmergencyContacts';
+import Feedback from './src/Profiles/FeedbackandSupport';
+import MyProfile from './src/Profiles/MyProfile';
+import Profile from './src/Profiles/Profile';
+import SecurityInfo from './src/Profiles/SecurityInformation';
+import SignOut from './src/Profiles/SignOut';
 
 
 const Stack = createStackNavigator();
@@ -38,10 +46,14 @@ export default function App() {
         <Stack.Screen name="RegEmailVerification" component={RegEmailVerification} options={{ headerShown: false }} />
         <Stack.Screen name="TherapyType" component={TherapyType} options={{ headerShown: false }} />
         <Stack.Screen name="DigitalDiary" component={DigitalDiary} options={{ headerShown: false }} />
-        <Stack.Screen name="EntryReceivedPage" component={EntryReceivedPage} options={{ headerShown: false }}  />
-        
-      
-
+        <Stack.Screen name="GroupChatApp" component={GroupChatApp} options={{ headerShown: false }} />
+        <Stack.Screen name="Profile" component={Profile} />
+        <Stack.Screen name ="My Profile" component = {MyProfile}/>
+        <Stack.Screen name="Accessibility Settings" component={AccessibilitySettings} />
+        <Stack.Screen name="Customizable Settings" component={CustomizableSettings} />
+        <Stack.Screen name="Emergency Contacts" component={Emergency} />
+        <Stack.Screen name="Feedback And Support" component={Feedback} />
+        <Stack.Screen name="Security" component={SecurityInfo} />
       </Stack.Navigator>
     </NavigationContainer>
   );
