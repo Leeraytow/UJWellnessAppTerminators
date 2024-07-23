@@ -72,8 +72,8 @@ const MainPage = () => {
   };
   const route = useRoute();
   const { userName, userEmail } = route.params;
-  
-  const [upperCaseUserName, setUpperCaseUserName] = useState('');
+
+  const [username, setUpperCaseUserName] = useState('');
   useEffect(() => {
     if (userName) {
       setUpperCaseUserName(userName.toUpperCase());
@@ -86,7 +86,7 @@ const MainPage = () => {
         <View style={styles.container}>
           <Header toggleMenu={toggleMenu} isMenuOpen={isMenuOpen} closeMenu={closeMenu} />
           <View style={styles.content}>
-            <Text style={styles.greeting}>HELLO THERE {upperCaseUserName}</Text>
+            <Text style={styles.greeting}>HELLO THERE {username}</Text>
             <ImageBackground
               source={currentAffirmation.image}
               style={styles.affirmationBackground}
