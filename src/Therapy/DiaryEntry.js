@@ -1,184 +1,167 @@
-
 import React, { useState } from 'react';
-import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet, Modal } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity, ScrollView, Platform } from 'react-native';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 
-const DiaryEntry = () => {
-    const [modalVisible, setModalVisible] = useState(false);
+export default function DigitalDiary() {
+  const [showOptions, setShowOptions] = useState(false);
+  const [image, setImage] = useState(null);
 
-    const handleSave = () => {
+  const pickImage = async () => {
+    if (Platform.OS !== 'web') {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        alert('Sorry, we need camera roll permissions to make this work!');
+      }
+    }
 
-        setModalVisible(false);
-    };
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
 
-    const handleDelete = () => {
+    if (!result.canceled) {
+      setImage(result.uri);
+    }
+  };
 
-        setModalVisible(false);
-    };
-
-    return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <TouchableOpacity style={styles.backButton}>
-                    <Icon name="arrow-left" size={24} color="#000" />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>New Moment</Text>
-                <TouchableOpacity style={styles.saveButton}>
-                    <Icon name="check" size={24} color="#000" />
-                </TouchableOpacity>
-            </View>
-            <Image source={require('../images/coffee.jpeg')} style={styles.image} />
-            <TouchableOpacity style={styles.closeButton}>
-                <Icon name="close" size={24} color="#000" />
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color="black" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>New Moment</Text>
+        <TouchableOpacity style={styles.optionsButton} onPress={() => setShowOptions(!showOptions)}>
+          <MaterialIcons name="more-vert" size={24} color="black" />
+        </TouchableOpacity>
+        {showOptions && (
+          <View style={styles.optionsMenu}>
+            <TouchableOpacity style={styles.optionItem}>
+              <Text style={styles.optionText}>Delete</Text>
             </TouchableOpacity>
-            <View style={styles.content}>
-                <Text style={styles.title}>Journaling Techniques for Gratitude</Text>
-                <Text style={styles.subtitle}>
-                    A gratitude journal offers a simple yet effective way to cultivate positivity and improve your overall well-being.
-                    By regularly reflecting on what you are grateful for, you can shift your perspective to focus on all the good things
-                    in your life.
-                </Text>
-                <TextInput
-                    style={styles.input}
-                    multiline
-                    placeholder="Write your thoughts here..."
-                />
-            </View>
-            <View style={styles.footer}>
-                <Icon name="emoticon-outline" size={24} color="#000" />
-                <Icon name="image-outline" size={24} color="#000" />
-                <Icon name="microphone-outline" size={24} color="#000" />
-                <TouchableOpacity onPress={() => setModalVisible(true)}>
-                    <Icon name="dots-horizontal" size={24} color="#000" />
-                </TouchableOpacity>
-            </View>
-
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => {
-                    setModalVisible(!modalVisible);
-                }}
-            >
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalView}>
-                        <TouchableOpacity style={styles.modalButton} onPress={handleSave}>
-                            <Text style={styles.modalButtonText}>Save</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.modalButton} onPress={handleDelete}>
-                            <Text style={styles.modalButtonText}>Delete</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={[styles.modalButton, { backgroundColor: '#CCC' }]}
-                            onPress={() => setModalVisible(!modalVisible)}
-                        >
-                            <Text style={styles.modalButtonText}>Cancel</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
+            <TouchableOpacity style={styles.optionItem}>
+              <Text style={styles.optionText}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.optionItem}>
+              <Text style={styles.optionText}>Save</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.optionItem}>
+              <Text style={styles.optionText}>Send</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+      <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.imageContainer}>
+          {image ? (
+            <Image source={{ uri: image }} style={styles.imagePlaceholder} />
+          ) : (
+            <TouchableOpacity style={styles.imagePlaceholder} onPress={pickImage}>
+              <Ionicons name="image" size={50} color="grey" />
+            </TouchableOpacity>
+          )}
         </View>
-    );
-};
+        <Text style={styles.title}>Journaling Techniques for Gratitude</Text>
+        <TextInput
+          style={styles.textInput}
+          multiline
+          placeholder="This Digital Diary offers a simple yet effective way to express your emotions, write how you feel and don't forget to hit the send button. One of our professionals will soon reach out to you."
+        />
+      </ScrollView>
+      <View style={styles.bottomIcons}>
+        <TouchableOpacity style={styles.iconButton}>
+          <Ionicons name="happy-outline" size={24} color="black" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.iconButton} onPress={pickImage}>
+          <Ionicons name="attach-outline" size={24} color="black" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.iconButton}>
+          <Ionicons name="mic-outline" size={24} color="black" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.iconButton}>
+          <Ionicons name="send-outline" size={24} color="black" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#F7F5DC',
-        padding: 20,
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    backButton: {
-        padding: 10,
-    },
-    headerTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    saveButton: {
-        padding: 10,
-    },
-    image: {
-        width: '100%',
-        height: 200,
-        borderRadius: 10,
-        marginBottom: 20,
-    },
-    closeButton: {
-        position: 'absolute',
-        top: 230,
-        right: 20,
-        backgroundColor: '#FFF',
-        borderRadius: 15,
-        padding: 5,
-    },
-    content: {
-        flex: 1,
-    },
-    title: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 10,
-    },
-    subtitle: {
-        fontSize: 16,
-        color: '#666',
-        marginBottom: 20,
-    },
-    input: {
-        flex: 1,
-        fontSize: 16,
-        color: '#333',
-        backgroundColor: '#FFF',
-        borderRadius: 10,
-        padding: 10,
-        textAlignVertical: 'top',
-    },
-    footer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingVertical: 10,
-    },
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.5)',
-    },
-    modalView: {
-        width: 300,
-        backgroundColor: '#FFF',
-        borderRadius: 10,
-        padding: 20,
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-    modalButton: {
-        backgroundColor: '#2196F3',
-        borderRadius: 10,
-        padding: 10,
-        marginVertical: 5,
-        width: '100%',
-        alignItems: 'center',
-    },
-    modalButtonText: {
-        color: '#FFF',
-        fontSize: 16,
-    },
+  container: {
+    flex: 1,
+    backgroundColor: '#FBF1D7',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 10,
+    backgroundColor: '#fff',
+  },
+  backButton: {
+    padding: 5,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  optionsButton: {
+    padding: 5,
+  },
+  optionsMenu: {
+    position: 'absolute',
+    top: 30,
+    right: 0,
+    backgroundColor: '#fff',
+    elevation: 5,
+    zIndex: 10,
+  },
+  optionItem: {
+    padding: 10,
+  },
+  optionText: {
+    fontSize: 16,
+  },
+  content: {
+    padding: 20,
+  },
+  imageContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  imagePlaceholder: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+    backgroundColor: '#e0e0e0',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  textInput: {
+    fontSize: 16,
+    lineHeight: 24,
+    backgroundColor: '#fff',
+    padding: 10,
+    borderRadius: 10,
+  },
+  bottomIcons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    padding: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+    backgroundColor: '#fff',
+  },
+  iconButton: {
+    padding: 10,
+  },
 });
-
-export default DiaryEntry;
