@@ -88,7 +88,7 @@ export default function TherapistLoginScreen() {
         querySnapshot.forEach((doc) => {
           const userName = doc.data().name;
   
-          navigation.navigate('Homepage', { userName: userName, userEmail: Email });
+          navigation.navigate('MainPage', { userName: userName, userEmail: Email });
 
         });
       }

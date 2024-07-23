@@ -9,12 +9,15 @@ import TherapistRegisterScreen from './src/Logins/TherapistRegisterScreen';
 import SplashScreen1 from './src/SplashPages/splash1';
 import SplashScreen2 from './src/SplashPages/Splash2';
 import SplashScreen3 from './src/SplashPages/Splash3';
-import Homepage from './src/Menu/Homepage';
 import PasswordResetScreen from './src/Logins/PasswordResetScreen';
 import EmailVerification from './src/Logins/EmailVerificationScreen';
 import RegEmailVerification from './src/Logins/RegEmailVerificationScreen';
 import TherapyType from './src/Therapy/Therapytype';
 import DigitalDiary from './src/Therapy/DiaryEntry';
+import MainPage from './src/Menu/MainPage';
+import MoodControl from './src/Menu/MoodControl';
+import TherapyButton from './src/Menu/TherapyButton';
+import GroupChatApp from './src/ChatApp/GroupChat';
 
 const Stack = createStackNavigator();
 
@@ -32,12 +35,13 @@ export default function App() {
         <Stack.Screen name="SplashScreen1" component={SplashScreen1} options={{ headerShown: false }} />
         <Stack.Screen name="SplashScreen2" component={SplashScreen2} options={{ headerShown: false }} />
         <Stack.Screen name="SplashScreen3" component={SplashScreen3} options={{ headerShown: false }} />
-        <Stack.Screen name="Homepage" component={Homepage} options={{ headerShown: false }} />
+        <Stack.Screen name="MainPage" component={MainPage} options={{ headerShown: false }} />
         <Stack.Screen name="RegEmailVerification" component={RegEmailVerification} options={{ headerShown: false }} />
         <Stack.Screen name="TherapyType" component={TherapyType} options={{ headerShown: false }} />
         <Stack.Screen name="DigitalDiary" component={DigitalDiary} options={{ headerShown: false }} />
-
-      
+        <Stack.Screen name="MoodControl" component={MoodControl} options={{ headerShown: false }} />
+        <Stack.Screen name="TherapyButton" component={TherapyButton} options={{ headerShown: false }} />
+        <Stack.Screen name="GroupChatApp" component={GroupChatApp} options={{ headerShown: false }} />
 
       </Stack.Navigator>
     </NavigationContainer>
