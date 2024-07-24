@@ -17,7 +17,7 @@ const Footer = () => {
       <TouchableOpacity style={styles.footerButton}>
         <Ionicons name="settings-sharp" size={24} color="white" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.footerButton}>
+      <TouchableOpacity style={styles.footerButton} onPress={()=>navigation.navigate('Profile')}>
         <Ionicons name="person" size={24} color="white" />
       </TouchableOpacity>
     </View>

@@ -18,6 +18,13 @@ import MainPage from './src/Menu/MainPage';
 import MoodControl from './src/Menu/MoodControl';
 import TherapyButton from './src/Menu/TherapyButton';
 import GroupChatApp from './src/ChatApp/GroupChat';
+import Profile from './src/StudentProfile/Profile';
+import AccessibilitySettings from './src/StudentProfile/AccessibilitySetting';
+import MyProfile from './src/StudentProfile/MyProfile';
+import CustomizableSettings from './src/StudentProfile/CustomizableSettings';
+import Feedback from './src/StudentProfile/FeedbackandSupport';
+import Emergency from './src/StudentProfile/EmergencyContact';
+import SecurityInfo from './src/StudentProfile/SecurityInformation';
 
 const Stack = createStackNavigator();
 
@@ -42,6 +49,13 @@ export default function App() {
         <Stack.Screen name="MoodControl" component={MoodControl} options={{ headerShown: false }} />
         <Stack.Screen name="TherapyButton" component={TherapyButton} options={{ headerShown: false }} />
         <Stack.Screen name="GroupChatApp" component={GroupChatApp} options={{ headerShown: false }} />
+        <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
+        <Stack.Screen name="MyProfile" component={MyProfile} options={{ headerShown: false }} />
+        <Stack.Screen name="AccessibilitySettings" component={AccessibilitySettings} options={{ headerShown: false }} />
+        <Stack.Screen name="CustomizableSettings" component={CustomizableSettings} options={{ headerShown: false }} />
+        <Stack.Screen name="Feedback" component={Feedback} options={{ headerShown: false }} />
+        <Stack.Screen name="Emergency" component={Emergency} options={{ headerShown: false }} />
+        <Stack.Screen name="SecurityInfor" component={SecurityInfo} options={{ headerShown: false }} />
 
       </Stack.Navigator>
     </NavigationContainer>

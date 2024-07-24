@@ -77,7 +77,14 @@ const Header = () => {
                     style={styles.menuItem}
                     onPress={() => navigateTo('PeerToPeerSupport')}
                   >
-                    <Text style={styles.menuItemText}>Peer-to-Peer Support</Text>
+                     <Text style={styles.menuItemText}>PeerToPeer</Text>
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity
+                    style={styles.menuItem}
+                    onPress={() => navigateTo('Profile')}
+                  >
+                    <Text style={styles.menuItemText}>Profile</Text>
                   </TouchableOpacity>
                 </View>
               </View>
