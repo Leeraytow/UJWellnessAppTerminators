@@ -1,54 +1,50 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
 import Footer from '../Menu/Footer'; 
 
-const SupportOption = ({ image, title, description, navigateTo }) => {
-  const navigation = useNavigation();
 
+const PeerSupporterCard = ({ image, name, bio }) => {
   return (
-    <TouchableOpacity style={styles.card} onPress={() => navigation.navigate(navigateTo)}>
-      <Image source={image} style={styles.cardImage} />
+    <View style={styles.card}>
+      <Image source={image} style={styles.profileImage} />
       <View style={styles.cardTextContainer}>
-        <Text style={styles.cardTitle}>{title}</Text>
-        <Text style={styles.cardDescription}>{description}</Text>
+        <Text style={styles.cardName}>{name}</Text>
+        <Text style={styles.cardBio}>{bio}</Text>
       </View>
-    </TouchableOpacity>
+      <TouchableOpacity style={styles.chatButton}>
+        <Ionicons name="chatbubble-outline" size={24} color="black" />
+      </TouchableOpacity>
+    </View>
   );
 };
 
-const HelpLine = () => {
-  const navigation = useNavigation();
-
+const PeerSupporters = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image source={require('../assets/Icon.png')} style={styles.logo} />
-        <TouchableOpacity style={styles.menuButton} onPress={() => navigation.openDrawer()}>
+        <Image source={require('../images/Icon.png')} style={styles.logo} />
+        <Text style={styles.headerText}>UJ WELLNESS</Text>
+        <TouchableOpacity style={styles.menuButton}>
           <Ionicons name="menu" size={24} color="black" />
         </TouchableOpacity>
       </View>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.mainTitle}>We are here for You</Text>
-        <Text style={styles.subTitle}>Choose your suitable option</Text>
-        <SupportOption 
-          image={require('../images/MainPage.png')} 
-          title="Contact Support" 
-          description="Speak with someone right now" 
-          navigateTo="ContactSupport"
+        <Text style={styles.mainTitle}>Available Peer Supporters</Text>
+        <PeerSupporterCard 
+          image={require('../images/profile1.jpg')} 
+          name="Khensani Mnisi" 
+          bio="23 year old doing Bcom in Psychology\nI love nature walks and listening to Music." 
         />
-        <SupportOption 
-          image={require('../images/EntryDiary.png')} 
-          title="Message" 
-          description="Chat with our available mentors" 
-          navigateTo="Message"
+        <PeerSupporterCard 
+          image={require('../images/profile2.jpg')} 
+          name="Liloith Landon" 
+          bio="23 year old doing Bcom in Psychology\nI love nature walks and listening to Music." 
         />
-        <SupportOption 
-          image={require('../images/ChatVideo.png')} 
-          title="Professional Support" 
-          description="Speak with our available professional therapist" 
-          navigateTo="ProfessionalSupport"
+        <PeerSupporterCard 
+          image={require('../images/profile3.jpg')} 
+          name="Liloith Landon" 
+          bio="23 year old doing Bcom in Psychology\nI love nature walks and listening to Music." 
         />
       </ScrollView>
       <Footer />
@@ -69,8 +65,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   logo: {
-    width: 50,
-    height: 50,
+    width: 30,
+    height: 30,
+  },
+  headerText: {
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   menuButton: {
     padding: 5,
@@ -82,11 +82,6 @@ const styles = StyleSheet.create({
   mainTitle: {
     fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  subTitle: {
-    fontSize: 16,
-    color: 'grey',
     marginBottom: 20,
   },
   card: {
@@ -103,22 +98,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
   },
-  cardImage: {
+  profileImage: {
     width: 50,
     height: 50,
+    borderRadius: 25,
     marginRight: 15,
   },
   cardTextContainer: {
     flex: 1,
   },
-  cardTitle: {
-    fontSize: 18,
+  cardName: {
+    fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 5,
   },
-  cardDescription: {
+  cardBio: {
     fontSize: 14,
     color: 'grey',
+  },
+  chatButton: {
+    padding: 10,
   },
   bottomNav: {
     flexDirection: 'row',
@@ -133,4 +132,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HelpLine;
+export default PeerSupporters;

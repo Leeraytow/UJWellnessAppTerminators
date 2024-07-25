@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity, ScrollView, Platform, SafeAreaView } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import Footer from './Menu/Footer';
+import Footer from '../Menu/Footer';
 
 export default function DigitalDiary() {
   const [showOptions, setShowOptions] = useState(false);
@@ -15,7 +15,7 @@ export default function DigitalDiary() {
         alert('Sorry, we need camera roll permissions to make this work!');
       }
     }
-
+npm
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,

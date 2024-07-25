@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import Footer from './Menu/Footer';
+import Footer from '../Menu/Footer';
 
 const BookingCompleted = () => {
     return (
