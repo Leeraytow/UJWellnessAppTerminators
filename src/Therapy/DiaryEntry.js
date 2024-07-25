@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity, ScrollView, Platform } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity, ScrollView, Platform, SafeAreaView } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import Footer from './Menu/Footer';
 
 export default function DigitalDiary() {
   const [showOptions, setShowOptions] = useState(false);
@@ -28,7 +29,7 @@ export default function DigitalDiary() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="black" />
@@ -64,7 +65,7 @@ export default function DigitalDiary() {
             </TouchableOpacity>
           )}
         </View>
-        <Text style={styles.title}>Journaling Techniques for Gratitude</Text>
+        <Text style={styles.title}>Journaling Techniques for DigitalTherapy</Text>
         <TextInput
           style={styles.textInput}
           multiline
@@ -85,7 +86,8 @@ export default function DigitalDiary() {
           <Ionicons name="send-outline" size={24} color="black" />
         </TouchableOpacity>
       </View>
-    </View>
+      <Footer /> 
+    </SafeAreaView>
   );
 }
 

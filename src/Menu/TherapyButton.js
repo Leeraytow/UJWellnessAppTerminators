@@ -1,5 +1,7 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import Footer from './Footer'; 
+
 
 const TherapyButton = ({ navigation }) => {
   return (
@@ -41,6 +43,7 @@ const TherapyButton = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </ScrollView>
+      <Footer /> 
     </View>
   );
 };
