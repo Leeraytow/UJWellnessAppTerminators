@@ -1,90 +1,140 @@
-// TherapyButton.js
-import React, { useState } from 'react';
-import { View, StyleSheet, Text, SafeAreaView, ScrollView, TouchableWithoutFeedback } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import Header from './Header';
-import Footer from './Footer';
-import Emoji from './Emoji';
+import React from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 
-const TherapyButton = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [selectedEmotion, setSelectedEmotion] = useState(null);
-  const navigation = useNavigation();
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-  const closeMenu = () => {
-    if (isMenuOpen) {
-      setIsMenuOpen(false);
-    }
-  };
-
-  const emotions = [
-    { emoji: '😃', label: 'Excited', id: 1 },
-    { emoji: '😊', label: 'Happy', id: 2 },
-    { emoji: '😍', label: 'Loved', id: 3 },
-    { emoji: '😐', label: 'Bored', id: 4 },
-    { emoji: '😨', label: 'Anxious', id: 5 },
-    { emoji: '😟', label: 'Worried', id: 6 },
-    { emoji: '😠', label: 'Angry', id: 7 },
-    { emoji: '😩', label: 'Frustrated', id: 8 },
-    { emoji: '😢', label: 'Sad', id: 9 },
-  ];
-
-  const handleEmojiPress = (id) => {
-    setSelectedEmotion(id);
-    navigation.navigate('MoodControl', { selectedEmotion: id });
-  };
-
+const TherapyButton = ({ navigation }) => {
   return (
-    <SafeAreaView style={styles.container}>
-      <TouchableWithoutFeedback onPress={closeMenu}>
-        <View style={styles.container}>
-          <Header toggleMenu={toggleMenu} isMenuOpen={isMenuOpen} closeMenu={closeMenu} />
-          <ScrollView contentContainerStyle={styles.contentContainer}>
-            <Text style={styles.heading}>How are you feeling right now?</Text>
-            <View style={styles.emojiGrid}>
-              {emotions.map((emotion) => (
-                <Emoji
-                  key={emotion.id}
-                  emoji={emotion.emoji}
-                  label={emotion.label}
-                  onPress={() => handleEmojiPress(emotion.id)}
-                  isSelected={selectedEmotion === emotion.id}
-                />
-              ))}
-            </View>
-          </ScrollView>
-          <Footer />
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <View style={styles.logoContainer}>
+          <Image source={require('../images/Icon.png')} style={styles.logo} />
         </View>
-      </TouchableWithoutFeedback>
-    </SafeAreaView>
+        <TouchableOpacity style={styles.menuIcon}>
+          <Text style={styles.menuText}>☰</Text>
+        </TouchableOpacity>
+      </View>
+      <Text style={styles.title}>You deserve to be Happy</Text>
+      <Text style={styles.subtitle}>What Type of Therapy are you looking for?</Text>
+      <ScrollView style={styles.scrollContainer}>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('DigitalDiary')}>
+            <View style={styles.buttonContent}>
+              <Text style={styles.buttonTitle}>Digital Diary</Text>
+              <Text style={styles.buttonSubtitle}>write on Journal</Text>
+            </View>
+            <Image source={require('../images/MainPage.png')} style={styles.buttonIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button1} onPress={() => navigation.navigate('OnlineTherapy')}>
+            <View style={styles.buttonContent}>
+              <Text style={styles.buttonTitle}>Online therapy</Text>
+              <Text style={styles.buttonSubtitle}>Meet with a professional </Text>
+              <Text style={styles.buttonSubtitle}>on a meeting</Text>
+            </View>
+            <Image source={require('../images/EntryDiary.png')} style={styles.buttonIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button2} onPress={() => navigation.navigate('PeerCounseling')}>
+            <View style={styles.buttonContent}>
+              <Text style={styles.buttonTitle}>Peer2Peer Counseling</Text>
+              <Text style={styles.buttonSubtitle}>Meet with your peer mate</Text>
+              <Text style={styles.buttonSubtitle}>have a casual Conversation</Text>
+            </View>
+            <Image source={require('../images/TherapyPage.png')} style={styles.buttonIcon} />
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 20,
     backgroundColor: '#fff',
   },
-  contentContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
-  heading: {
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  logo: {
+    width: 110,
+    height: 100,
+    marginLeft: -40,
+  },
+  menuIcon: {
+    padding: 10,
+  },
+  menuText: {
+    fontSize: 24,
+  },
+  title: {
+    fontSize: 20,
+    marginTop: 20,
+    textAlign: 'center',
+  },
+  subtitle: {
     fontSize: 18,
     fontWeight: 'bold',
+    textAlign: 'center',
+    marginVertical: 20,
+  },
+  scrollContainer: {
     marginBottom: 20,
   },
-  emojiGrid: {
+  buttonContainer: {
+    marginBottom: 20,
+  },
+  button: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    width: '100%',
-    paddingHorizontal: 10,
+    alignItems: 'center',
+    backgroundColor: '#FBF1D7',
+    padding: 10,
+    marginBottom: 30,
+    borderRadius: 10,
+    width: 300,
+    height: 100,
+    justifyContent: 'space-between',
+  },
+  button1: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F7F5DC',
+    padding: 10,
+    marginBottom: 30,
+    borderRadius: 10,
+    width: 300,
+    height: 100,
+    justifyContent: 'space-between',
+  },
+  button2: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E0DCC8',
+    padding: 10,
+    marginBottom: 30,
+    borderRadius: 10,
+    width: 300,
+    height: 100,
+    justifyContent: 'space-between',
+  },
+  buttonContent: {
+    flexDirection: 'column',
+  },
+  buttonTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  buttonSubtitle: {
+    fontSize: 14,
+    fontWeight: '300',
+  },
+  buttonIcon: {
+    width: 130,
+    height: 130,
   },
 });
 
