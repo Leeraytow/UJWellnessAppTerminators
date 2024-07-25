@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, TextInput, Alert, TouchableOpacity, FlatList, StyleSheet, Dimensions, ScrollView,Platform,StatusBar } from 'react-native';
 import { collection, addDoc, query, onSnapshot, doc, deleteDoc } from "firebase/firestore";
-import { db } from '../Configuration'; // Make sure the path is correct
+import { db } from '../Configuration/firebase'; 
 import YoutubePlayer from 'react-native-youtube-iframe';
 import { Picker } from '@react-native-picker/picker';
 

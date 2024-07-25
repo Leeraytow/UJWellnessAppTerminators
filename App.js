@@ -25,6 +25,9 @@ import CustomizableSettings from './src/StudentProfile/CustomizableSettings';
 import Feedback from './src/StudentProfile/FeedbackandSupport';
 import Emergency from './src/StudentProfile/EmergencyContact';
 import SecurityInfo from './src/StudentProfile/SecurityInformation';
+import HelpLine from './src/HelpLine/Help';
+import MedicalHelp from './src/MedicalHelp/MedicalHelp';
+import UserVid from './src/Videos/UserVideos';
 
 const Stack = createStackNavigator();
 
@@ -56,6 +59,10 @@ export default function App() {
         <Stack.Screen name="Feedback" component={Feedback} options={{ headerShown: false }} />
         <Stack.Screen name="Emergency" component={Emergency} options={{ headerShown: false }} />
         <Stack.Screen name="SecurityInfor" component={SecurityInfo} options={{ headerShown: false }} />
+        <Stack.Screen name="HelpLine" component={HelpLine} options={{ headerShown: false }} />
+        <Stack.Screen name="MedicalHelp" component={MedicalHelp} options={{ headerShown: false }} />
+        <Stack.Screen name="UserVid" component={UserVid} options={{ headerShown: false }} />
+
 
       </Stack.Navigator>
     </NavigationContainer>

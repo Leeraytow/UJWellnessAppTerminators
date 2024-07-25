@@ -100,7 +100,7 @@ const MainPage = () => {
             </TouchableOpacity>
             <Text style={styles.toolsText}>Tools</Text>
             <View style={styles.toolsContainer}>
-              <TouchableOpacity style={styles.toolButton} onPress={() => navigation.navigate('Video')}>
+              <TouchableOpacity style={styles.toolButton} onPress={() => navigation.navigate('UserVid')}>
                 <Image source={require('../images/podcast.jpeg')} style={styles.buttonImage} />
                 <Text style={styles.toolButtonText}>Podcast and Videos</Text>
               </TouchableOpacity>
@@ -116,9 +116,9 @@ const MainPage = () => {
                 <Image source={require('../images/peer.jpeg')} style={styles.buttonImage} />
                 <Text style={styles.toolButtonText}>Peer-to-Peer Support</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.toolButton} onPress={() => navigation.navigate('AddVideoSlider')}>
+              <TouchableOpacity style={styles.toolButton} onPress={() => navigation.navigate('MedicalHelp')}>
                 <Image source={require('../images/medical.jpeg')} style={styles.buttonImage} />
-                <Text style={styles.toolButtonText}>Professional Medical Help</Text>
+                <Text style={styles.toolButtonText}>Medical Help</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.toolButton} onPress={() => navigation.navigate('HelpLine')}>
                 <Image source={require('../images/help.jpeg')} style={styles.buttonImage} />
@@ -153,11 +153,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   affirmationBackground: {
-    width: 350, // Fixed width
+    width: 350, 
     height:180,
-    alignSelf: 'center', // Center the image horizontally
+    alignSelf: 'center', 
     justifyContent: 'center',
-// Reduced margin to accommodate the button
+
   },
   affirmationText: {
     fontSize: 16,
