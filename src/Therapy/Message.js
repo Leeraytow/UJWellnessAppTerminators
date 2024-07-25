@@ -1,8 +1,7 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import Footer from '../Menu/Footer'; 
-
+import Footer from '../Menu/Footer';
 
 const PeerSupporterCard = ({ image, name, bio }) => {
   return (
@@ -21,7 +20,7 @@ const PeerSupporterCard = ({ image, name, bio }) => {
 
 const PeerSupporters = () => {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Image source={require('../images/Icon.png')} style={styles.logo} />
         <Text style={styles.headerText}>UJ WELLNESS</Text>
@@ -48,7 +47,7 @@ const PeerSupporters = () => {
         />
       </ScrollView>
       <Footer />
-    </View>
+    </SafeAreaView>
   );
 };
 

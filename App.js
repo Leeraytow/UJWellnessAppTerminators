@@ -15,6 +15,7 @@ import RegEmailVerification from './src/Logins/RegEmailVerificationScreen';
 import DigitalDiary from './src/Therapy/DiaryEntry';
 import OnlineTherapyPage from './src/Therapy/Onlinetherapy';
 import PeerCounselingPage from './src/Therapy/PeerCounseling';
+import MessageScreen from './src/Therapy/Message';
 import MainPage from './src/Menu/MainPage';
 import MoodControl from './src/Menu/MoodControl';
 import TherapyButton from './src/Menu/TherapyButton';
@@ -51,6 +52,7 @@ export default function App() {
         <Stack.Screen name="OnlineTherapy" component={OnlineTherapyPage} options={{ headerShown: false }} />
         <Stack.Screen name="PeerCounseling" component={PeerCounselingPage} options={{ headerShown: false }} />
         <Stack.Screen name="DigitalDiary" component={DigitalDiary} options={{ headerShown: false }} />
+        <Stack.Screen name="Message" component={MessageScreen} options={{ headerShown: false }} />
         <Stack.Screen name="MoodControl" component={MoodControl} options={{ headerShown: false }} />
         <Stack.Screen name="TherapyButton" component={TherapyButton} options={{ headerShown: false }} />
         <Stack.Screen name="GroupChatApp" component={GroupChatApp} options={{ headerShown: false }} />
