@@ -12,8 +12,9 @@ import SplashScreen3 from './src/SplashPages/Splash3';
 import PasswordResetScreen from './src/Logins/PasswordResetScreen';
 import EmailVerification from './src/Logins/EmailVerificationScreen';
 import RegEmailVerification from './src/Logins/RegEmailVerificationScreen';
-import TherapyType from './src/Therapy/Therapytype';
 import DigitalDiary from './src/Therapy/DiaryEntry';
+import OnlineTherapyPage from './src/Therapy/Onlinetherapy';
+import PeerCounselingPage from './src/Therapy/PeerCounseling';
 import MainPage from './src/Menu/MainPage';
 import MoodControl from './src/Menu/MoodControl';
 import TherapyButton from './src/Menu/TherapyButton';
@@ -44,7 +45,8 @@ export default function App() {
         <Stack.Screen name="SplashScreen3" component={SplashScreen3} options={{ headerShown: false }} />
         <Stack.Screen name="MainPage" component={MainPage} options={{ headerShown: false }} />
         <Stack.Screen name="RegEmailVerification" component={RegEmailVerification} options={{ headerShown: false }} />
-        <Stack.Screen name="TherapyType" component={TherapyType} options={{ headerShown: false }} />
+        <Stack.Screen name="OnlineTherapy" component={OnlineTherapyPage} options={{ headerShown: false }} />
+        <Stack.Screen name="PeerCounseling" component={PeerCounselingPage} options={{ headerShown: false }} />
         <Stack.Screen name="DigitalDiary" component={DigitalDiary} options={{ headerShown: false }} />
         <Stack.Screen name="MoodControl" component={MoodControl} options={{ headerShown: false }} />
         <Stack.Screen name="TherapyButton" component={TherapyButton} options={{ headerShown: false }} />
