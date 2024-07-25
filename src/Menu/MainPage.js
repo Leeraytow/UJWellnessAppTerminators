@@ -126,7 +126,7 @@ const MainPage = () => {
               </TouchableOpacity>
             </View>
           </View>
-          <Footer />
+          <Footer style={styles.foot}/>
         </View>
       </TouchableWithoutFeedback>
     </SafeAreaView>
@@ -150,11 +150,11 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   affirmationBackground: {
     width: 350, // Fixed width
-    height:200,
+    height:180,
     alignSelf: 'center', // Center the image horizontally
     justifyContent: 'center',
 // Reduced margin to accommodate the button
@@ -216,6 +216,9 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
   },
+  foot:{
+    marginBottom:50
+  }
 });
 
 export default MainPage; 
