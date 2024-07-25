@@ -12,7 +12,7 @@ const PeerSupporterCard = ({ image, name, bio }) => {
         <Text style={styles.cardBio}>{bio}</Text>
       </View>
       <TouchableOpacity style={styles.chatButton}>
-        <Ionicons name="chatbubble-outline" size={24} color="black" />
+        <Ionicons name="chatbubble-outline" size={24} color="#FF6F00" />
       </TouchableOpacity>
     </View>
   );
@@ -23,9 +23,8 @@ const PeerSupporters = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Image source={require('../images/Icon.png')} style={styles.logo} />
-        <Text style={styles.headerText}>UJ WELLNESS</Text>
         <TouchableOpacity style={styles.menuButton}>
-          <Ionicons name="menu" size={24} color="black" />
+          <Ionicons name="menu" size={24} color="#FF6F00" />
         </TouchableOpacity>
       </View>
       <ScrollView contentContainerStyle={styles.content}>
@@ -54,22 +53,22 @@ const PeerSupporters = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FBF1D7',
+    backgroundColor: '#FAFAFA', // Light orange background
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 10,
-    backgroundColor: '#fff',
+    paddingVertical: 15, // Reduced padding for a more compact header
+    paddingHorizontal: 20,
+    backgroundColor: '#FAFAFA', // Light orange background
+    borderBottomWidth: 1,
+    borderBottomColor: '#FF6F00', // Darker orange border
+    marginTop: 30,
   },
   logo: {
     width: 30,
     height: 30,
-  },
-  headerText: {
-    fontSize: 18,
-    fontWeight: 'bold',
   },
   menuButton: {
     padding: 5,
@@ -81,52 +80,43 @@ const styles = StyleSheet.create({
   mainTitle: {
     fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 20,
+    color: '#FF6F00', // Darker orange text color
+    marginBottom: 40,
   },
   card: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
+    backgroundColor: '#FAFAFA', // Light orange card background
     borderRadius: 10,
     elevation: 3,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 2 },
+    shadowColor: '#FF6F00', // Orange shadow color
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
     marginVertical: 10,
     padding: 15,
     alignItems: 'center',
     width: '100%',
   },
   profileImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     marginRight: 15,
   },
   cardTextContainer: {
     flex: 1,
   },
   cardName: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
+    color: '#FF6F00', // Darker orange text color
     marginBottom: 5,
   },
   cardBio: {
     fontSize: 14,
-    color: 'grey',
+    color: '#FF8C00', // Slightly lighter orange text color
   },
   chatButton: {
-    padding: 10,
-  },
-  bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 10,
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#ddd',
-  },
-  navButton: {
     padding: 10,
   },
 });

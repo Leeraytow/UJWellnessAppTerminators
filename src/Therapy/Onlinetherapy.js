@@ -23,13 +23,13 @@ const BookingCompleted = () => {
                     <Text style={styles.bookingText}>Booking Completed</Text>
                 </View>
                 <TouchableOpacity style={styles.button}>
-                    <Text style={styles.buttonText}>Start Video call with a therapist</Text>
+                    <Text style={styles.buttonText}>Start Video Call with a Therapist</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.button}>
-                    <Text style={styles.buttonText}>Start chatting with a therapist</Text>
+                    <Text style={styles.buttonText}>Start Chatting with a Therapist</Text>
                 </TouchableOpacity>
             </View>
-            <Footer /> 
+            <Footer />
         </View>
     );
 };
@@ -37,65 +37,68 @@ const BookingCompleted = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: '#f5f5f5',
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: 10,
-        backgroundColor: '#fff',
+        padding: 15,
+        backgroundColor: '#FF6F00',
     },
     logo: {
         width: 50,
-        height: 55,
-        marginLeft: -20,
+        height: 50,
+        resizeMode: 'contain',
     },
     menuButton: {
         padding: 10,
     },
     menuText: {
         fontSize: 24,
-        fontWeight: 'bold',
+        color: '#fff',
     },
     content: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center', 
+        justifyContent: 'center',
+        padding: 20,
     },
     orangeContainer: {
-        backgroundColor: '#f57c00',
+        backgroundColor: '#FF6F00',
         borderRadius: 20,
-        padding: 20,
+        padding: 30,
         alignItems: 'center',
         width: '100%',
-        marginBottom: 50,
-        marginTop: 30, 
-        height:400,
+        marginBottom: 40,
+        height: 350,
+        justifyContent: 'center',
     },
     image: {
-        width: 200,
-        height: 200,
+        width: 180,
+        height: 180,
         marginBottom: 20,
     },
     bookingText: {
-        fontSize: 24,
+        fontSize: 22,
         fontWeight: 'bold',
         color: '#fff',
         marginBottom: 20,
+        textAlign: 'center',
     },
     button: {
-        backgroundColor: '#000',
+        backgroundColor: '#FF6F00',
         paddingVertical: 15,
-        paddingHorizontal: 20,
-        borderRadius: 10,
+        paddingHorizontal: 30,
+        borderRadius: 8,
         marginVertical: 10,
-        width: '80%',
+        width: '90%',
         alignItems: 'center',
     },
     buttonText: {
         color: '#fff',
         fontSize: 16,
+        fontWeight: 'bold',
     },
 });
 

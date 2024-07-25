@@ -2,42 +2,38 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import Footer from './Footer'; 
 
-
 const TherapyButton = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <View style={styles.logoContainer}>
-          <Image source={require('../images/Icon.png')} style={styles.logo} />
-        </View>
+        <Image source={require('../images/Icon.png')} style={styles.logo} />
         <TouchableOpacity style={styles.menuIcon}>
           <Text style={styles.menuText}>☰</Text>
         </TouchableOpacity>
       </View>
-      <Text style={styles.title}>You deserve to be Happy</Text>
-      <Text style={styles.subtitle}>What Type of Therapy are you looking for?</Text>
+      <Text style={styles.title}>You Deserve to Be Happy</Text>
+      <Text style={styles.subtitle}>What Type of Therapy Are You Looking For?</Text>
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('DigitalDiary')}>
             <View style={styles.buttonContent}>
               <Text style={styles.buttonTitle}>Digital Diary</Text>
-              <Text style={styles.buttonSubtitle}>write on Journal</Text>
+              <Text style={styles.buttonSubtitle}>Write in Journal</Text>
             </View>
             <Image source={require('../images/MainPage.png')} style={styles.buttonIcon} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button1} onPress={() => navigation.navigate('OnlineTherapy')}>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('OnlineTherapy')}>
             <View style={styles.buttonContent}>
-              <Text style={styles.buttonTitle}>Online therapy</Text>
-              <Text style={styles.buttonSubtitle}>Meet with a professional </Text>
-              <Text style={styles.buttonSubtitle}>on a meeting</Text>
+              <Text style={styles.buttonTitle}>Online Therapy</Text>
+              <Text style={styles.buttonSubtitle}>Meet with a Professional</Text>
+              <Text style={styles.buttonSubtitle}>on a Video Call</Text>
             </View>
             <Image source={require('../images/EntryDiary.png')} style={styles.buttonIcon} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button2} onPress={() => navigation.navigate('PeerCounseling')}>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('PeerCounseling')}>
             <View style={styles.buttonContent}>
               <Text style={styles.buttonTitle}>Peer2Peer Counseling</Text>
-              <Text style={styles.buttonSubtitle}>Meet with your peer mate</Text>
-              <Text style={styles.buttonSubtitle}>have a casual Conversation</Text>
+              <Text style={styles.buttonSubtitle}>Casual Conversation with a Peer</Text>
             </View>
             <Image source={require('../images/TherapyPage.png')} style={styles.buttonIcon} />
           </TouchableOpacity>
@@ -51,42 +47,43 @@ const TherapyButton = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#FAFAFA', // Light gray background for modern look
     padding: 20,
-    backgroundColor: '#fff',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  logoContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    marginBottom: 20,
   },
   logo: {
-    width: 110,
+    width: 100,
     height: 100,
-    marginLeft: -40,
+    resizeMode: 'contain',
   },
   menuIcon: {
     padding: 10,
   },
   menuText: {
     fontSize: 24,
+    color: '#FF6F00', // Orange for visibility
   },
   title: {
-    fontSize: 20,
-    marginTop: 20,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginVertical: 20,
+    color: '#FF6F00', // Orange for consistency
+    marginVertical: 10,
+  },
+  subtitle: {
+    fontSize: 16,
+    fontWeight: '500',
+    textAlign: 'center',
+    marginVertical: 10,
+    color: '#333', // Dark gray for readability
   },
   scrollContainer: {
-    marginBottom: 20,
+    flex: 1,
   },
   buttonContainer: {
     marginBottom: 20,
@@ -94,50 +91,35 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FBF1D7',
-    padding: 10,
-    marginBottom: 30,
-    borderRadius: 10,
-    width: 300,
-    height: 100,
+    backgroundColor: '#FFFFFF', // White background for a clean look
+    padding: 15,
+    marginBottom: 15,
+    borderRadius: 12,
+    width: '100%',
+    height: 120,
     justifyContent: 'space-between',
-  },
-  button1: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F7F5DC',
-    padding: 10,
-    marginBottom: 30,
-    borderRadius: 10,
-    width: 300,
-    height: 100,
-    justifyContent: 'space-between',
-  },
-  button2: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#E0DCC8',
-    padding: 10,
-    marginBottom: 30,
-    borderRadius: 10,
-    width: 300,
-    height: 100,
-    justifyContent: 'space-between',
+    borderWidth: 2, // Border width
+    borderColor: '#E65100', // Dark orange border
+    elevation: 6, // Shadow for visibility
   },
   buttonContent: {
-    flexDirection: 'column',
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 10,
   },
   buttonTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '600',
+    color: '#FF6F00', // Orange for titles
   },
   buttonSubtitle: {
     fontSize: 14,
-    fontWeight: '300',
+    color: '#666', // Gray for subtitles
   },
   buttonIcon: {
-    width: 130,
-    height: 130,
+    width: 80,
+    height: 80,
+    resizeMode: 'contain',
   },
 });
 
