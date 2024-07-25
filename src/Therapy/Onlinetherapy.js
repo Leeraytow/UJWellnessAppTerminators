@@ -17,7 +17,7 @@ const BookingCompleted = () => {
             <View style={styles.content}>
                 <View style={styles.orangeContainer}>
                     <Image
-                        source={require('../images/ChatVideo.png')}
+                        source={require('../images/ChatVideo img.png')}
                         style={styles.image}
                     />
                     <Text style={styles.bookingText}>Booking Completed</Text>
