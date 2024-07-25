@@ -6,7 +6,7 @@ const TherapyType = ({ navigation }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.logoContainer}>
-          <Image source={require('../assets/Icon.png')} style={styles.logo} />
+          <Image source={require('../images/Icon.png')} style={styles.logo} />
         </View>
         <TouchableOpacity style={styles.menuIcon}>
           <Text style={styles.menuText}>☰</Text>
@@ -21,7 +21,7 @@ const TherapyType = ({ navigation }) => {
               <Text style={styles.buttonTitle}>Digital Diary</Text>
               <Text style={styles.buttonSubtitle}>write on Journal</Text>
             </View>
-            <Image source={require('../assets/MainPage.png')} style={styles.buttonIcon} />
+            <Image source={require('../images/MainPage.png')} style={styles.buttonIcon} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.button1} onPress={() => navigation.navigate('OnlineTherapy')}>
             <View style={styles.buttonContent}>
@@ -29,7 +29,7 @@ const TherapyType = ({ navigation }) => {
               <Text style={styles.buttonSubtitle}>Meet with a professional </Text>
               <Text style={styles.buttonSubtitle}>on a meeting</Text>
             </View>
-            <Image source={require('../assets/EntryDiary.png')} style={styles.buttonIcon} />
+            <Image source={require('../images/EntryDiary.png')} style={styles.buttonIcon} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.button2} onPress={() => navigation.navigate('PeerCounseling')}>
             <View style={styles.buttonContent}>
@@ -37,7 +37,7 @@ const TherapyType = ({ navigation }) => {
               <Text style={styles.buttonSubtitle}>Meet with your peer mate</Text>
               <Text style={styles.buttonSubtitle}>have a casual Conversation</Text>
             </View>
-            <Image source={require('../assets/TherapyPage.png')} style={styles.buttonIcon} />
+            <Image source={require('../images/TherapyPage.png')} style={styles.buttonIcon} />
           </TouchableOpacity>
         </View>
       </ScrollView>
