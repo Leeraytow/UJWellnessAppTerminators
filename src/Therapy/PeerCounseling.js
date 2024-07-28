@@ -24,7 +24,7 @@ const HelpLine = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image source={require('../assets/Icon.png')} style={styles.logo} />
+        <Image source={require('../images/Icon.png')} style={styles.logo} />
         <TouchableOpacity style={styles.menuButton} onPress={() => navigation.openDrawer()}>
           <Ionicons name="menu" size={24} color="black" />
         </TouchableOpacity>
