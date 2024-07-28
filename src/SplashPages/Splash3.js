@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
         marginTop: -50,
     },
     message: {
-        backgroundColor: '#CC5500',
+        backgroundColor: '#FF6F00',
         padding: 20,
         borderRadius: 10,
         alignItems: 'center',
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
         bottom: 50,
         position: 'absolute',
         left: 50,
-        backgroundColor: '#CC5500',
+        backgroundColor: '#FF6F00',
         padding: 10,
         borderRadius: 5,
     },

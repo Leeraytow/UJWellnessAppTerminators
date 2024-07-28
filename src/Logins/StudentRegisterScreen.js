@@ -95,7 +95,7 @@ export default function StudentRegisterScreen() {
 
   return (
     <View style={styles.container}>
-      <ImageBackground source={require('../images/mental.png')} style={styles.background}>
+      <ImageBackground source={require('../images/background.png')} style={styles.background}>
         <View style={styles.registerContainer}>
           <Header />
           <TextInput
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   registerButton: {
-    backgroundColor: '#FFA500',
+    backgroundColor: '#FF6F00',
     paddingVertical: 15,
     borderRadius: 10,
   },

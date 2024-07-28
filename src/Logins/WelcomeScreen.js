@@ -26,7 +26,7 @@ export default function WelcomeScreen() {
   };
 
   return (
-    <ImageBackground source={require('../images/mental.png')} style={styles.background}>
+    <ImageBackground source={require('../images/background.png')} style={styles.background}>
       <View style={styles.container}>
         <Animated.Image source={require('../images/logo.png')} style={[styles.logo, { opacity: fadeAnim }]} />
 
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   button: {
-    backgroundColor: 'orange',
+    backgroundColor: '#FF6F00',
     width: 200,
     paddingVertical: 12,
     paddingHorizontal: 24,

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking } from 'react-native';
+import Footer from '../Menu/Footer'; // Adjust the path as necessary
 
 const hospitals = [
   {
@@ -103,14 +104,17 @@ const HospitalCard = ({ hospital }) => (
   </View>
 );
 
-const  MedicalHelp = () => {
+const MedicalHelp = () => {
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.header}>Hospitals Offering Mental Health Support</Text>
-      {hospitals.map((hospital, index) => (
-        <HospitalCard key={index} hospital={hospital} />
-      ))}
-    </ScrollView>
+    <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <Text style={styles.header}>Hospitals Offering Mental Health Support</Text>
+        {hospitals.map((hospital, index) => (
+          <HospitalCard key={index} hospital={hospital} />
+        ))}
+      </ScrollView>
+      <Footer />
+    </View>
   );
 };
 
@@ -118,13 +122,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
+  },
+  scrollViewContent: {
     padding: 16,
+    paddingBottom: 80, // Ensure space for the footer
   },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 24,
-    marginTop: 16,
+    marginBottom: 30,
+    marginTop: 30,
     textAlign: 'center',
     color: '#FF5E0E',
   },

@@ -1,19 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, SafeAreaView, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+const Header = ({ toggleMenu, isMenuOpen, closeMenu }) => {
   const navigation = useNavigation();
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-  const closeMenu = () => {
-    setIsMenuOpen(false);
-  };
 
   const navigateTo = (screen) => {
     closeMenu();
@@ -29,9 +20,8 @@ const Header = () => {
               <Image source={require('../images/logo.png')} style={styles.logo} />
               <Text style={styles.headerText}>UJWellness</Text>
             </View>
-            <TouchableOpacity onPress={toggleMenu}>
+            <TouchableOpacity onPress={toggleMenu} style={styles.menuBtn}>
               <Ionicons name="menu" size={28} color="white" />
-
             </TouchableOpacity>
           </View>
           <Modal
@@ -42,44 +32,49 @@ const Header = () => {
           >
             <TouchableWithoutFeedback onPress={closeMenu}>
               <View style={styles.modalOverlay}>
-                <View style={styles.dropdownMenu}>
+                <View style={styles.drawerMenu}>
                   <TouchableOpacity
                     style={styles.menuItem}
                     onPress={() => navigateTo('PsyCadVideos')}
                   >
                     <Text style={styles.menuItemText}>Podcast and Videos</Text>
                   </TouchableOpacity>
+                  <View style={styles.separator} />
                   <TouchableOpacity
                     style={styles.menuItem}
                     onPress={() => navigateTo('Therapy')}
                   >
                     <Text style={styles.menuItemText}>Therapy</Text>
                   </TouchableOpacity>
+                  <View style={styles.separator} />
                   <TouchableOpacity
                     style={styles.menuItem}
                     onPress={() => navigateTo('HelpLine')}
                   >
                     <Text style={styles.menuItemText}>Help Line</Text>
                   </TouchableOpacity>
+                  <View style={styles.separator} />
                   <TouchableOpacity
                     style={styles.menuItem}
                     onPress={() => navigateTo('ProfessionalMedicalHelp')}
                   >
                     <Text style={styles.menuItemText}>Professional Medical Help</Text>
                   </TouchableOpacity>
+                  <View style={styles.separator} />
                   <TouchableOpacity
                     style={styles.menuItem}
                     onPress={() => navigateTo('CommunitySupport')}
                   >
                     <Text style={styles.menuItemText}>Community Support</Text>
                   </TouchableOpacity>
+                  <View style={styles.separator} />
                   <TouchableOpacity
                     style={styles.menuItem}
                     onPress={() => navigateTo('PeerToPeerSupport')}
                   >
-                     <Text style={styles.menuItemText}>PeerToPeer</Text>
+                    <Text style={styles.menuItemText}>Peer-to-Peer Support</Text>
                   </TouchableOpacity>
-                  
+                  <View style={styles.separator} />
                   <TouchableOpacity
                     style={styles.menuItem}
                     onPress={() => navigateTo('Profile')}
@@ -101,11 +96,11 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   header: {
-    backgroundColor: '#FFA500',
+    backgroundColor: '#FF6F00',
     padding: 10,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
   headerLeft: {
     flexDirection: 'row',
@@ -125,15 +120,15 @@ const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'flex-end', // Aligns the modal content to the bottom
   },
-  dropdownMenu: {
-    backgroundColor: '#FFA500',
+  drawerMenu: {
+    backgroundColor: '#FF6F00',
+    width: 250,
+    height: '100%',
     padding: 10,
-    borderWidth: 1,
-    borderColor: '#fff',
-    borderRadius: 5,
+    position: 'absolute',
+    right: 0, // Aligns the drawer content to the right
   },
   menuItem: {
     paddingVertical: 10,
@@ -141,6 +136,14 @@ const styles = StyleSheet.create({
   menuItemText: {
     fontSize: 16,
     color: 'white',
+  },
+  menuBtn: {
+    padding: 10,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: 'white',
+    marginVertical: 5,
   },
 });
 

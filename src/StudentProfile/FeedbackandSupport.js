@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, Pressable } from 'react-native';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 const StarRating = ({ rating, setRating }) => {
   return (
@@ -19,6 +20,7 @@ const StarRating = ({ rating, setRating }) => {
 };
 
 const Feedback = () => {
+  const navigation = useNavigation();
   const [rating, setRating] = useState(0);
   const [suggestions, setSuggestions] = useState('');
 
@@ -35,10 +37,16 @@ const Feedback = () => {
 
   return (
     <View style={styles.container}>
-    
+      <View style={styles.header}>
+        <Pressable onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} color="#FF6F00" />
+        </Pressable>
+        <Text style={styles.headerTitle}>Feedback</Text>
+      </View>
+
       <View style={styles.section}>
         <Text style={styles.sectionHeader}>User Feedback</Text>
-        <Text>Ratings</Text>
+        <Text style={styles.label}>Ratings</Text>
         <StarRating rating={rating} setRating={setRating} />
       </View>
 
@@ -66,22 +74,50 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   header: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: '#FFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
     marginBottom: 16,
-    textAlign: 'center',
+    marginTop: 30,
+    
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginLeft: 16,
   },
   section: {
     marginBottom: 16,
+    padding: 16,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   sectionHeader: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: '#FF6F00',
     marginBottom: 8,
+  },
+  label: {
+    fontSize: 16,
+    color: '#333',
   },
   starContainer: {
     flexDirection: 'row',
     marginVertical: 8,
+    justifyContent: 'center',
   },
   input: {
     height: 100,
@@ -90,9 +126,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     textAlignVertical: 'top',
+    marginTop: 8,
   },
   button: {
-    backgroundColor: '#FFA500',
+    backgroundColor: '#FF6F00',
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 32,

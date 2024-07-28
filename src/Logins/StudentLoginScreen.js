@@ -97,7 +97,7 @@ export default function StudentLoginScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <ImageBackground source={require('../images/mental.png')} style={styles.background}>
+      <ImageBackground source={require('../images/background.png')} style={styles.background}>
         <View style={styles.loginContainer}>
           <Header />
 
@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   loginButton: {
-    backgroundColor: '#FFA500',
+    backgroundColor: '#FF6F00',
     paddingVertical: 15,
     borderRadius: 10,
     marginBottom: 15,
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   createAccountText: {
-    color: '#FFA500',
+    color: '#FF6F00',
     fontSize: 16,
     textAlign: 'center',
   },

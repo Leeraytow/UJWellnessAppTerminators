@@ -1,28 +1,29 @@
-// App.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, TextInput, Alert, TouchableOpacity, FlatList, StyleSheet, Dimensions, ScrollView,Platform,StatusBar } from 'react-native';
-import { collection, addDoc, query, onSnapshot, doc, deleteDoc } from "firebase/firestore";
-import { db } from '../Configuration/firebase'; 
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+  StyleSheet,
+  Dimensions,
+  ScrollView,
+  Platform,
+  StatusBar,
+  SafeAreaView
+} from 'react-native';
+import { collection, query, onSnapshot } from 'firebase/firestore';
+import { db } from '../Configuration/firebase';
 import YoutubePlayer from 'react-native-youtube-iframe';
-import { Picker } from '@react-native-picker/picker';
+import Footer from '../Menu/Footer'; // Adjust the path as necessary
 
 const UserVid = () => {
   const { width } = Dimensions.get('window');
 
-  const extractYouTubeVideoID = (url) => {
-    const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/ ]{11})/;
-    const match = url.match(regex);
-    return match ? match[1] : null;
-  };
-
-  const [link, setLink] = useState('');
-  const [title, setTitle] = useState('');
-  const [category, setCategory] = useState('Meditation');
   const [videos, setVideos] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
 
   useEffect(() => {
-    const q = query(collection(db, "Videos"));
+    const q = query(collection(db, 'Videos'));
     const unsub = onSnapshot(q, (querySnapshot) => {
       let videoList = [];
       querySnapshot.forEach((doc) => {
@@ -33,40 +34,14 @@ const UserVid = () => {
     return () => unsub();
   }, []);
 
-  const handleSubmit = async () => {
-    const videoId = extractYouTubeVideoID(link);
-    if (videoId) {
-      await addDoc(collection(db, "Videos"), {
-        videoId,
-        title,
-        category
-      });
-      setLink('');
-      setTitle('');
-      setCategory('Meditation');
-    } else {
-      Alert.alert("Invalid URL", "Please enter a valid YouTube URL.");
-    }
-  };
-
-  const handleDelete = async (id) => {
-    await deleteDoc(doc(db, "Videos", id));
-  };
-
   const filteredVideos = selectedCategory === 'All'
     ? videos
-    : videos.filter(video => video.category === selectedCategory);
+    : videos.filter((video) => video.category === selectedCategory);
 
   const renderVideoItem = ({ item }) => (
     <View style={styles.videoContainer}>
-      <Text>{item.title}</Text>
-      <YoutubePlayer
-        height={250}
-        width={width / 1.1}
-        play={false}
-        videoId={item.videoId}
-      />
-
+      <Text style={styles.videoTitle}>{item.title}</Text>
+      <YoutubePlayer height={250} width={width - 40} play={false} videoId={item.videoId} />
     </View>
   );
 
@@ -75,80 +50,80 @@ const UserVid = () => {
   };
 
   return (
-    <ScrollView style={{margin:5, flex: 1,backgroundColor: '#fff',paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,}}>
-    
-      <View style={styles.categoryContainer}>
-        <TouchableOpacity onPress={() => handleCategoryChange('All')}>
-          <Text style={selectedCategory === 'All' ? styles.selectedCategory : styles.category}>All</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleCategoryChange('Meditation')}>
-          <Text style={selectedCategory === 'Meditation' ? styles.selectedCategory : styles.category}>Meditation</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleCategoryChange('Podcast')}>
-          <Text style={selectedCategory === 'Podcast' ? styles.selectedCategory : styles.category}>Podcasts</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleCategoryChange('SelfTherapy')}>
-          <Text style={selectedCategory === 'SelfTherapy' ? styles.selectedCategory : styles.category}>Self Therapy</Text>
-        </TouchableOpacity>
-      </View>
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <View style={styles.safeArea}>
+          <View style={styles.categoryContainer}>
+            {['All', 'Meditation', 'Podcast', 'SelfTherapy'].map((cat) => (
+              <TouchableOpacity key={cat} onPress={() => handleCategoryChange(cat)}>
+                <Text style={selectedCategory === cat ? styles.selectedCategory : styles.category}>
+                  {cat}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
 
-      <FlatList
-        data={filteredVideos}
-        renderItem={renderVideoItem}
-        keyExtractor={(item) => item.id}
-      />
-    </ScrollView>
+          <FlatList data={filteredVideos} renderItem={renderVideoItem} keyExtractor={(item) => item.id} />
+        </View>
+      </ScrollView>
+      <Footer />
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f7f7f7',
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+  },
   safeArea: {
     flex: 1,
     backgroundColor: '#fff',
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-  
+    padding: 10,
   },
-  input: {
-    height: 50,
-    borderColor: '#ddd',
-    borderWidth: 1,
-    borderRadius: 8,
+  header: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginVertical: 20,
+  },
+  categoryContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
     marginBottom: 20,
-    paddingHorizontal: 15,
+  },
+  category: {
     fontSize: 16,
-    backgroundColor: 'white',
+    color: 'black',
+    fontWeight: 'bold',
+  },
+  selectedCategory: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    borderBottomWidth: 2,
+    borderColor: '#ff6347',
+    color: '#ff6347',
   },
   videoContainer: {
     borderRadius: 10,
     overflow: 'hidden',
     marginBottom: 10,
     padding: 10,
-    backgroundColor: 'white',
+    backgroundColor: '#fff',
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 5 },
+    alignItems: 'center',
   },
-  categoryContainer: {
-    flexDirection: 'row',
-    marginBottom: 20,
-  },
-  category: {
-    marginTop: 10,
-    marginRight: 15,
-    fontSize: 16,
-    color: 'black',
+  videoTitle: {
+    fontSize: 18,
     fontWeight: 'bold',
-  },
-  selectedCategory: {
-    marginTop: 8,
-    marginRight: 15,
-    fontSize: 16,
-    fontWeight: 'bold',
-    borderWidth: 1,
-    borderRadius: 10,
-    padding: 5,
-    backgroundColor: 'orange',
+    marginBottom: 10,
   },
 });
 
