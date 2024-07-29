@@ -81,6 +81,7 @@ export default function StudentRegisterScreen() {
       await setDoc(userRef, {
         name: username,
         email: email,
+        profilePicture: ""
         // verified: false, 
       });
 
