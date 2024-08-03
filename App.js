@@ -30,13 +30,15 @@ import SecurityInfo from './src/StudentProfile/SecurityInformation';
 import HelpLine from './src/HelpLine/Help';
 import MedicalHelp from './src/MedicalHelp/MedicalHelp';
 import UserVid from './src/Videos/UserVideos';
+import Chat from './src/ChatApp/Chat'
+import UserList from './src/ChatApp/userList';
 
 const Stack = createStackNavigator();
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="SplashScreen1">
+      <Stack.Navigator initialRouteName="StudentLogin">
         <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="StudentLogin" component={StudentLoginScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="StudentRegister" component={StudentRegister} options={{ headerShown: false }} />
@@ -66,6 +68,9 @@ export default function App() {
         <Stack.Screen name="HelpLine" component={HelpLine} options={{ headerShown: false }} />
         <Stack.Screen name="MedicalHelp" component={MedicalHelp} options={{ headerShown: false }} />
         <Stack.Screen name="UserVid" component={UserVid} options={{ headerShown: false }} />
+        <Stack.Screen name="Chat" component={Chat}/>
+        <Stack.Screen name="userList" component={UserList}/>
+
 
 
       </Stack.Navigator>

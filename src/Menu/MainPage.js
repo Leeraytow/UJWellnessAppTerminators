@@ -7,13 +7,13 @@ import {
   TouchableOpacity,
   SafeAreaView,
   TouchableWithoutFeedback,
-  AsyncStorage,
   Image,
   Platform,
   StatusBar,
   Dimensions,
   ScrollView,
 } from 'react-native';
+import { AsyncStorage } from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import moment from 'moment';
 import Header from './Header';
@@ -125,7 +125,7 @@ const MainPage = () => {
                 <ToolButton
                   title="Peer-to-Peer Support"
                   image={require('../images/peer.jpeg')}
-                  onPress={() => navigation.navigate('PeerToPeerSupport')}
+                  onPress={() => navigation.navigate('userList')}
                 />
                 <ToolButton
                   title="Professional Medical Help"

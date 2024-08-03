@@ -3,6 +3,8 @@ import { View, Text, Image, StyleSheet, Pressable, ScrollView, Alert, SafeAreaVi
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
+import { signOut } from 'firebase/auth';
+import { auth } from '../Configuration/firebase'; 
 
 const Profile = () => {
   const navigation = useNavigation();
@@ -10,14 +12,32 @@ const Profile = () => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const handleSignOut = () => {
-    Alert.alert("Confirm Sign Out", "Are you sure you want to sign out?", [
-      {
-        text: "Cancel",
-        style: "cancel"
-      },
-      { text: "Sign Out", onPress: () => console.log("User signed out") }
-    ]);
+    Alert.alert(
+      'Confirm Sign Out',
+      'Are you sure you want to sign out?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Sign Out',
+          onPress: () => {
+            signOut(auth)
+              .then(() => {
+                console.log('User signed out');
+                navigation.replace('StudentLogin'); // Redirect to the Login screen after sign out
+              })
+              .catch(error => {
+                console.error('Error signing out: ', error);
+              });
+          },
+        },
+      ],
+      { cancelable: true }
+    );
   };
+
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({

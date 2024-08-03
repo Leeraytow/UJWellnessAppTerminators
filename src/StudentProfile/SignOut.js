@@ -1,7 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
+import { signOut } from 'firebase/auth';
+import { auth } from '../Configuration/firebase'; // Make sure the path to firebase configuration is correct
+import { useNavigation } from '@react-navigation/native';
 
 const SignOut = () => {
+  const navigation = useNavigation();
+
   const handleSignOut = () => {
     Alert.alert(
       'Confirm Sign Out',
@@ -14,8 +19,14 @@ const SignOut = () => {
         {
           text: 'Sign Out',
           onPress: () => {
-            // Implement sign-out logic here
-            console.log('User signed out');
+            signOut(auth)
+              .then(() => {
+                console.log('User signed out');
+                navigation.replace('Login'); // Redirect to the Login screen after sign out
+              })
+              .catch(error => {
+                console.error('Error signing out: ', error);
+              });
           },
         },
       ],
