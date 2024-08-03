@@ -61,18 +61,18 @@ const HelpLine = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAFAFA', // Light cream background
+    backgroundColor: '#FAFAFA', 
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: 20, // Adds space at the top
+    paddingTop: 20, 
     paddingHorizontal: 10,
-    backgroundColor: '#FAFAFA', // Peach puff background
-    marginBottom: 80, // Adds space below the header
+    backgroundColor: '#FAFAFA', 
+    marginBottom: 80, 
     borderBottomWidth: 1,
-    borderBottomColor: '#FF6F00', // Dark orange border
+    borderBottomColor: '#FF6F00', 
   },
   logo: {
     width: 50,
@@ -88,27 +88,27 @@ const styles = StyleSheet.create({
   mainTitle: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#FF6F00', // Dark orange title
+    color: '#FF6F00', 
     marginBottom: 10,
   },
   subTitle: {
     fontSize: 16,
-    color: '#FF8C00', // Light orange subtitle
+    color: '#FF8C00', 
     marginBottom: 20,
   },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FAFAFA', // Peach puff background
+    backgroundColor: '#FAFAFA', 
     borderRadius: 10,
     padding: 15,
     marginVertical: 10,
     width: '100%',
-    shadowColor: '#FF4500', // Orange shadow
+    shadowColor: '#FF4500', 
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
-    borderColor: '#FF6F00', // Dark orange border
+    borderColor: '#FF6F00', 
     borderWidth: 2,
   },
   cardContent: {
@@ -127,11 +127,11 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#FF6F00', // Dark orange title
+    color: '#FF6F00', 
   },
   cardDescription: {
     fontSize: 14,
-    color: '#555', // Dark gray description
+    color: '#555', 
   },
 });
 

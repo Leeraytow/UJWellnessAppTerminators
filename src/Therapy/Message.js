@@ -53,17 +53,17 @@ const PeerSupporters = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAFAFA', // Light orange background
+    backgroundColor: '#FAFAFA', 
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 15, // Reduced padding for a more compact header
+    paddingVertical: 15, 
     paddingHorizontal: 20,
-    backgroundColor: '#FAFAFA', // Light orange background
+    backgroundColor: '#FAFAFA', 
     borderBottomWidth: 1,
-    borderBottomColor: '#FF6F00', // Darker orange border
+    borderBottomColor: '#FF6F00', 
     marginTop: 30,
   },
   logo: {
@@ -80,15 +80,15 @@ const styles = StyleSheet.create({
   mainTitle: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#FF6F00', // Darker orange text color
+    color: '#FF6F00',
     marginBottom: 40,
   },
   card: {
     flexDirection: 'row',
-    backgroundColor: '#FAFAFA', // Light orange card background
+    backgroundColor: '#FAFAFA', 
     borderRadius: 10,
     elevation: 3,
-    shadowColor: '#FF6F00', // Orange shadow color
+    shadowColor: '#FF6F00', 
     shadowOpacity: 0.2,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
@@ -109,12 +109,12 @@ const styles = StyleSheet.create({
   cardName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#FF6F00', // Darker orange text color
+    color: '#FF6F00', 
     marginBottom: 5,
   },
   cardBio: {
     fontSize: 14,
-    color: '#FF8C00', // Slightly lighter orange text color
+    color: '#FF8C00', 
   },
   chatButton: {
     padding: 10,

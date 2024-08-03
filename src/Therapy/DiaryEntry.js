@@ -157,7 +157,7 @@ export default function DigitalDiary({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAFAFA', // Light cream background
+    backgroundColor: '#FAFAFA', 
   },
   header: {
     flexDirection: 'row',
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
-    marginTop: 20, // Add margin to move the header downwards
+    marginTop: 20, 
   },
   backButton: {
     padding: 5,
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#FF6F00', // Orange shade
+    color: '#FF6F00', 
   },
   optionsButton: {
     padding: 5,
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: '#E0E0E0', // Border around the container
+    borderColor: '#E0E0E0',
     borderRadius: 10,
     padding: 10,
   },
@@ -224,14 +224,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#FF6F00', // Orange border
+    borderColor: '#FF6F00',
   },
   image: {
     width: 120,
     height: 120,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#E0E0E0', // Border around the image
+    borderColor: '#E0E0E0', 
   },
   imagePlaceholderText: {
     fontSize: 14,
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: '#333',
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0', // Border below the title
+    borderBottomColor: '#E0E0E0', 
     paddingBottom: 5,
   },
   textInput: {
