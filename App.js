@@ -15,6 +15,8 @@ import RegEmailVerification from './src/Logins/RegEmailVerificationScreen';
 import DigitalDiary from './src/Therapy/DiaryEntry';
 import OnlineTherapyPage from './src/Therapy/Onlinetherapy';
 import PeerCounselingPage from './src/Therapy/PeerCounseling';
+import ContactSupportScreen from './components/ContactSupport'; 
+import ProffesionalSupport from './src/Therapy/ProffesionalSupport';
 import MessageScreen from './src/Therapy/Message';
 import MainPage from './src/Menu/MainPage';
 import MoodControl from './src/Menu/MoodControl';
@@ -55,8 +57,10 @@ export default function App() {
         <Stack.Screen name="PeerCounseling" component={PeerCounselingPage} options={{ headerShown: false }} />
         <Stack.Screen name="DigitalDiary" component={DigitalDiary} options={{ headerShown: false }} />
         <Stack.Screen name="Message" component={MessageScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="ContactSupport" component={ContactSupportScreen} options={{ headerShown: false }} />
         <Stack.Screen name="MoodControl" component={MoodControl} options={{ headerShown: false }} />
         <Stack.Screen name="TherapyButton" component={TherapyButton} options={{ headerShown: false }} />
+        <Stack.Screen name="ProfessionalSupport" component={ProffesionalSupport} options={{ headerShown: false }} />
         <Stack.Screen name="GroupChatApp" component={GroupChatApp} options={{ headerShown: false }} />
         <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
         <Stack.Screen name="MyProfile" component={MyProfile} options={{ headerShown: false }} />
