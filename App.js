@@ -15,7 +15,7 @@ import RegEmailVerification from './src/Logins/RegEmailVerificationScreen';
 import DigitalDiary from './src/Therapy/DiaryEntry';
 import OnlineTherapyPage from './src/Therapy/Onlinetherapy';
 import PeerCounselingPage from './src/Therapy/PeerCounseling';
-import ContactSupportScreen from './components/ContactSupport'; 
+import ContactSupportScreen from './src/Therapy/ContactSupport'; 
 import ProffesionalSupport from './src/Therapy/ProffesionalSupport';
 import MessageScreen from './src/Therapy/Message';
 import MainPage from './src/Menu/MainPage';
