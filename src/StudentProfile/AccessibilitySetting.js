@@ -1,37 +1,35 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import { View, Text, Switch, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { ThemeContext } from './ThemeContext'; 
 
 const AccessibilitySettings = () => {
   const navigation = useNavigation();
-  const [isLowVision, setIsLowVision] = useState(false);
-  const [useScreenReader, setUseScreenReader] = useState(false);
-  const [useVoiceCommands, setUseVoiceCommands] = useState(false);
-  const [highContrast, setHighContrast] = useState(false);
-  const [darkTheme, setDarkTheme] = useState(false);
+  const { isDarkMode, toggleTheme } = useContext(ThemeContext);
+
+  const [isLowVision, setIsLowVision] = React.useState(false);
+  const [useScreenReader, setUseScreenReader] = React.useState(false);
+  const [useVoiceCommands, setUseVoiceCommands] = React.useState(false);
+  const [highContrast, setHighContrast] = React.useState(false);
 
   const toggleHighContrast = () => {
-    setHighContrast(!highContrast);
-  };
-
-  const toggleDarkTheme = () => {
-    setDarkTheme(!darkTheme);
+    setHighContrast(prev => !prev);
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View style={[styles.container, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
+      <View style={[styles.header, { backgroundColor: isDarkMode ? '#444' : '#FFF' }]}>
         <Pressable onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="#FF6F00" />
+          <Ionicons name="arrow-back" size={24} color={isDarkMode ? '#FFA500' : '#FF6F00'} />
         </Pressable>
-        <Text style={styles.headerTitle}>Accessibility Settings</Text>
+        <Text style={[styles.headerTitle, { color: isDarkMode ? '#fff' : '#333' }]}>Accessibility Settings</Text>
       </View>
 
-      <View style={styles.setting}>
-        <Text style={styles.label}>Visual Impairment Details</Text>
+      <View style={[styles.setting, { backgroundColor: isDarkMode ? '#555' : '#fff' }]}>
+        <Text style={[styles.label, { color: isDarkMode ? '#FFA500' : '#FF6F00' }]}>Visual Impairment Details</Text>
         <View style={styles.switchContainer}>
-          <Text style={styles.switchLabel}>Low Vision</Text>
+          <Text style={[styles.switchLabel, { color: isDarkMode ? '#fff' : '#333' }]}>Low Vision</Text>
           <Switch
             trackColor={{ false: '#767577', true: '#FFA500' }}
             thumbColor={isLowVision ? '#FFA500' : '#f4f3f4'}
@@ -41,10 +39,10 @@ const AccessibilitySettings = () => {
         </View>
       </View>
 
-      <View style={styles.setting}>
-        <Text style={styles.label}>Preferred Accessibility Tools</Text>
+      <View style={[styles.setting, { backgroundColor: isDarkMode ? '#555' : '#fff' }]}>
+        <Text style={[styles.label, { color: isDarkMode ? '#FFA500' : '#FF6F00' }]}>Preferred Accessibility Tools</Text>
         <View style={styles.switchContainer}>
-          <Text style={styles.switchLabel}>Screen Reader</Text>
+          <Text style={[styles.switchLabel, { color: isDarkMode ? '#fff' : '#333' }]}>Screen Reader</Text>
           <Switch
             trackColor={{ false: '#767577', true: '#FFA500' }}
             thumbColor={useScreenReader ? '#FFA500' : '#f4f3f4'}
@@ -53,7 +51,7 @@ const AccessibilitySettings = () => {
           />
         </View>
         <View style={styles.switchContainer}>
-          <Text style={styles.switchLabel}>Voice Commands</Text>
+          <Text style={[styles.switchLabel, { color: isDarkMode ? '#fff' : '#333' }]}>Voice Commands</Text>
           <Switch
             trackColor={{ false: '#767577', true: '#FFA500' }}
             thumbColor={useVoiceCommands ? '#FFA500' : '#f4f3f4'}
@@ -63,10 +61,10 @@ const AccessibilitySettings = () => {
         </View>
       </View>
 
-      <View style={styles.setting}>
-        <Text style={styles.label}>Color Contrast Adjustment</Text>
+      <View style={[styles.setting, { backgroundColor: isDarkMode ? '#555' : '#fff' }]}>
+        <Text style={[styles.label, { color: isDarkMode ? '#FFA500' : '#FF6F00' }]}>Color Contrast Adjustment</Text>
         <View style={styles.switchContainer}>
-          <Text style={styles.switchLabel}>High Contrast Mode</Text>
+          <Text style={[styles.switchLabel, { color: isDarkMode ? '#fff' : '#333' }]}>High Contrast Mode</Text>
           <Switch
             trackColor={{ false: '#767577', true: '#FFA500' }}
             thumbColor={highContrast ? '#FFA500' : '#f4f3f4'}
@@ -76,15 +74,15 @@ const AccessibilitySettings = () => {
         </View>
       </View>
 
-      <View style={styles.setting}>
-        <Text style={styles.label}>Theme</Text>
+      <View style={[styles.setting, { backgroundColor: isDarkMode ? '#555' : '#fff' }]}>
+        <Text style={[styles.label, { color: isDarkMode ? '#FFA500' : '#FF6F00' }]}>Theme</Text>
         <View style={styles.switchContainer}>
-          <Text style={styles.switchLabel}>Dark Theme</Text>
+          <Text style={[styles.switchLabel, { color: isDarkMode ? '#fff' : '#333' }]}>Dark Theme</Text>
           <Switch
             trackColor={{ false: '#767577', true: '#FFA500' }}
-            thumbColor={darkTheme ? '#FFA500' : '#f4f3f4'}
-            value={darkTheme}
-            onValueChange={toggleDarkTheme}
+            thumbColor={isDarkMode ? '#FFA500' : '#f4f3f4'}
+            value={isDarkMode}
+            onValueChange={toggleTheme}
           />
         </View>
       </View>
@@ -96,13 +94,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#fff',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: '#FFF',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -114,13 +110,11 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
     marginLeft: 16,
   },
   setting: {
     marginVertical: 16,
     padding: 16,
-    backgroundColor: '#fff',
     borderRadius: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -131,7 +125,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#FF6F00',
     marginBottom: 8,
   },
   switchContainer: {
@@ -142,7 +135,6 @@ const styles = StyleSheet.create({
   },
   switchLabel: {
     fontSize: 16,
-    color: '#333',
   },
 });
 

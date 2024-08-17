@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, Pressable } from 'react-native';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { ThemeContext } from './ThemeContext'; // Adjust the path if necessary
 
 const StarRating = ({ rating, setRating }) => {
+  const { isDarkMode } = useContext(ThemeContext);
+
   return (
     <View style={styles.starContainer}>
       {Array.from({ length: 5 }, (_, index) => (
@@ -11,7 +14,7 @@ const StarRating = ({ rating, setRating }) => {
           <FontAwesome 
             name={index < rating ? 'star' : 'star-o'} 
             size={32} 
-            color="#FFA500" 
+            color={isDarkMode ? '#FFA500' : '#FFA500'} // Adjust the color as needed
           />
         </TouchableOpacity>
       ))}
@@ -21,6 +24,7 @@ const StarRating = ({ rating, setRating }) => {
 
 const Feedback = () => {
   const navigation = useNavigation();
+  const { isDarkMode } = useContext(ThemeContext);
   const [rating, setRating] = useState(0);
   const [suggestions, setSuggestions] = useState('');
 
@@ -36,30 +40,31 @@ const Feedback = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View style={[styles.container, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
+      <View style={[styles.header, { backgroundColor: isDarkMode ? '#444' : '#fff' }]}>
         <Pressable onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="#FF6F00" />
+          <Ionicons name="arrow-back" size={24} color={isDarkMode ? '#FFA500' : '#FF6F00'} />
         </Pressable>
-        <Text style={styles.headerTitle}>Feedback</Text>
+        <Text style={[styles.headerTitle, { color: isDarkMode ? '#FFF' : '#333' }]}>Feedback</Text>
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionHeader}>User Feedback</Text>
-        <Text style={styles.label}>Ratings</Text>
+      <View style={[styles.section, { backgroundColor: isDarkMode ? '#555' : '#fff' }]}>
+        <Text style={[styles.sectionHeader, { color: isDarkMode ? '#FFA500' : '#FF6F00' }]}>User Feedback</Text>
+        <Text style={[styles.label, { color: isDarkMode ? '#FFF' : '#333' }]}>Ratings</Text>
         <StarRating rating={rating} setRating={setRating} />
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionHeader}>Suggestions for App Improvements</Text>
+      <View style={[styles.section, { backgroundColor: isDarkMode ? '#555' : '#fff' }]}>
+        <Text style={[styles.sectionHeader, { color: isDarkMode ? '#FFA500' : '#FF6F00' }]}>Suggestions for App Improvements</Text>
         <TextInput 
-          style={styles.input} 
+          style={[styles.input, { backgroundColor: isDarkMode ? '#444' : '#f9f9f9', color: isDarkMode ? '#FFF' : '#000' }]} 
           placeholder="Write your suggestions here..." 
+          placeholderTextColor={isDarkMode ? '#888' : '#888'}
           value={suggestions} 
           onChangeText={handleSuggestionChange} 
           multiline 
         />
-        <TouchableOpacity style={styles.button} onPress={handleSendFeedback}>
+        <TouchableOpacity style={[styles.button, { backgroundColor: isDarkMode ? '#FFA500' : '#FF6F00' }]} onPress={handleSendFeedback}>
           <Text style={styles.buttonText}>Send</Text>
         </TouchableOpacity>
       </View>
@@ -70,33 +75,28 @@ const Feedback = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
     padding: 16,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: '#FFF',
+    marginBottom: 16,
+    marginTop: 30,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
-    marginBottom: 16,
-    marginTop: 30,
-    
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
     marginLeft: 16,
   },
   section: {
     marginBottom: 16,
     padding: 16,
-    backgroundColor: '#fff',
     borderRadius: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -107,12 +107,10 @@ const styles = StyleSheet.create({
   sectionHeader: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#FF6F00',
     marginBottom: 8,
   },
   label: {
     fontSize: 16,
-    color: '#333',
   },
   starContainer: {
     flexDirection: 'row',
@@ -129,7 +127,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   button: {
-    backgroundColor: '#FF6F00',
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 32,

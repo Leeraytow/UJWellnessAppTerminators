@@ -1,26 +1,29 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Linking, SafeAreaView, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Footer from '../Menu/Footer'; // Adjust the path as necessary
+import Footer from '../Menu/Footer';
+import { ThemeContext } from '../StudentProfile/ThemeContext'; 
 
 const HelpLine = () => {
+  const { isDarkMode } = useContext(ThemeContext);
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: isDarkMode ? '#000' : '#fff' }]}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <View style={styles.box}>
+        <View style={[styles.box, { backgroundColor: isDarkMode ? '#333' : '#FF6F00' }]}>
           <TouchableOpacity style={styles.contact} onPress={() => handleCall('+27115594555')}>
-            <Icon name="phone" size={20} color="#FFF" style={styles.icon} />
-            <Text style={styles.contactInfo}>Telephone: +27 11 559 4555</Text>
+            <Icon name="phone" size={20} color={isDarkMode ? '#FFF' : '#FFF'} style={styles.icon} />
+            <Text style={[styles.contactInfo, { color: isDarkMode ? '#FFF' : '#FFF' }]}>Telephone: +27 11 559 4555</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.contact} onPress={() => handleCall('0820541137')}>
-            <Icon name="phone" size={20} color="#FFF" style={styles.icon} />
-            <Text style={styles.contactInfo}>24 hour crisis: 082 054 1137</Text>
+            <Icon name="phone" size={20} color={isDarkMode ? '#FFF' : '#FFF'} style={styles.icon} />
+            <Text style={[styles.contactInfo, { color: isDarkMode ? '#FFF' : '#FFF' }]}>24 hour crisis: 082 054 1137</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.contact} onPress={() => handleCall('112')}>
-            <Icon name="phone" size={20} color="#FFF" style={styles.icon} />
-            <Text style={styles.contactInfo}>Emergency number: 112</Text>
+            <Icon name="phone" size={20} color={isDarkMode ? '#FFF' : '#FFF'} style={styles.icon} />
+            <Text style={[styles.contactInfo, { color: isDarkMode ? '#FFF' : '#FFF' }]}>Emergency number: 112</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -37,14 +40,12 @@ const handleCall = (phoneNumber) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   scrollViewContent: {
     flexGrow: 1,
     justifyContent: 'center',
   },
   box: {
-    backgroundColor: '#FF6F00',
     borderRadius: 10,
     padding: 20,
     width: '100%',
@@ -65,7 +66,6 @@ const styles = StyleSheet.create({
   },
   contactInfo: {
     fontSize: 18,
-    color: '#FFF',
   },
 });
 

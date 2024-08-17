@@ -1,23 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  ImageBackground,
-  TouchableOpacity,
-  SafeAreaView,
-  TouchableWithoutFeedback,
-  Image,
-  Platform,
-  StatusBar,
-  Dimensions,
-  ScrollView,
-} from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import {StyleSheet,Text,View,ImageBackground,TouchableOpacity,SafeAreaView,TouchableWithoutFeedback,Image,Platform,StatusBar,Dimensions,
+  ScrollView,} from 'react-native';
 import { AsyncStorage } from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import moment from 'moment';
 import Header from './Header';
 import Footer from './Footer';
+import { ThemeContext } from '../StudentProfile/ThemeContext'; // Import the ThemeContext
 
 const dailyAffirmations = [
   { text: 'You are capable of achieving great things.', image: require('../images/affirmation1.jpg') },
@@ -33,9 +22,10 @@ const MainPage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentAffirmationIndex, setCurrentAffirmationIndex] = useState(0);
   const [username, setUsername] = useState('');
+  const { isDarkMode } = useContext(ThemeContext); 
   const navigation = useNavigation();
   const route = useRoute();
-  const { userName } = route.params || {};  // Ensure route params are safely accessed
+  const { userName } = route.params || {}; 
 
   useEffect(() => {
     const checkAffirmation = async () => {
@@ -87,13 +77,15 @@ const MainPage = () => {
   const currentAffirmation = dailyAffirmations[currentAffirmationIndex];
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: isDarkMode ? '#000' : '#fff' }]}>
       <TouchableWithoutFeedback onPress={closeMenu}>
         <View style={styles.container}>
           <Header toggleMenu={toggleMenu} isMenuOpen={isMenuOpen} closeMenu={closeMenu} />
           <ScrollView contentContainerStyle={styles.contentContainer}>
-            <View style={styles.content}>
-              <Text style={styles.greeting}>HELLO THERE {username}</Text>
+            <View style={[styles.content, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
+              <Text style={[styles.greeting, { color: isDarkMode ? '#fff' : '#000' }]}>
+                HELLO THERE {username}
+              </Text>
               <ImageBackground
                 source={currentAffirmation.image}
                 style={styles.affirmationBackground}
@@ -102,11 +94,11 @@ const MainPage = () => {
                 <Text style={styles.affirmationText}>{currentAffirmation.text}</Text>
                 <Text style={styles.date}>{moment().format('MMMM D, YYYY')}</Text>
               </ImageBackground>
-              <TouchableOpacity style={styles.moodButton} onPress={() => navigation.navigate('MoodControl')}>
+              <TouchableOpacity style={[styles.moodButton, { backgroundColor: isDarkMode ? '#FF6F00' : '#FF6F00' }]} onPress={() => navigation.navigate('MoodControl')}>
                 <Text style={styles.moodButtonText}>Click to tell me how you feel</Text>
               </TouchableOpacity>
-              <Text style={styles.toolsText}>Tools</Text>
-              <View style={styles.toolsContainer}>
+              <Text style={[styles.toolsText, { color: isDarkMode ? '#fff' : '#000' }]}>Tools</Text>
+              <View style={[styles.toolsContainer, { backgroundColor: isDarkMode ? '#444' : '#f0f0f0' }]}>
                 <ToolButton
                   title="Podcast and Videos"
                   image={require('../images/podcast.jpeg')}
@@ -157,7 +149,6 @@ const ToolButton = ({ title, image, onPress }) => (
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   container: {
@@ -202,7 +193,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   moodButton: {
-    backgroundColor: '#FF6F00',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
@@ -224,7 +214,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     borderRadius: 10,
     padding: 10,
-    backgroundColor: '#f0f0f0',
   },
   toolButton: {
     alignItems: 'center',

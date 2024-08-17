@@ -1,21 +1,10 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  ScrollView,
-  Platform,
-  SafeAreaView,
-  Alert
-} from 'react-native';
+import React, { useState, useContext } from 'react';
+import {View,Text,TextInput,StyleSheet,Image,TouchableOpacity,ScrollView,Platform,SafeAreaView,Alert} from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import * as Permissions from 'expo-permissions';
 import { Audio } from 'expo-av';
 import EmojiSelector from 'react-native-emoji-selector';
+import { ThemeContext } from '../StudentProfile/ThemeContext'; // Import the ThemeContext
 
 export default function DigitalDiary({ navigation }) {
   const [showOptions, setShowOptions] = useState(false);
@@ -23,6 +12,7 @@ export default function DigitalDiary({ navigation }) {
   const [text, setText] = useState('');
   const [recording, setRecording] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const { isDarkMode } = useContext(ThemeContext); // Use the ThemeContext
 
   const pickImage = async () => {
     if (Platform.OS !== 'web') {
@@ -47,7 +37,7 @@ export default function DigitalDiary({ navigation }) {
 
   const startRecording = async () => {
     try {
-      const permission = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
+      const permission = await Audio.requestPermissionsAsync();
       if (permission.status === 'granted') {
         await Audio.setAudioModeAsync({
           allowsRecordingIOS: true,
@@ -79,49 +69,49 @@ export default function DigitalDiary({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+    <SafeAreaView style={[styles.container, { backgroundColor: isDarkMode ? '#000' : '#FAFAFA' }]}>
+      <View style={[styles.header, { backgroundColor: isDarkMode ? '#222' : '#FFF', borderBottomColor: isDarkMode ? '#444' : '#E0E0E0' }]}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="#FF6F00" />
+          <Ionicons name="arrow-back" size={24} color={isDarkMode ? '#FF6F00' : '#FF6F00'} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>New Moment</Text>
+        <Text style={[styles.headerTitle, { color: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>New Moment</Text>
         <TouchableOpacity style={styles.optionsButton} onPress={() => setShowOptions(!showOptions)}>
-          <MaterialIcons name="more-vert" size={24} color="#FF6F00" />
+          <MaterialIcons name="more-vert" size={24} color={isDarkMode ? '#FF6F00' : '#FF6F00'} />
         </TouchableOpacity>
         {showOptions && (
-          <View style={styles.optionsMenu}>
+          <View style={[styles.optionsMenu, { backgroundColor: isDarkMode ? '#222' : '#FFF', borderColor: isDarkMode ? '#444' : '#E0E0E0' }]}>
             <TouchableOpacity style={styles.optionItem}>
-              <Text style={styles.optionText}>Delete</Text>
+              <Text style={[styles.optionText, { color: isDarkMode ? '#FFF' : '#333' }]}>Delete</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.optionItem}>
-              <Text style={styles.optionText}>Cancel</Text>
+              <Text style={[styles.optionText, { color: isDarkMode ? '#FFF' : '#333' }]}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.optionItem}>
-              <Text style={styles.optionText}>Save</Text>
+              <Text style={[styles.optionText, { color: isDarkMode ? '#FFF' : '#333' }]}>Save</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.optionItem}>
-              <Text style={styles.optionText}>Send</Text>
+              <Text style={[styles.optionText, { color: isDarkMode ? '#FFF' : '#333' }]}>Send</Text>
             </TouchableOpacity>
           </View>
         )}
       </View>
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.imageContainer}>
+        <View style={[styles.imageContainer, { borderColor: isDarkMode ? '#444' : '#E0E0E0' }]}>
           {image ? (
-            <Image source={{ uri: image }} style={styles.image} />
+            <Image source={{ uri: image }} style={[styles.image, { borderColor: isDarkMode ? '#444' : '#E0E0E0' }]} />
           ) : (
-            <TouchableOpacity style={styles.imagePlaceholder} onPress={pickImage}>
-              <Ionicons name="image" size={50} color="#FF6F00" />
-              <Text style={styles.imagePlaceholderText}>Add Image</Text>
+            <TouchableOpacity style={[styles.imagePlaceholder, { backgroundColor: isDarkMode ? '#555' : '#E0E0E0', borderColor: isDarkMode ? '#FF6F00' : '#FF6F00' }]} onPress={pickImage}>
+              <Ionicons name="image" size={50} color={isDarkMode ? '#FF6F00' : '#FF6F00'} />
+              <Text style={[styles.imagePlaceholderText, { color: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>Add Image</Text>
             </TouchableOpacity>
           )}
         </View>
-        <Text style={styles.title}>Journaling Techniques for Digital Therapy</Text>
+        <Text style={[styles.title, { color: isDarkMode ? '#FFF' : '#333' }]}>Journaling Techniques for Digital Therapy</Text>
         <TextInput
-          style={styles.textInput}
+          style={[styles.textInput, { backgroundColor: isDarkMode ? '#333' : '#FFF', color: isDarkMode ? '#FFF' : '#000', borderColor: isDarkMode ? '#444' : '#E0E0E0' }]}
           multiline
           placeholder="This Digital Diary offers a simple yet effective way to express your emotions. Write how you feel and hit the send button. One of our professionals will soon reach out to you."
-          placeholderTextColor="#999"
+          placeholderTextColor={isDarkMode ? '#999' : '#999'}
           value={text}
           onChangeText={setText}
         />
@@ -133,21 +123,21 @@ export default function DigitalDiary({ navigation }) {
           />
         )}
       </ScrollView>
-      <View style={styles.bottomIcons}>
+      <View style={[styles.bottomIcons, { backgroundColor: isDarkMode ? '#222' : '#FFF', borderTopColor: isDarkMode ? '#444' : '#E0E0E0' }]}>
         <TouchableOpacity style={styles.iconButton} onPress={() => setShowEmojiPicker(!showEmojiPicker)}>
-          <Ionicons name="happy-outline" size={24} color="#FF6F00" />
+          <Ionicons name="happy-outline" size={24} color={isDarkMode ? '#FF6F00' : '#FF6F00'} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton} onPress={pickImage}>
-          <Ionicons name="attach-outline" size={24} color="#FF6F00" />
+          <Ionicons name="attach-outline" size={24} color={isDarkMode ? '#FF6F00' : '#FF6F00'} />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.iconButton}
           onPress={recording ? stopRecording : startRecording}
         >
-          <Ionicons name="mic-outline" size={24} color="#FF6F00" />
+          <Ionicons name="mic-outline" size={24} color={isDarkMode ? '#FF6F00' : '#FF6F00'} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton} onPress={handleSend}>
-          <Ionicons name="send-outline" size={24} color="#FF6F00" />
+          <Ionicons name="send-outline" size={24} color={isDarkMode ? '#FF6F00' : '#FF6F00'} />
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -157,21 +147,18 @@ export default function DigitalDiary({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAFAFA', 
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 15,
-    backgroundColor: '#FFF',
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
     shadowColor: '#E0E0E0',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
-    marginTop: 20, 
+    marginTop: 20,
   },
   backButton: {
     padding: 5,
@@ -179,7 +166,6 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#FF6F00', 
   },
   optionsButton: {
     padding: 5,
@@ -188,21 +174,17 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 55,
     right: 15,
-    backgroundColor: '#FFF',
     borderRadius: 10,
     overflow: 'hidden',
     elevation: 5,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
   },
   optionItem: {
     padding: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
   },
   optionText: {
     fontSize: 16,
-    color: '#333',
   },
   content: {
     padding: 20,
@@ -212,7 +194,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
     borderRadius: 10,
     padding: 10,
   },
@@ -220,40 +201,32 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 10,
-    backgroundColor: '#E0E0E0',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#FF6F00',
   },
   image: {
     width: 120,
     height: 120,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#E0E0E0', 
   },
   imagePlaceholderText: {
     fontSize: 14,
-    color: '#FF6F00',
     marginTop: 5,
   },
   title: {
     fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: '#333',
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0', 
     paddingBottom: 5,
   },
   textInput: {
     fontSize: 16,
     lineHeight: 24,
-    backgroundColor: '#FFF',
     padding: 10,
     borderRadius: 10,
-    borderColor: '#E0E0E0',
     borderWidth: 1,
   },
   bottomIcons: {
@@ -262,8 +235,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     borderTopWidth: 1,
-    borderTopColor: '#E0E0E0',
-    backgroundColor: '#FFF',
   },
   iconButton: {
     padding: 10,

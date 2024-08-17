@@ -1,19 +1,21 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import Footer from '../Menu/Footer'; 
+import { ThemeContext } from '../StudentProfile/ThemeContext'; 
 
 const SupportOption = ({ image, title, description, navigateTo }) => {
   const navigation = useNavigation();
+  const { isDarkMode } = useContext(ThemeContext); 
 
   return (
-    <TouchableOpacity style={styles.card} onPress={() => navigation.navigate(navigateTo)}>
+    <TouchableOpacity style={[styles.card, { backgroundColor: isDarkMode ? '#333' : '#FAFAFA', borderColor: isDarkMode ? '#666' : '#FF6F00' }]} onPress={() => navigation.navigate(navigateTo)}>
       <View style={styles.cardContent}>
         <Image source={image} style={styles.cardImage} />
         <View style={styles.cardTextContainer}>
-          <Text style={styles.cardTitle}>{title}</Text>
-          <Text style={styles.cardDescription}>{description}</Text>
+          <Text style={[styles.cardTitle, { color: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>{title}</Text>
+          <Text style={[styles.cardDescription, { color: isDarkMode ? '#ddd' : '#555' }]}>{description}</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -22,18 +24,19 @@ const SupportOption = ({ image, title, description, navigateTo }) => {
 
 const HelpLine = () => {
   const navigation = useNavigation();
+  const { isDarkMode } = useContext(ThemeContext); // Use the ThemeContext
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+    <SafeAreaView style={[styles.container, { backgroundColor: isDarkMode ? '#222' : '#FAFAFA' }]}>
+      <View style={[styles.header, { backgroundColor: isDarkMode ? '#333' : '#FAFAFA', borderBottomColor: isDarkMode ? '#666' : '#FF6F00' }]}>
         <Image source={require('../images/Icon.png')} style={styles.logo} />
         <TouchableOpacity style={styles.menuButton} onPress={() => navigation.openDrawer()}>
-          <Ionicons name="menu" size={24} color="#FF6F00" />
+          <Ionicons name="menu" size={24} color={isDarkMode ? '#fff' : '#FF6F00'} />
         </TouchableOpacity>
       </View>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.mainTitle}>We are here for You</Text>
-        <Text style={styles.subTitle}>Choose your suitable option</Text>
+        <Text style={[styles.mainTitle, { color: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>We are here for You</Text>
+        <Text style={[styles.subTitle, { color: isDarkMode ? '#FF8C00' : '#FF8C00' }]}>Choose your suitable option</Text>
         <SupportOption 
           image={require('../images/MainPage.png')} 
           title="Contact Support" 
@@ -61,7 +64,6 @@ const HelpLine = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAFAFA', 
   },
   header: {
     flexDirection: 'row',
@@ -69,10 +71,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingTop: 20, 
     paddingHorizontal: 10,
-    backgroundColor: '#FAFAFA', 
     marginBottom: 80, 
     borderBottomWidth: 1,
-    borderBottomColor: '#FF6F00', 
   },
   logo: {
     width: 50,
@@ -88,27 +88,19 @@ const styles = StyleSheet.create({
   mainTitle: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#FF6F00', 
     marginBottom: 10,
   },
   subTitle: {
     fontSize: 16,
-    color: '#FF8C00', 
     marginBottom: 20,
   },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FAFAFA', 
     borderRadius: 10,
     padding: 15,
     marginVertical: 10,
     width: '100%',
-    shadowColor: '#FF4500', 
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    borderColor: '#FF6F00', 
     borderWidth: 2,
   },
   cardContent: {
@@ -127,11 +119,9 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#FF6F00', 
   },
   cardDescription: {
     fontSize: 14,
-    color: '#555', 
   },
 });
 

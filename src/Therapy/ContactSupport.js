@@ -1,34 +1,39 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Footer from '../Menu/Footer';
+import { ThemeContext } from '../StudentProfile/ThemeContext'; // Import the ThemeContext
+
 const PeerSupporterCard = ({ image, name, phone, bio }) => {
+  const { isDarkMode } = useContext(ThemeContext); // Use the ThemeContext
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { backgroundColor: isDarkMode ? '#333' : '#FAFAFA', borderColor: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>
       <Image source={image} style={styles.profileImage} />
       <View style={styles.cardTextContainer}>
-        <Text style={styles.cardName}>{name}</Text>
-        <Text style={styles.cardPhone}>{phone}</Text>
-        <Text style={styles.cardBio}>{bio}</Text>
+        <Text style={[styles.cardName, { color: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>{name}</Text>
+        <Text style={[styles.cardPhone, { color: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>{phone}</Text>
+        <Text style={[styles.cardBio, { color: isDarkMode ? '#FF8C00' : '#FF8C00' }]}>{bio}</Text>
       </View>
-      <TouchableOpacity style={styles.callButton}>
-        <Ionicons name="call-outline" size={24} color="#FF6F00" />
+      <TouchableOpacity style={[styles.callButton, { backgroundColor: isDarkMode ? '#555' : '#FFEDD5', borderColor: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>
+        <Ionicons name="call-outline" size={24} color={isDarkMode ? '#FF6F00' : '#FF6F00'} />
       </TouchableOpacity>
     </View>
   );
 };
 
 const PeerSupporters = () => {
+  const { isDarkMode } = useContext(ThemeContext); // Use the ThemeContext
+
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+    <SafeAreaView style={[styles.container, { backgroundColor: isDarkMode ? '#000' : '#FAFAFA' }]}>
+      <View style={[styles.header, { backgroundColor: isDarkMode ? '#222' : '#FAFAFA', borderBottomColor: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>
         <Image source={require('../images/Icon.png')} style={styles.logo} />
         <TouchableOpacity style={styles.menuButton}>
-          <Ionicons name="menu" size={24} color="#FF6F00" />
+          <Ionicons name="menu" size={24} color={isDarkMode ? '#FF6F00' : '#FF6F00'} />
         </TouchableOpacity>
       </View>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.mainTitle}>Available Peer Supporters</Text>
+        <Text style={[styles.mainTitle, { color: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>Available Peer Supporters</Text>
         <PeerSupporterCard 
           image={require('../images/profile1.jpg')} 
           name="Khensani Mnisi" 
@@ -62,7 +67,6 @@ const PeerSupporters = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAFAFA',
   },
   header: {
     flexDirection: 'row',
@@ -70,9 +74,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 15,
     paddingHorizontal: 20,
-    backgroundColor: '#FAFAFA',
     borderBottomWidth: 1,
-    borderBottomColor: '#FF6F00',
     marginTop: 30,
   },
   logo: {
@@ -89,15 +91,12 @@ const styles = StyleSheet.create({
   mainTitle: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#FF6F00',
     marginBottom: 40,
   },
   card: {
     flexDirection: 'row',
-    backgroundColor: '#FAFAFA',
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#FF6F00',
     marginVertical: 10,
     padding: 15,
     alignItems: 'center',
@@ -115,23 +114,18 @@ const styles = StyleSheet.create({
   cardName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#FF6F00',
     marginBottom: 5,
   },
   cardPhone: {
     fontSize: 14,
-    color: '#FF6F00',
   },
   cardBio: {
     fontSize: 14,
-    color: '#FF8C00',
   },
   callButton: {
     padding: 10,
-    backgroundColor: '#FFEDD5',
     borderRadius: 50,
     borderWidth: 1,
-    borderColor: '#FF6F00',
   },
 });
 

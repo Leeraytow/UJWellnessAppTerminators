@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking } from 'react-native';
-import Footer from '../Menu/Footer'; // Adjust the path as necessary
+import Footer from '../Menu/Footer';
+import { ThemeContext } from '../StudentProfile/ThemeContext'; // Adjust the path as necessary
 
 const hospitals = [
   {
@@ -82,33 +83,37 @@ const callNumber = (phone) => {
   Linking.openURL(phoneNumber);
 };
 
-const HospitalCard = ({ hospital }) => (
-  <View style={styles.card}>
-    <Text style={styles.name}>{hospital.name}</Text>
-    <TouchableOpacity onPress={() => openMap(hospital.address)}>
-      <Text style={styles.address}>{hospital.address}</Text>
-    </TouchableOpacity>
-    {hospital.phone && (
-      <TouchableOpacity onPress={() => callNumber(hospital.phone)}>
-        <Text style={styles.phone}>Phone: {hospital.phone}</Text>
+const HospitalCard = ({ hospital }) => {
+  const { isDarkMode } = useContext(ThemeContext);
+  return (
+    <View style={[styles.card, { borderLeftColor: isDarkMode ? '#FFA500' : '#FFA500' }]}>
+      <Text style={[styles.name, { color: isDarkMode ? '#FFF' : '#333' }]}>{hospital.name}</Text>
+      <TouchableOpacity onPress={() => openMap(hospital.address)}>
+        <Text style={[styles.address, { color: isDarkMode ? '#FF5E0E' : '#FF5E0E' }]}>{hospital.address}</Text>
       </TouchableOpacity>
-    )}
-    {hospital.hours && <Text style={styles.hours}>Hours: {hospital.hours}</Text>}
-    {hospital.website && (
-      <TouchableOpacity onPress={() => Linking.openURL(hospital.website)}>
-        <Text style={styles.website}>Website: {hospital.website}</Text>
-      </TouchableOpacity>
-    )}
-    {hospital.contactDetails && <Text style={styles.contactDetails}>Contact: {hospital.contactDetails}</Text>}
-    {hospital.operatingHours && <Text style={styles.operatingHours}>Operating Hours: {hospital.operatingHours}</Text>}
-  </View>
-);
+      {hospital.phone && (
+        <TouchableOpacity onPress={() => callNumber(hospital.phone)}>
+          <Text style={[styles.phone, { color: isDarkMode ? '#FFA500' : '#FFA500' }]}>Phone: {hospital.phone}</Text>
+        </TouchableOpacity>
+      )}
+      {hospital.hours && <Text style={[styles.hours, { color: isDarkMode ? '#FF5E0E' : '#FF5E0E' }]}>Hours: {hospital.hours}</Text>}
+      {hospital.website && (
+        <TouchableOpacity onPress={() => Linking.openURL(hospital.website)}>
+          <Text style={[styles.website, { color: isDarkMode ? '#FF5E0E' : '#FF5E0E' }]}>Website: {hospital.website}</Text>
+        </TouchableOpacity>
+      )}
+      {hospital.contactDetails && <Text style={[styles.contactDetails, { color: isDarkMode ? '#FFF' : '#333' }]}>Contact: {hospital.contactDetails}</Text>}
+      {hospital.operatingHours && <Text style={[styles.operatingHours, { color: isDarkMode ? '#FF5E0E' : '#FF5E0E' }]}>Operating Hours: {hospital.operatingHours}</Text>}
+    </View>
+  );
+};
 
 const MedicalHelp = () => {
+  const { isDarkMode } = useContext(ThemeContext);
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: isDarkMode ? '#000' : '#f5f5f5' }]}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <Text style={styles.header}>Hospitals Offering Mental Health Support</Text>
+        <Text style={[styles.header, { color: isDarkMode ? '#FF5E0E' : '#FF5E0E' }]}>Hospitals Offering Mental Health Support</Text>
         {hospitals.map((hospital, index) => (
           <HospitalCard key={index} hospital={hospital} />
         ))}
@@ -121,7 +126,6 @@ const MedicalHelp = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
   },
   scrollViewContent: {
     padding: 16,
@@ -133,7 +137,6 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     marginTop: 30,
     textAlign: 'center',
-    color: '#FF5E0E',
   },
   card: {
     backgroundColor: '#fff',
@@ -146,44 +149,36 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 3,
     borderLeftWidth: 5,
-    borderLeftColor: '#FFA500',
   },
   name: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 8,
-    color: '#333',
   },
   address: {
     fontSize: 16,
-    color: '#FF5E0E',
     marginBottom: 4,
   },
   phone: {
     fontSize: 16,
-    color: '#FFA500',
     marginBottom: 4,
   },
   hours: {
     fontSize: 16,
     marginBottom: 4,
-    color: '#FF5E0E',
   },
   website: {
     fontSize: 16,
-    color: '#FF5E0E',
     marginBottom: 4,
     textDecorationLine: 'underline',
   },
   contactDetails: {
     fontSize: 16,
     marginBottom: 4,
-    color: '#333',
   },
   operatingHours: {
     fontSize: 16,
     marginBottom: 4,
-    color: '#FF5E0E',
   },
 });
 

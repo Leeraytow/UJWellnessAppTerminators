@@ -1,27 +1,30 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import { View, Text, Switch, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { ThemeContext } from './ThemeContext'; 
 
 const CustomizableSettings = () => {
   const navigation = useNavigation();
-  const [sessionReminders, setSessionReminders] = useState(false);
-  const [wellnessTips, setWellnessTips] = useState(false);
-  const [anonymity, setAnonymity] = useState(false);
+  const { isDarkMode, toggleTheme } = useContext(ThemeContext);
+
+  const [sessionReminders, setSessionReminders] = React.useState(false);
+  const [wellnessTips, setWellnessTips] = React.useState(false);
+  const [anonymity, setAnonymity] = React.useState(false);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View style={[styles.container, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
+      <View style={[styles.header, { backgroundColor: isDarkMode ? '#444' : '#FFF' }]}>
         <Pressable onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="#FF6F00" />
+          <Ionicons name="arrow-back" size={24} color={isDarkMode ? '#FFA500' : '#FF6F00'} />
         </Pressable>
-        <Text style={styles.headerTitle}>Customizable Settings</Text>
+        <Text style={[styles.headerTitle, { color: isDarkMode ? '#fff' : '#333' }]}>Customizable Settings</Text>
       </View>
 
-      <View style={styles.setting}>
-        <Text style={styles.label}>Notification Preferences</Text>
+      <View style={[styles.setting, { backgroundColor: isDarkMode ? '#555' : '#fff' }]}>
+        <Text style={[styles.label, { color: isDarkMode ? '#FFA500' : '#FF6F00' }]}>Notification Preferences</Text>
         <View style={styles.switchContainer}>
-          <Text style={styles.switchLabel}>Session Reminders</Text>
+          <Text style={[styles.switchLabel, { color: isDarkMode ? '#fff' : '#333' }]}>Session Reminders</Text>
           <Switch
             trackColor={{ false: '#767577', true: '#FFA500' }}
             thumbColor={sessionReminders ? '#FFA500' : '#f4f3f4'}
@@ -30,7 +33,7 @@ const CustomizableSettings = () => {
           />
         </View>
         <View style={styles.switchContainer}>
-          <Text style={styles.switchLabel}>Wellness Tips</Text>
+          <Text style={[styles.switchLabel, { color: isDarkMode ? '#fff' : '#333' }]}>Wellness Tips</Text>
           <Switch
             trackColor={{ false: '#767577', true: '#FFA500' }}
             thumbColor={wellnessTips ? '#FFA500' : '#f4f3f4'}
@@ -40,10 +43,10 @@ const CustomizableSettings = () => {
         </View>
       </View>
 
-      <View style={styles.setting}>
-        <Text style={styles.label}>Privacy Settings</Text>
+      <View style={[styles.setting, { backgroundColor: isDarkMode ? '#555' : '#fff' }]}>
+        <Text style={[styles.label, { color: isDarkMode ? '#FFA500' : '#FF6F00' }]}>Privacy Settings</Text>
         <View style={styles.switchContainer}>
-          <Text style={styles.switchLabel}>Anonymity Options</Text>
+          <Text style={[styles.switchLabel, { color: isDarkMode ? '#fff' : '#333' }]}>Anonymity Options</Text>
           <Switch
             trackColor={{ false: '#767577', true: '#FFA500' }}
             thumbColor={anonymity ? '#FFA500' : '#f4f3f4'}
@@ -60,13 +63,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#fff',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: '#FFF',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -78,13 +79,11 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
     marginLeft: 16,
   },
   setting: {
     marginVertical: 16,
     padding: 16,
-    backgroundColor: '#fff',
     borderRadius: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -95,7 +94,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#FF6F00',
     marginBottom: 8,
   },
   switchContainer: {
@@ -106,7 +104,6 @@ const styles = StyleSheet.create({
   },
   switchLabel: {
     fontSize: 16,
-    color: '#333',
   },
 });
 

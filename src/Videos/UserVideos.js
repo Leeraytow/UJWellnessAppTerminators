@@ -1,23 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  FlatList,
-  StyleSheet,
-  Dimensions,
-  ScrollView,
-  Platform,
-  StatusBar,
-  SafeAreaView
+import React, { useEffect, useState, useContext } from 'react';
+import {View,Text,TouchableOpacity,FlatList,StyleSheet, Dimensions,ScrollView,Platform,StatusBar,SafeAreaView
 } from 'react-native';
 import { collection, query, onSnapshot } from 'firebase/firestore';
 import { db } from '../Configuration/firebase';
 import YoutubePlayer from 'react-native-youtube-iframe';
 import Footer from '../Menu/Footer'; // Adjust the path as necessary
+import { ThemeContext } from '../StudentProfile/ThemeContext'; // Import the ThemeContext
 
 const UserVid = () => {
   const { width } = Dimensions.get('window');
+  const { isDarkMode } = useContext(ThemeContext); // Use the ThemeContext
 
   const [videos, setVideos] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -39,8 +31,8 @@ const UserVid = () => {
     : videos.filter((video) => video.category === selectedCategory);
 
   const renderVideoItem = ({ item }) => (
-    <View style={styles.videoContainer}>
-      <Text style={styles.videoTitle}>{item.title}</Text>
+    <View style={[styles.videoContainer, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
+      <Text style={[styles.videoTitle, { color: isDarkMode ? '#fff' : '#000' }]}>{item.title}</Text>
       <YoutubePlayer height={250} width={width - 40} play={false} videoId={item.videoId} />
     </View>
   );
@@ -50,9 +42,9 @@ const UserVid = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: isDarkMode ? '#000' : '#f7f7f7' }]}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <View style={styles.safeArea}>
+        <View style={[styles.safeArea, { backgroundColor: isDarkMode ? '#222' : '#fff' }]}>
           <View style={styles.categoryContainer}>
             {['All', 'Meditation', 'Podcast', 'SelfTherapy'].map((cat) => (
               <TouchableOpacity key={cat} onPress={() => handleCategoryChange(cat)}>
@@ -63,7 +55,11 @@ const UserVid = () => {
             ))}
           </View>
 
-          <FlatList data={filteredVideos} renderItem={renderVideoItem} keyExtractor={(item) => item.id} />
+          <FlatList
+            data={filteredVideos}
+            renderItem={renderVideoItem}
+            keyExtractor={(item) => item.id}
+          />
         </View>
       </ScrollView>
       <Footer />
@@ -74,22 +70,14 @@ const UserVid = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f7f7f7',
   },
   scrollViewContent: {
     flexGrow: 1,
   },
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     padding: 10,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginVertical: 20,
   },
   categoryContainer: {
     flexDirection: 'row',
@@ -98,7 +86,6 @@ const styles = StyleSheet.create({
   },
   category: {
     fontSize: 16,
-    color: 'black',
     fontWeight: 'bold',
   },
   selectedCategory: {
@@ -113,7 +100,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginBottom: 10,
     padding: 10,
-    backgroundColor: '#fff',
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 10,

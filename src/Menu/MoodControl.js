@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, SafeAreaView, ScrollView, TouchableWithoutFeedback, Dimensions,Platform,StatusBar } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { View, StyleSheet, TouchableOpacity, Text, SafeAreaView, ScrollView, TouchableWithoutFeedback, Dimensions, Platform, StatusBar } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
@@ -7,8 +7,10 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import Header from './Header';
 import Footer from './Footer';
 import Emoji from './Emoji';
+import { ThemeContext } from '../StudentProfile/ThemeContext';  // Import ThemeContext
 
 const MoodControl = () => {
+  const { isDarkMode } = useContext(ThemeContext);  // Use ThemeContext
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedEmotion, setSelectedEmotion] = useState(null);
   const [moodData, setMoodData] = useState({});
@@ -64,9 +66,9 @@ const MoodControl = () => {
   };
 
   const chartConfig = {
-    backgroundGradientFrom: "#fff",
-    backgroundGradientTo: "#fff",
-    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    backgroundGradientFrom: isDarkMode ? "#333" : "#fff",  // Dark mode background
+    backgroundGradientTo: isDarkMode ? "#333" : "#fff",    // Dark mode background
+    color: (opacity = 1) => isDarkMode ? `rgba(255, 255, 255, ${opacity})` : `rgba(0, 0, 0, ${opacity})`,
     strokeWidth: 2,
     barPercentage: 0.5,
     useShadowColorFromDataset: false
@@ -74,22 +76,16 @@ const MoodControl = () => {
 
   const screenWidth = Dimensions.get("window").width;
 
-  const moodIcons = emotions.map(emotion => (
-    <View key={emotion.id} style={styles.moodIcon}>
-      <Text style={styles.moodIconEmoji}>{emotion.emoji}</Text>
-    </View>
-  ));
-
   const chartData = Object.entries(moodData).sort(([a], [b]) => moment(a).diff(moment(b)));
 
   return (
-    <SafeAreaView style={styles.SafeArea}>
+    <SafeAreaView style={[styles.SafeArea, { backgroundColor: isDarkMode ? '#000' : '#fff' }]}>
       <TouchableWithoutFeedback onPress={closeMenu}>
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
           <Header toggleMenu={toggleMenu} isMenuOpen={isMenuOpen} closeMenu={closeMenu} />
           
           <ScrollView contentContainerStyle={styles.contentContainer}>
-            <Text style={styles.heading}>How are you feeling right now?</Text>
+            <Text style={[styles.heading, { color: isDarkMode ? '#fff' : '#000' }]}>How are you feeling right now?</Text>
             <View style={styles.emojiGrid}>
               {emotions.map((emotion) => (
                 <Emoji
@@ -105,11 +101,20 @@ const MoodControl = () => {
             <Calendar
               onDayPress={handleDayPress}
               markedDates={{
-                [selectedDate]: { selected: true, selectedColor: '#00adf5' },
+                [selectedDate]: { selected: true, selectedColor: isDarkMode ? '#00adf5' : '#00adf5' },
                 ...Object.keys(moodData).reduce((acc, date) => ({
                   ...acc,
-                  [date]: { marked: true, dotColor: '#50cebb' }
+                  [date]: { marked: true, dotColor: isDarkMode ? '#50cebb' : '#50cebb' }
                 }), {})
+              }}
+              theme={{
+                calendarBackground: isDarkMode ? '#333' : '#fff',
+                textSectionTitleColor: isDarkMode ? '#b6c1cd' : '#2d4150',
+                todayTextColor: isDarkMode ? '#00adf5' : '#00adf5',
+                dayTextColor: isDarkMode ? '#fff' : '#2d4150',
+                arrowColor: isDarkMode ? '#fff' : '#2d4150',
+                monthTextColor: isDarkMode ? '#fff' : '#2d4150',
+                textDisabledColor: isDarkMode ? '#d9e1e8' : '#d9e1e8',
               }}
               style={styles.calendar}
             />
@@ -141,13 +146,12 @@ const MoodControl = () => {
 };
 
 const styles = StyleSheet.create({
-  SafeArea:{
+  SafeArea: {
     flex: 1,
     backgroundColor: '#fff',
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   container: {
- 
     flex: 1,
     backgroundColor: '#fff',
   },
@@ -190,9 +194,3 @@ const styles = StyleSheet.create({
 });
 
 export default MoodControl;
-
-
-
-
-
-
