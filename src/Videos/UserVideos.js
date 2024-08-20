@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import {View,Text,TouchableOpacity,FlatList,StyleSheet, Dimensions,ScrollView,Platform,StatusBar,SafeAreaView
-} from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, Dimensions, ScrollView, Platform, StatusBar, SafeAreaView } from 'react-native';
 import { collection, query, onSnapshot } from 'firebase/firestore';
 import { db } from '../Configuration/firebase';
 import YoutubePlayer from 'react-native-youtube-iframe';
@@ -47,8 +46,20 @@ const UserVid = () => {
         <View style={[styles.safeArea, { backgroundColor: isDarkMode ? '#222' : '#fff' }]}>
           <View style={styles.categoryContainer}>
             {['All', 'Meditation', 'Podcast', 'SelfTherapy'].map((cat) => (
-              <TouchableOpacity key={cat} onPress={() => handleCategoryChange(cat)}>
-                <Text style={selectedCategory === cat ? styles.selectedCategory : styles.category}>
+              <TouchableOpacity
+                key={cat}
+                onPress={() => handleCategoryChange(cat)}
+                style={[
+                  styles.categoryButton,
+                  selectedCategory === cat && styles.selectedCategoryButton,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.categoryText,
+                    selectedCategory === cat && styles.selectedCategoryText,
+                  ]}
+                >
                   {cat}
                 </Text>
               </TouchableOpacity>
@@ -70,6 +81,7 @@ const UserVid = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fff',
   },
   scrollViewContent: {
     flexGrow: 1,
@@ -77,39 +89,55 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-    padding: 10,
+    padding: 20,
   },
   categoryContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginBottom: 20,
+    backgroundColor: '#FF6F00',
+    borderRadius: 25,
+    padding: 5,
   },
-  category: {
+  categoryButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+  },
+  selectedCategoryButton: {
+    backgroundColor: '#fff',
+  },
+  categoryText: {
     fontSize: 16,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  selectedCategoryText: {
+    color: '#FF6F00',
     fontWeight: 'bold',
   },
-  selectedCategory: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    borderBottomWidth: 2,
-    borderColor: '#ff6347',
-    color: '#ff6347',
+  flatListContent: {
+    paddingBottom: 20,
   },
   videoContainer: {
-    borderRadius: 10,
+    borderRadius: 15,
     overflow: 'hidden',
-    marginBottom: 10,
-    padding: 10,
+    marginBottom: 20,
+    backgroundColor: '#fff',
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 5 },
-    alignItems: 'center',
+    elevation: 5,
   },
   videoTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
+    color: '#000',
+    textAlign: 'center',
+    paddingTop: 15,
+    paddingHorizontal: 15,
   },
 });
 

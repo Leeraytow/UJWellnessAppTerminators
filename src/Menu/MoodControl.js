@@ -7,15 +7,15 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import Header from './Header';
 import Footer from './Footer';
 import Emoji from './Emoji';
-import { ThemeContext } from '../StudentProfile/ThemeContext';  // Import ThemeContext
+import { ThemeContext } from '../StudentProfile/ThemeContext';
 
 const MoodControl = () => {
-  const { isDarkMode } = useContext(ThemeContext);  // Use ThemeContext
+  const { isDarkMode } = useContext(ThemeContext);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedEmotion, setSelectedEmotion] = useState(null);
   const [moodData, setMoodData] = useState({});
   const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
-  
+
   const route = useRoute();
   const navigation = useNavigation();
 
@@ -66,12 +66,21 @@ const MoodControl = () => {
   };
 
   const chartConfig = {
-    backgroundGradientFrom: isDarkMode ? "#333" : "#fff",  // Dark mode background
-    backgroundGradientTo: isDarkMode ? "#333" : "#fff",    // Dark mode background
+    backgroundGradientFrom: isDarkMode ? "#333" : "#fff",
+    backgroundGradientTo: isDarkMode ? "#333" : "#fff",
     color: (opacity = 1) => isDarkMode ? `rgba(255, 255, 255, ${opacity})` : `rgba(0, 0, 0, ${opacity})`,
     strokeWidth: 2,
     barPercentage: 0.5,
-    useShadowColorFromDataset: false
+    useShadowColorFromDataset: false,
+    propsForDots: {
+      r: "6",
+      strokeWidth: "2",
+      stroke: isDarkMode ? "#00f" : "#f00" // Use contrasting colors for dots
+    },
+    propsForBackgroundLines: {
+      stroke: isDarkMode ? "#444" : "#eee", // Lighten gridlines for better contrast
+      strokeDasharray: "" // Solid gridlines
+    },
   };
 
   const screenWidth = Dimensions.get("window").width;
@@ -133,7 +142,13 @@ const MoodControl = () => {
                   chartConfig={chartConfig}
                   bezier
                   style={styles.chart}
+                  fromZero
+                  withDots
+                  withInnerLines
+                  withVerticalLabels
+                  withHorizontalLabels
                 />
+                <Text style={styles.chartLabel}>Mood Over Time</Text>
               </View>
             )}
           </ScrollView>
@@ -190,6 +205,12 @@ const styles = StyleSheet.create({
   },
   chart: {
     borderRadius: 16,
+  },
+  chartLabel: {
+    fontSize: 16,
+    color: '#888',
+    marginTop: 10,
+    textAlign: 'center',
   },
 });
 
