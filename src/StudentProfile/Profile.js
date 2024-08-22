@@ -1,15 +1,117 @@
-import React, { useState, useRef, useContext, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, Pressable, ScrollView, Alert, SafeAreaView, Animated } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useState, useEffect, useContext,useRef } from 'react';
+
 import * as ImagePicker from 'expo-image-picker';
-import { Ionicons } from '@expo/vector-icons';
-import { signOut, deleteUser } from 'firebase/auth';
-import { auth, db } from '../Configuration/firebase';
-import { doc, getDoc, deleteDoc } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { doc, getDoc, updateDoc,deleteDoc } from 'firebase/firestore';
+import { auth, db } from '../../src/Configuration/firebase';
 import { ThemeContext } from './ThemeContext';
 
-const Profile = () => {
-  const navigation = useNavigation();
+import { View, Text, Image, StyleSheet, Pressable, ScrollView, Alert, SafeAreaView, Animated,TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+
+import { Ionicons } from '@expo/vector-icons';
+import { signOut, deleteUser } from 'firebase/auth';
+
+
+
+import Icon from 'react-native-vector-icons/Ionicons';
+
+const ProfileImageUpdate = ({ navigation }) => {
+  
+  const [pickedImage, setPickedImage] = useState(null);
+  const [currentImage, setCurrentImage] = useState(null);
+
+  useEffect(() => {
+    const fetchCurrentImage = async () => {
+      const user = auth.currentUser;
+      if (user) {
+        try {
+          const userRef = doc(db, 'Students', user.uid);
+          const docSnap = await getDoc(userRef);
+
+          if (docSnap.exists()) {
+            const userData = docSnap.data();
+            setCurrentImage(userData.profileImage || null);
+          }
+        } catch (error) {
+          console.error('Error fetching user profile image: ', error);
+        }
+      }
+    };
+
+    fetchCurrentImage();
+  }, []);
+
+  const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission Required', 'Sorry, we need media library permissions to select an image.');
+      return;
+    }
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+      
+    
+        
+      
+    });
+
+    if (!result.canceled) {
+      setPickedImage(result.assets[0].uri);
+      
+     
+    }
+   
+   
+  };
+
+  useEffect(() => {
+    if (pickedImage) {
+      handleUpdateImage(); // Call handleUpdateImage when pickedImage changes
+    }
+  }, [pickedImage]);
+
+  const handleUpdateImage = async () => {
+    const user = auth.currentUser;
+    if (!user) {
+      Alert.alert('Error', 'No user is logged in.');
+      return;
+    }
+
+    if (pickedImage) {
+      try {
+        const storage = getStorage();
+        const imageRef = ref(storage, `profileImages/${user.uid}_${Date.now()}.jpg`);
+
+        // Convert the image to Blob format
+        const response = await fetch(pickedImage);
+        const blob = await response.blob();
+
+        // Upload the image to Firebase Storage
+        await uploadBytes(imageRef, blob);
+
+        // Get the download URL of the uploaded image
+        const imageUrl = await getDownloadURL(imageRef);
+
+        // Update the Firestore database with the new image URL
+        const userRef = doc(db, 'Students', user.uid);
+        await updateDoc(userRef, { profileImage: imageUrl });
+
+        Alert.alert('Success', 'Profile image updated successfully!');
+  
+      } catch (error) {
+        Alert.alert('Update Error', 'Failed to update profile image. Please try again.');
+        console.error('Error updating profile image: ', error);
+      }
+    } else {
+      Alert.alert('No Image Selected', 'Please select an image before updating.');
+    }
+  };
+
   const { isDarkMode } = useContext(ThemeContext);
   const [profilePicture, setProfilePicture] = useState(require('../images/alice.jpeg'));
   const [username, setUsername] = useState('');
@@ -67,19 +169,7 @@ const Profile = () => {
     );
   };
 
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      setProfilePicture({ uri: result.uri });
-    }
-  };
-
+const fallbackImage= "https://imgs.search.brave.com/iy-sEupdI8V7_1q3MjjWqpGGNTZ53DPoppz8Eascl-M/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/cG5naXRlbS5jb20v/cGltZ3MvbS8xNDYt/MTQ2ODg0M19wcm9m/aWxlLWljb24tb3Jh/bmdlLXBuZy10cmFu/c3BhcmVudC1wbmcu/cG5n"
   const handlePressIn = () => {
     Animated.spring(scaleAnim, {
       toValue: 0.9,
@@ -132,22 +222,28 @@ const Profile = () => {
       { cancelable: true }
     );
   };
+  const [text, setText] = useState('');
+  const [name, setName] = useState('User1'); // Replace with dynamic user name
+  const [posts, setPosts] = useState([]);
+
+
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: isDarkMode ? '#333' : '#F5F5F5' }]}>
+      
       <View style={[styles.header, { backgroundColor: isDarkMode ? '#444' : '#FFF' }]}>
-        <Pressable onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color={isDarkMode ? '#FFA500' : '#FF6F00'} />
-        </Pressable>
-        <Text style={[styles.headerTitle, { color: isDarkMode ? '#FFF' : '#333' }]}>Profile</Text>
-      </View>
 
       <ScrollView contentContainerStyle={styles.scrollView}>
-        <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={pickImage}>
-          <Animated.Image style={[styles.profilePicture, { transform: [{ scale: scaleAnim }], borderColor: isDarkMode ? '#FFA500' : '#FF6F00' }]} source={profilePicture} />
-        </Pressable>
-        
-        <View style={styles.infoContainer}>
+      
+      <TouchableOpacity  onPress={pickImage} >
+
+      <Image 
+source={{ uri: pickedImage ? pickedImage : currentImage }}  style={[styles.profilePicture]} />
+
+      </TouchableOpacity>
+     
+    
+      <View style={styles.infoContainer}>
           <Text style={[styles.name, { color: isDarkMode ? '#FFF' : '#333' }]}>{username}</Text>
           <Text style={[styles.email, { color: isDarkMode ? '#888' : '#777' }]}>{email}</Text>
         </View>
@@ -196,6 +292,8 @@ const Profile = () => {
           <Text style={styles.signOutText}>Delete Account</Text>
         </Pressable>
       </ScrollView>
+
+    </View>
     </SafeAreaView>
   );
 };
@@ -203,8 +301,21 @@ const Profile = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  header: {
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  imagePreview: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    marginBottom: 20,
+  }, header: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
@@ -227,9 +338,9 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   profilePicture: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 160,
+    height: 160,
+    borderRadius: 100,
     borderWidth: 3,
     marginBottom: 16,
   },
@@ -283,4 +394,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Profile;
+
+export default ProfileImageUpdate;

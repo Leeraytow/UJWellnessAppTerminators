@@ -6,6 +6,7 @@ import { GiftedChat } from 'react-native-gifted-chat';
 import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
+import PostApp from '../post';
 
 const firebaseConfig = {
     apiKey: "AIzaSyDsmNjBPkjHmJlZi0RTW9FE59DZCFkBoBo",
@@ -69,6 +70,7 @@ export default function GroupChatApp() {
   if (!user) {
     return (
       <View style={styles.container}>
+     
         <TextInput
           style={styles.inputText}
           placeholder="Enter name"

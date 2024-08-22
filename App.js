@@ -42,7 +42,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="MainPage">
+        <Stack.Navigator initialRouteName="StudentLogin">
           <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} options={{ headerShown: false }}/>
           <Stack.Screen name="StudentLogin" component={StudentLoginScreen} options={{ headerShown: false }}/>
           <Stack.Screen name="StudentRegister" component={StudentRegister} options={{ headerShown: false }} />
@@ -75,7 +75,7 @@ export default function App() {
           <Stack.Screen name="MedicalHelp" component={MedicalHelp} options={{ headerShown: false }} />
           <Stack.Screen name="UserVid" component={UserVid} options={{ headerShown: false }} />
           <Stack.Screen name="Chat" component={Chat}/>
-          <Stack.Screen name="UserList" component={UserList}/>
+          <Stack.Screen name="userList" component={UserList}/>
         </Stack.Navigator>
       </NavigationContainer>
     </ThemeProvider>
