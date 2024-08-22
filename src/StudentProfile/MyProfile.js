@@ -1,20 +1,65 @@
-import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, StyleSheet, Pressable, ScrollView } from 'react-native';
+import React, { useState, useContext, useEffect } from 'react';
+import { View, Text, TextInput, StyleSheet, Pressable, ScrollView, Alert } from 'react-native';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { ThemeContext } from './ThemeContext'; 
+import { ThemeContext } from './ThemeContext';
+import { getFirestore, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 
 const MyProfile = () => {
   const navigation = useNavigation();
   const { isDarkMode } = useContext(ThemeContext);
 
-  const [username, setUsername] = useState('Leece Precious');
-  const [email, setEmail] = useState('222001759@student.uj.ac.za');
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [age, setAge] = useState('');
   const [gender, setGender] = useState('');
 
-  const handleUpdate = () => {
-    console.log('Updating profile...');
+  const auth = getAuth();
+  const db = getFirestore();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const user = auth.currentUser;
+        if (user) {
+          const userRef = doc(db, 'Students', user.uid);
+          const docSnap = await getDoc(userRef);
+
+          if (docSnap.exists()) {
+            const userData = docSnap.data();
+            setUsername(userData.name || '');
+            setEmail(userData.email || '');
+            setAge(userData.age || '');
+            setGender(userData.gender || '');
+          } else {
+            console.log('No such document!');
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching user data: ', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const handleUpdate = async () => {
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        const userRef = doc(db, 'Students', user.uid);
+        await updateDoc(userRef, {
+          name: username,
+          age: age,
+          gender: gender,
+        });
+        Alert.alert('Success', 'Profile updated successfully');
+      }
+    } catch (error) {
+      console.error('Error updating profile: ', error);
+      Alert.alert('Error', 'There was an error updating your profile. Please try again.');
+    }
   };
 
   return (
@@ -46,9 +91,7 @@ const MyProfile = () => {
             <TextInput
               style={[styles.input, { color: isDarkMode ? '#FFF' : '#000' }]}
               value={email}
-              onChangeText={text => setEmail(text)}
-              keyboardType="email-address"
-              autoCapitalize="none"
+              editable={false} // Make email textbox non-editable
             />
           </View>
         </View>
