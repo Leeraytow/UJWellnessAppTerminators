@@ -1,17 +1,44 @@
-import React, { useState, useRef, useContext } from 'react';
+import React, { useState, useRef, useContext, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, Pressable, ScrollView, Alert, SafeAreaView, Animated } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
-import { signOut } from 'firebase/auth';
-import { auth } from '../Configuration/firebase';
-import { ThemeContext } from './ThemeContext'; 
+import { signOut, deleteUser } from 'firebase/auth';
+import { auth, db } from '../Configuration/firebase';
+import { doc, getDoc, deleteDoc } from 'firebase/firestore';
+import { ThemeContext } from './ThemeContext';
 
 const Profile = () => {
   const navigation = useNavigation();
   const { isDarkMode } = useContext(ThemeContext);
   const [profilePicture, setProfilePicture] = useState(require('../images/alice.jpeg'));
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const user = auth.currentUser;
+        if (user) {
+          const userRef = doc(db, 'Students', user.uid);
+          const docSnap = await getDoc(userRef);
+
+          if (docSnap.exists()) {
+            const userData = docSnap.data();
+            setUsername(userData.name || ''); // Set the user's name
+            setEmail(userData.email || '');   // Set the user's email
+          } else {
+            console.log('No such document!');
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching user data: ', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleSignOut = () => {
     Alert.alert(
@@ -69,6 +96,43 @@ const Profile = () => {
     }).start();
   };
 
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account',
+      'Are you sure you want to delete your account? This action cannot be undone.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          onPress: async () => {
+            const user = auth.currentUser;
+            if (user) {
+              try {
+                // Delete user data from Firestore
+                const userDocRef = doc(db, 'Students', user.uid);
+                await deleteDoc(userDocRef);
+
+                // Delete the user account from Firebase Authentication
+                await deleteUser(user);
+
+                console.log('User account and associated data deleted');
+                navigation.replace('StudentLogin'); // Redirect to the Login screen after account deletion
+              } catch (error) {
+                console.error('Error deleting user account or data: ', error);
+                Alert.alert('Error', 'There was an error deleting your account. Please try again.');
+              }
+            }
+          },
+          style: 'destructive',
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: isDarkMode ? '#333' : '#F5F5F5' }]}>
       <View style={[styles.header, { backgroundColor: isDarkMode ? '#444' : '#FFF' }]}>
@@ -84,8 +148,8 @@ const Profile = () => {
         </Pressable>
         
         <View style={styles.infoContainer}>
-          <Text style={[styles.name, { color: isDarkMode ? '#FFF' : '#333' }]}>Leece Precious</Text>
-          <Text style={[styles.email, { color: isDarkMode ? '#888' : '#777' }]}>222001759@student.uj.ac.za</Text>
+          <Text style={[styles.name, { color: isDarkMode ? '#FFF' : '#333' }]}>{username}</Text>
+          <Text style={[styles.email, { color: isDarkMode ? '#888' : '#777' }]}>{email}</Text>
         </View>
 
         <Pressable style={[styles.item, { backgroundColor: isDarkMode ? '#444' : '#FFF' }]} onPress={() => navigation.navigate('MyProfile')}>
@@ -126,6 +190,10 @@ const Profile = () => {
 
         <Pressable style={[styles.signOut, { backgroundColor: isDarkMode ? '#FFA500' : '#FF6F00' }]} onPress={handleSignOut}>
           <Text style={styles.signOutText}>Sign Out</Text>
+        </Pressable>
+
+        <Pressable style={[styles.signOut, { backgroundColor: isDarkMode ? '#FFA500' : '#FF6F00' }]} onPress={handleDeleteAccount}>
+          <Text style={styles.signOutText}>Delete Account</Text>
         </Pressable>
       </ScrollView>
     </SafeAreaView>
