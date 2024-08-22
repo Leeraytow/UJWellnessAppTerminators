@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Platform, StatusBar } from 'react-native';
 import { collection, getDocs } from 'firebase/firestore';
 import { db, auth } from '../Configuration/firebase';
+import { ThemeContext } from '../StudentProfile/ThemeContext';
 
 const UserList = ({ navigation }) => {
   const [users, setUsers] = useState([]);
+  const { isDarkMode } = useContext(ThemeContext);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -27,15 +29,29 @@ const UserList = ({ navigation }) => {
     navigation.navigate('Chat', { selectedUser: user });
   };
 
+  const handleProfilePress = (user) => {
+    navigation.navigate('Profile', { selectedUser: user });
+  };
+
   const renderItem = ({ item }) => (
-    <TouchableOpacity onPress={() => handleUserPress(item)} style={styles.userItem}>
-      <Image source={{ uri: item.profilePicture || 'https://i.pravatar.cc/300' }} style={styles.avatar} />
-      <Text style={styles.name}>{item.id === auth.currentUser.email ? 'Myself' : item.name}</Text>
+    <TouchableOpacity 
+      onPress={() => handleUserPress(item)} 
+      style={[styles.userItem, { backgroundColor: isDarkMode ? '#333' : '#FFF' }]}
+    >
+      <TouchableOpacity onPress={() => handleProfilePress(item)}>
+        <Image 
+          source={{ uri: item.profileImage || 'https://www.pngitem.com/pimgs/m/146-1468843_profile-icon-orange-png-transparent-png.png' }} 
+          style={[styles.avatar, { borderColor: isDarkMode ? '#FFA500' : '#FF6F00' }]} 
+        />
+      </TouchableOpacity>
+      <Text style={[styles.name, { color: isDarkMode ? '#FFF' : '#333' }]}>
+        {item.id === auth.currentUser.email ? 'Myself' : item.name}
+      </Text>
     </TouchableOpacity>
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: isDarkMode ? '#222' : '#F5F5F5' }]}>
       <FlatList
         data={users}
         renderItem={renderItem}
@@ -49,7 +65,7 @@ const UserList = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   list: {
     padding: 16,
@@ -58,7 +74,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: '#FFF',
     borderRadius: 8,
     marginBottom: 8,
     shadowColor: '#000',
@@ -71,13 +86,11 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    borderWidth: 2,
-    borderColor: '#FF6F00',
+    borderWidth: 1,
     marginRight: 16,
   },
   name: {
     fontSize: 18,
-    color: '#333',
   },
 });
 

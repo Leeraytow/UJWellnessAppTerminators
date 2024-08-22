@@ -1,7 +1,9 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, StyleSheet, Pressable, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Pressable, TouchableOpacity, Alert } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { ThemeContext } from './ThemeContext'; 
+import { auth } from '../Configuration/firebase'; // Make sure to import your Firebase configuration
+import { reauthenticateWithCredential, EmailAuthProvider, updatePassword } from 'firebase/auth';
 
 const SecurityInfo = () => {
   const { isDarkMode } = useContext(ThemeContext);
@@ -14,11 +16,31 @@ const SecurityInfo = () => {
   const [newPasswordVisible, setNewPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
 
-  const handleUpdatePassword = () => {
-    if (newPassword === confirmPassword) {
-      console.log('Password updated successfully');
-    } else {
-      console.log('Passwords do not match');
+  const handleUpdatePassword = async () => {
+    if (newPassword !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match.');
+      return;
+    }
+
+    const user = auth.currentUser;
+    if (user) {
+      try {
+        // Step 1: Re-authenticate the user
+        const credential = EmailAuthProvider.credential(user.email, currentPassword);
+        await reauthenticateWithCredential(user, credential);
+
+        // Step 2: Update the password
+        await updatePassword(user, newPassword);
+        Alert.alert('Success', 'Password updated successfully.');
+
+        // Clear the inputs
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+      } catch (error) {
+        console.error('Error updating password: ', error);
+        Alert.alert('Error', error.message);
+      }
     }
   };
 

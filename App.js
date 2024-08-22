@@ -35,6 +35,11 @@ import MedicalHelp from './src/MedicalHelp/MedicalHelp';
 import UserVid from './src/Videos/UserVideos';
 import Chat from './src/ChatApp/Chat'
 import UserList from './src/ChatApp/userList';
+import Users from './src/Admin/Users';
+import UserFeedback from './src/Admin/UserFeedback';
+import AdminHomeScreen from './src/Admin/AdminHomeScreen';
+import UserHistory from './src/Admin/UserHistory';
+import AdminSettings from './src/Admin/AdminSettings';
 
 const Stack = createStackNavigator();
 
@@ -42,7 +47,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="MainPage">
+        <Stack.Navigator initialRouteName="StudentLogin">
           <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} options={{ headerShown: false }}/>
           <Stack.Screen name="StudentLogin" component={StudentLoginScreen} options={{ headerShown: false }}/>
           <Stack.Screen name="StudentRegister" component={StudentRegister} options={{ headerShown: false }} />
@@ -75,7 +80,12 @@ export default function App() {
           <Stack.Screen name="MedicalHelp" component={MedicalHelp} options={{ headerShown: false }} />
           <Stack.Screen name="UserVid" component={UserVid} options={{ headerShown: false }} />
           <Stack.Screen name="Chat" component={Chat}/>
-          <Stack.Screen name="UserList" component={UserList}/>
+          <Stack.Screen name="userList" component={UserList} options={{ headerShown: false }} />
+          <Stack.Screen name="AdminHomeScreen" component={AdminHomeScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="Users" component={Users} options={{ headerShown: false }} />
+          <Stack.Screen name="UserFeedback" component={UserFeedback} options={{ headerShown: false }} />
+          <Stack.Screen name="UserHistory" component={UserHistory} options={{ headerShown: false }} />
+          <Stack.Screen name="AdminSettings" component={AdminSettings} options={{ headerShown: false }} />
         </Stack.Navigator>
       </NavigationContainer>
     </ThemeProvider>

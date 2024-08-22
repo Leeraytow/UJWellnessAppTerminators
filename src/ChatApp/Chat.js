@@ -6,6 +6,7 @@ import { signOut } from "firebase/auth";
 import { auth, db } from '../Configuration/firebase';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
+import { ThemeContext } from '../StudentProfile/ThemeContext';
 
 export default function Chat() {
     const [messages, setMessages] = useState([]);
@@ -25,11 +26,7 @@ export default function Chat() {
                     <Text style={styles.headerText}>{selectedUser ? selectedUser.name : 'Chat'}</Text>
                 </View>
             ),
-            headerRight: () => (
-                <TouchableOpacity style={{ marginRight: 10 }} onPress={onSignOut}>
-                    <AntDesign name="logout" size={24} color="gray" />
-                </TouchableOpacity>
-            )
+           
         });
     }, [navigation, selectedUser]);
 

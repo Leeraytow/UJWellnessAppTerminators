@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Image, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { signInWithEmailAndPassword} from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { auth, db } from '../Configuration/firebase';
-
 
 const Header = () => (
   <View>
@@ -25,8 +24,14 @@ export default function StudentLoginScreen({ navigation }) {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (loading) {
+      handleLogin();
+    }
+  }, [loading]);
+
   const validateEmail = (inputText) => {
-    const emailPattern = /^[0-9]{9,}@student\.uj\.ac\.za$/;
+    const emailPattern = /^[0-9]{9,}@student\.uj\.ac\.za$|^[a-zA-Z0-9._%+-]+@gmail\.com$/;
     return emailPattern.test(inputText.trim());
   };
 
@@ -45,18 +50,20 @@ export default function StudentLoginScreen({ navigation }) {
     if (!Email || !password) {
       setError('All fields are required');
       setTimeout(() => setError(''), 12000);
+      setLoading(false);
       return;
     } else if (!validateEmail(Email)) {
       setError('Invalid email address');
       setTimeout(() => setError(''), 12000);
+      setLoading(false);
       return;
     } else if (!validatePassword(password)) {
-      setError('Password must be at least 8 characters long, contain at least one uppercase letter, special character and a number.');
+      setError('Password must be at least 8 characters long, contain at least one uppercase letter, special character, and a number.');
       setTimeout(() => setError(''), 12000);
+      setLoading(false);
       return;
     }
 
-    setLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(auth, Email, password);
       const user = userCredential.user;
@@ -64,27 +71,38 @@ export default function StudentLoginScreen({ navigation }) {
       if (!user.emailVerified) {
         setError('Please verify your email before logging in.');
         setLoading(false); 
-        return navigation.navigate('EmailVerification', { userEmail: Email }); 
+        return navigation.navigate('EmailVerification', { userEmail: Email });
       }
 
-      const usersCollection = collection(db, 'Students');
-      const q = query(usersCollection, where('email', '==', Email));
-      const querySnapshot = await getDocs(q);
+      const isAdmin = Email.endsWith('@gmail.com');
+      if (isAdmin) {
+        navigation.navigate('AdminHomeScreen');
+      } else if (Email.endsWith('@student.uj.ac.za')) {
+        const usersCollection = collection(db, 'Students');
+        const q = query(usersCollection, where('email', '==', Email));
+        const querySnapshot = await getDocs(q);
 
-      if (querySnapshot.size === 1) {
-        querySnapshot.forEach((doc) => {
-          const userName = doc.data().name;
-          navigation.navigate('MainPage', { userName: userName, userEmail: Email });
-        });
+        if (querySnapshot.size === 1) {
+          querySnapshot.forEach((doc) => {
+            const userName = doc.data().name;
+            navigation.navigate('MainPage', { userName: userName, userEmail: Email });
+          });
+        } else {
+          setError('User not found');
+        }
       } else {
-        setError('User not found');
+        setError('Invalid user role');
       }
     } catch (error) {
       setError(error.message);
     } finally {
       setLoading(false);
-      setTimeout(() => setError(''), 12000);
     }
+  };
+
+  const initiateLogin = () => {
+    setError(''); // Reset any previous errors
+    setLoading(true); // This will trigger useEffect and initiate login
   };
 
   const handleRegisterPress = () => {
@@ -131,7 +149,7 @@ export default function StudentLoginScreen({ navigation }) {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+          <TouchableOpacity style={styles.loginButton} onPress={initiateLogin}>
             <Text style={styles.loginButtonText}>Sign in</Text>
           </TouchableOpacity>
 
@@ -213,7 +231,6 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 20,
   },
-  
   forgotPasswordButton: {
     alignSelf: 'flex-end',
   },
@@ -248,5 +265,4 @@ const styles = StyleSheet.create({
     color: 'red',
     marginTop: 13,
   },
- 
 });

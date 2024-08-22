@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, Pressable }
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { ThemeContext } from './ThemeContext'; // Adjust the path if necessary
+import { auth, db } from '../Configuration/firebase'; // Import Firestore and auth
+import { collection, addDoc } from 'firebase/firestore'; // Import Firestore functions
 
 const StarRating = ({ rating, setRating }) => {
   const { isDarkMode } = useContext(ThemeContext);
@@ -32,11 +34,29 @@ const Feedback = () => {
     setSuggestions(text);
   };
 
-  const handleSendFeedback = () => {
-    Alert.alert("Feedback Sent", "Thank you for your feedback!");
-    // Implement sending feedback to backend here
-    setRating(0);
-    setSuggestions('');
+  const handleSendFeedback = async () => {
+    const user = auth.currentUser;
+
+    if (user) {
+      try {
+        const feedbackRef = collection(db, 'Feedback');
+        await addDoc(feedbackRef, {
+          username: user.displayName || 'Anonymous',
+          date: new Date().toISOString(),
+          rating: rating,
+          suggestions: suggestions,
+        });
+
+        Alert.alert("Feedback Sent", "Thank you for your feedback!");
+        setRating(0);
+        setSuggestions('');
+      } catch (error) {
+        console.error('Error sending feedback: ', error);
+        Alert.alert("Error", "There was an issue sending your feedback. Please try again.");
+      }
+    } else {
+      Alert.alert("Error", "User is not authenticated. Please log in.");
+    }
   };
 
   return (

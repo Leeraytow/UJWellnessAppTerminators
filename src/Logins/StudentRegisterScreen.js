@@ -31,9 +31,9 @@ export default function StudentRegisterScreen() {
     return passwordPattern.test(inputText);
   };
 
-  const validateEmail = (email) => {
-    const emailPattern = /^[0-9]{9,}@student\.uj\.ac\.za$/;
-    return emailPattern.test(email);
+  const validateEmail = (inputText) => {
+    const emailPattern = /^[0-9]{9,}@student\.uj\.ac\.za$|^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+    return emailPattern.test(inputText.trim());
   };
 
   let validateAndSet = (value, valueToCompare, setValue) => {
