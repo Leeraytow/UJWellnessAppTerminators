@@ -3,6 +3,9 @@ import { View, Text, StyleSheet, TouchableOpacity, Linking, SafeAreaView, Scroll
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Footer from '../Menu/Footer';
 import { ThemeContext } from '../StudentProfile/ThemeContext'; 
+import ProductsScreen from '../test2';
+import Store from '../test';
+import HomeScreen from '../HomeScreen';
 
 const HelpLine = () => {
   const { isDarkMode } = useContext(ThemeContext);
@@ -10,6 +13,7 @@ const HelpLine = () => {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: isDarkMode ? '#000' : '#fff' }]}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
+       <HomeScreen/>
         <View style={[styles.box, { backgroundColor: isDarkMode ? '#333' : '#FF6F00' }]}>
           <TouchableOpacity style={styles.contact} onPress={() => handleCall('+27115594555')}>
             <Icon name="phone" size={20} color={isDarkMode ? '#FFF' : '#FFF'} style={styles.icon} />
