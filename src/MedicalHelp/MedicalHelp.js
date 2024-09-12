@@ -86,8 +86,11 @@ const callNumber = (phone) => {
 const HospitalCard = ({ hospital }) => {
   const { isDarkMode } = useContext(ThemeContext);
   return (
-    <View style={[styles.card, { borderLeftColor: isDarkMode ? '#FFA500' : '#FFA500' }]}>
-      <Text style={[styles.name, { color: isDarkMode ? '#FFF' : '#333' }]}>{hospital.name}</Text>
+    <View style={[styles.card, { 
+      backgroundColor: isDarkMode ? '#333' : '#fff',  // Dark background for dark mode
+      borderLeftColor: isDarkMode ? '#FFA500' : '#FFA500' 
+    }]}>
+      <Text style={[styles.name, { color: isDarkMode ? '#FFA500' : '#333' }]}>{hospital.name}</Text>
       <TouchableOpacity onPress={() => openMap(hospital.address)}>
         <Text style={[styles.address, { color: isDarkMode ? '#FF5E0E' : '#FF5E0E' }]}>{hospital.address}</Text>
       </TouchableOpacity>
@@ -102,7 +105,6 @@ const HospitalCard = ({ hospital }) => {
           <Text style={[styles.website, { color: isDarkMode ? '#FF5E0E' : '#FF5E0E' }]}>Website: {hospital.website}</Text>
         </TouchableOpacity>
       )}
-      {hospital.contactDetails && <Text style={[styles.contactDetails, { color: isDarkMode ? '#FFF' : '#333' }]}>Contact: {hospital.contactDetails}</Text>}
       {hospital.operatingHours && <Text style={[styles.operatingHours, { color: isDarkMode ? '#FF5E0E' : '#FF5E0E' }]}>Operating Hours: {hospital.operatingHours}</Text>}
     </View>
   );
@@ -139,7 +141,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   card: {
-    backgroundColor: '#fff',
     padding: 16,
     marginBottom: 16,
     borderRadius: 8,
@@ -171,10 +172,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 4,
     textDecorationLine: 'underline',
-  },
-  contactDetails: {
-    fontSize: 16,
-    marginBottom: 4,
   },
   operatingHours: {
     fontSize: 16,
