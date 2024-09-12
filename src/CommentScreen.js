@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 export default function CommentsScreen({ route }) {
   const { post } = route.params;
   const [comment, setComment] = useState('');
-  const [name, setName] = useState('User2'); // Replace with dynamic user name
+  const [name, setName] = useState('User2'); 
   const [comments, setComments] = useState(post.comments);
 
   const handleComment = () => {
@@ -19,7 +19,7 @@ export default function CommentsScreen({ route }) {
       const updatedComments = [...comments, newComment];
       setComments(updatedComments);
       setComment('');
-      // Ideally, update the post in the parent state or in the database here
+    
     }
   };
 
