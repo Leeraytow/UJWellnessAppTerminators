@@ -1,16 +1,40 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { View, Text, Switch, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { ThemeContext } from './ThemeContext'; 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CustomizableSettings = () => {
   const navigation = useNavigation();
-  const { isDarkMode, toggleTheme } = useContext(ThemeContext);
+  const { isDarkMode } = useContext(ThemeContext);
 
   const [sessionReminders, setSessionReminders] = React.useState(false);
   const [wellnessTips, setWellnessTips] = React.useState(false);
   const [anonymity, setAnonymity] = React.useState(false);
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const storedAnonymity = await AsyncStorage.getItem('anonymity');
+        if (storedAnonymity !== null) {
+          setAnonymity(JSON.parse(storedAnonymity));
+        }
+      } catch (error) {
+        console.error('Failed to load anonymity setting:', error);
+      }
+    };
+    loadSettings();
+  }, []);
+
+  const handleAnonymityChange = async (value) => {
+    try {
+      setAnonymity(value);
+      await AsyncStorage.setItem('anonymity', JSON.stringify(value));
+    } catch (error) {
+      console.error('Failed to save anonymity setting:', error);
+    }
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
@@ -51,7 +75,7 @@ const CustomizableSettings = () => {
             trackColor={{ false: '#767577', true: '#FFA500' }}
             thumbColor={anonymity ? '#FFA500' : '#f4f3f4'}
             value={anonymity}
-            onValueChange={setAnonymity}
+            onValueChange={handleAnonymityChange}
           />
         </View>
       </View>

@@ -1,12 +1,11 @@
-//@refresh reset
 import React, { useState, useEffect, useCallback } from 'react';
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GiftedChat } from 'react-native-gifted-chat';
-import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, SafeAreaView, Platform, StatusBar } from 'react-native';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
-import PostApp from '../post';
+import Header from '../Menu/Header'; // Adjust the path as necessary
+import Footer from '../Menu/Footer'; // Adjust the path as necessary
 
 const firebaseConfig = {
     apiKey: "AIzaSyDsmNjBPkjHmJlZi0RTW9FE59DZCFkBoBo",
@@ -28,6 +27,21 @@ export default function GroupChatApp() {
   const [user, setUser] = useState(null);
   const [name, setName] = useState('');
   const [messages, setMessages] = useState([]);
+  const [isAnonymous, setIsAnonymous] = useState(false);
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const storedAnonymity = await AsyncStorage.getItem('anonymity');
+        if (storedAnonymity !== null) {
+          setIsAnonymous(JSON.parse(storedAnonymity));
+        }
+      } catch (error) {
+        console.error('Failed to load anonymity setting:', error);
+      }
+    };
+    loadSettings();
+  }, []);
 
   useEffect(() => {
     readUser();
@@ -57,7 +71,8 @@ export default function GroupChatApp() {
 
   async function handleEnterChat() {
     const _id = Math.random().toString(36).substring(7);
-    const user = { _id, name };
+    const displayName = isAnonymous ? 'Anonymous' : name;
+    const user = { _id, name: displayName };
     await AsyncStorage.setItem('user', JSON.stringify(user));
     setUser(user);
   }
@@ -69,21 +84,33 @@ export default function GroupChatApp() {
 
   if (!user) {
     return (
-      <View style={styles.container}>
-     
-        <TextInput
-          style={styles.inputText}
-          placeholder="Enter name"
-          value={name}
-          onChangeText={setName}
-        />
-        <Button title="Enter chat" onPress={handleEnterChat} />
-      </View>
+      <SafeAreaView style={styles.container}>
+        <Header />
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.inputText}
+            placeholder="Enter name"
+            value={name}
+            onChangeText={setName}
+          />
+          <Button title="Enter chat" onPress={handleEnterChat} />
+        </View>
+        <Footer />
+      </SafeAreaView>
     );
   }
 
   return (
-    <GiftedChat messages={messages} user={user} onSend={handleSend} />
+    <SafeAreaView style={styles.container}>
+      <Header />
+      <GiftedChat
+        messages={messages}
+        user={user}
+        onSend={handleSend}
+        style={styles.chat}
+      />
+      <Footer />
+    </SafeAreaView>
   );
 }
 
@@ -91,8 +118,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+  },
+  inputContainer: {
+    padding: 16,
   },
   inputText: {
     height: 50,
@@ -101,5 +130,8 @@ const styles = StyleSheet.create({
     padding: 15,
     borderColor: 'gray',
     marginBottom: 10,
+  },
+  chat: {
+    flex: 1,
   },
 });

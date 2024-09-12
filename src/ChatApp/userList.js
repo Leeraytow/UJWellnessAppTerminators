@@ -3,10 +3,26 @@ import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Platform, St
 import { collection, getDocs } from 'firebase/firestore';
 import { db, auth } from '../Configuration/firebase';
 import { ThemeContext } from '../StudentProfile/ThemeContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const UserList = ({ navigation }) => {
   const [users, setUsers] = useState([]);
   const { isDarkMode } = useContext(ThemeContext);
+  const [isAnonymous, setIsAnonymous] = useState(false);
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const storedAnonymity = await AsyncStorage.getItem('anonymity');
+        if (storedAnonymity !== null) {
+          setIsAnonymous(JSON.parse(storedAnonymity));
+        }
+      } catch (error) {
+        console.error('Failed to load anonymity setting:', error);
+      }
+    };
+    loadSettings();
+  }, []);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -45,13 +61,16 @@ const UserList = ({ navigation }) => {
         />
       </TouchableOpacity>
       <Text style={[styles.name, { color: isDarkMode ? '#FFF' : '#333' }]}>
-        {item.id === auth.currentUser.email ? 'Myself' : item.name}
+        {item.id === auth.currentUser.email && !isAnonymous ? 'Myself' : item.name}
       </Text>
     </TouchableOpacity>
   );
 
   return (
     <View style={[styles.container, { backgroundColor: isDarkMode ? '#222' : '#F5F5F5' }]}>
+      <View style={[styles.header, { backgroundColor: isDarkMode ? '#444' : '#FF5733' }]}>
+        <Text style={styles.headerTitle}>UJWellness Chat</Text>
+      </View>
       <FlatList
         data={users}
         renderItem={renderItem}
@@ -66,6 +85,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+  },
+  header: {
+    backgroundColor: '#FF5733',
+    padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#fff',
   },
   list: {
     padding: 16,
