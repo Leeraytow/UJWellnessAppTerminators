@@ -1,8 +1,23 @@
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import Footer from '../Menu/Footer'; 
 
 export default function SessionInfo() {
   const [activeTab, setActiveTab] = useState('Information');
+  
+  const [medications, setMedications] = useState({
+    med1: '',
+    med2: '',
+  });
+  
+  const [diagnoses, setDiagnoses] = useState({
+    diag1: '',
+    diag2: '',
+  });
+  
+  const [additionalNotes, setAdditionalNotes] = useState(
+    ""
+  );
 
   const renderContent = () => {
     switch (activeTab) {
@@ -10,22 +25,36 @@ export default function SessionInfo() {
         return (
           <View style={styles.contentContainer}>
             <Text style={styles.subSectionTitle}>Medicine</Text>
-            <Text style={styles.contentText}>
-              Edward is currently taking the following medications:
-            </Text>
-            <Text style={styles.medsText}>- Fluoxetine (Prozac)</Text>
-            <Text style={styles.medsText}>- Lorazepam (Ativan)</Text>
+            <TextInput
+              style={styles.input}
+              value={medications.med1}
+              onChangeText={(text) => setMedications({ ...medications, med1: text })}
+              placeholder="Medication 1"
+            />
+            <TextInput
+              style={styles.input}
+              value={medications.med2}
+              onChangeText={(text) => setMedications({ ...medications, med2: text })}
+              placeholder="Medication 2"
+            />
           </View>
         );
       case 'Diagnose':
         return (
           <View style={styles.contentContainer}>
             <Text style={styles.subSectionTitle}>Diagnose</Text>
-            <Text style={styles.contentText}>
-              Edward has been diagnosed with:
-            </Text>
-            <Text style={styles.diagnoseText}>- Major Depressive Disorder</Text>
-            <Text style={styles.diagnoseText}>- Generalized Anxiety Disorder</Text>
+            <TextInput
+              style={styles.input}
+              value={diagnoses.diag1}
+              onChangeText={(text) => setDiagnoses({ ...diagnoses, diag1: text })}
+              placeholder="Diagnosis 1"
+            />
+            <TextInput
+              style={styles.input}
+              value={diagnoses.diag2}
+              onChangeText={(text) => setDiagnoses({ ...diagnoses, diag2: text })}
+              placeholder="Diagnosis 2"
+            />
           </View>
         );
       default:
@@ -77,7 +106,7 @@ export default function SessionInfo() {
         <View style={styles.complaintsContainer}>
           <Text style={styles.sectionTitle}>Complaints</Text>
           <View style={styles.tagsContainer}>
-            {['Bad mood', 'Bad mood', 'Insomnia', 'Anger', 'Anxiety'].map((tag, index) => (
+            {['Bad mood', 'Insomnia', 'Anger', 'Anxiety'].map((tag, index) => (
               <View key={index} style={styles.tag}>
                 <Text style={styles.tagText}>{tag}</Text>
               </View>
@@ -103,20 +132,17 @@ export default function SessionInfo() {
 
         <View style={styles.additionalInfoContainer}>
           <Text style={styles.subSectionTitle}>Additional</Text>
-          <Text style={styles.additionalText}>
-            Therapist Notes:{"\n"}
-            Edward showed all 5 symptoms of major depression for at least 2 weeks:
-          </Text>
+          <TextInput
+            style={styles.additionalInput}
+            value={additionalNotes}
+            onChangeText={setAdditionalNotes}
+            placeholder="Therapist Notes"
+            multiline
+          />
         </View>
       </ScrollView>
 
-      <View style={styles.footer}>
-        {['home', 'bell', 'group', 'chat'].map((icon, index) => (
-          <View key={index} style={styles.footerIcon}>
-            <Text>{icon}</Text>
-          </View>
-        ))}
-      </View>
+      <Footer /> 
     </View>
   );
 }
@@ -241,44 +267,25 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
   },
-  contentText: {
-    fontSize: 14,
+  input: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    paddingVertical: 4,
     marginBottom: 8,
-  },
-  medsText: {
-    fontSize: 14,
-    marginBottom: 4,
-    color: '#f57c00',
-  },
-  diagnoseText: {
-    fontSize: 14,
-    marginBottom: 4,
-    color: '#f57c00',
   },
   additionalInfoContainer: {
     borderWidth: 1,
     borderColor: '#ffcc80',
     padding: 16,
     borderRadius: 8,
+    marginBottom: 16,
   },
-  additionalText: {
-    fontSize: 14,
-    color: '#f57c00',
-  },
-  footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 60,
-    backgroundColor: '#fff8e1',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    borderTopWidth: 1,
-    borderColor: '#ddd',
-  },
-  footerIcon: {
-    alignItems: 'center',
+  additionalInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 8,
+    minHeight: 60,
+    textAlignVertical: 'top',
   },
 });
