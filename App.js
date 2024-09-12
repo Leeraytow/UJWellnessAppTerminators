@@ -8,6 +8,9 @@ import StudentLoginScreen from './src/Logins/StudentLoginScreen';
 import StudentRegister from './src/Logins/StudentRegisterScreen';
 import TherapistScreen from './src/Logins/TherapistLoginScreen'; 
 import TherapistRegisterScreen from './src/Logins/TherapistRegisterScreen';
+import TherapistLandingScreen from './src/TherapyPages/TherapistLandingScreen';
+import ResourcesScreen from './src/TherapyPages/Resource';
+import  RegisterScreen from './src/TherapyPages/RegisterScreen';
 import SplashScreen1 from './src/SplashPages/splash1';
 import SplashScreen2 from './src/SplashPages/Splash2';
 import SplashScreen3 from './src/SplashPages/Splash3';
@@ -55,6 +58,9 @@ export default function App() {
           <Stack.Screen name="StudentRegister" component={StudentRegister} options={{ headerShown: false }} />
           <Stack.Screen name="TherapistScreen" component={TherapistScreen} options={{ headerShown: false }} />
           <Stack.Screen name="TherapistRegisterScreen" component={TherapistRegisterScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="TherapistLandingScreen" component={TherapistLandingScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="Resources" component={ResourcesScreen} />
+          <Stack.Screen name="Register" component={RegisterScreen} />
           <Stack.Screen name="PasswordResetScreen" component={PasswordResetScreen} options={{ headerShown: false }}/>
           <Stack.Screen name="EmailVerification" component={EmailVerification} options={{ headerShown: false }}/>
           <Stack.Screen name="SplashScreen1" component={SplashScreen1} options={{ headerShown: false }} />
