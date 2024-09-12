@@ -1,39 +1,53 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import Footer from './Footer'; 
+import { ThemeContext } from '../StudentProfile/ThemeContext'; // Import ThemeContext
 
 const TherapyButton = ({ navigation }) => {
+  const { isDarkMode } = useContext(ThemeContext); // Get the dark mode state
+
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View style={[styles.container, { backgroundColor: isDarkMode ? '#222' : '#FAFAFA' }]}>
+      <View style={[styles.header, { backgroundColor: isDarkMode ? '#333' : '#FAFAFA' }]}>
         <Image source={require('../images/Icon.png')} style={styles.logo} />
         <TouchableOpacity style={styles.menuIcon}>
-          <Text style={styles.menuText}>☰</Text>
+          <Text style={[styles.menuText, { color: isDarkMode ? '#FFF' : '#FF6F00' }]}>☰</Text>
         </TouchableOpacity>
       </View>
-      <Text style={styles.title}>You Deserve to Be Happy</Text>
-      <Text style={styles.subtitle}>What Type of Therapy Are You Looking For?</Text>
+      <Text style={[styles.title, { color: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>You Deserve to Be Happy</Text>
+      <Text style={[styles.subtitle, { color: isDarkMode ? '#ccc' : '#333' }]}>What Type of Therapy Are You Looking For?</Text>
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('DigitalDiary')}>
+          <TouchableOpacity 
+            style={[styles.button, { backgroundColor: isDarkMode ? '#333' : '#FFFFFF', borderColor: isDarkMode ? '#666' : '#E65100' }]} 
+            onPress={() => navigation.navigate('DigitalDiary')}
+          >
             <View style={styles.buttonContent}>
-              <Text style={styles.buttonTitle}>Digital Diary</Text>
-              <Text style={styles.buttonSubtitle}>Write in Journal</Text>
+              <Text style={[styles.buttonTitle, { color: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>Digital Diary</Text>
+              <Text style={[styles.buttonSubtitle, { color: isDarkMode ? '#aaa' : '#666' }]}>Write in Journal</Text>
             </View>
             <Image source={require('../images/MainPage.png')} style={styles.buttonIcon} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('OnlineTherapy')}>
+
+          <TouchableOpacity 
+            style={[styles.button, { backgroundColor: isDarkMode ? '#333' : '#FFFFFF', borderColor: isDarkMode ? '#666' : '#E65100' }]} 
+            onPress={() => navigation.navigate('OnlineTherapy')}
+          >
             <View style={styles.buttonContent}>
-              <Text style={styles.buttonTitle}>Online Therapy</Text>
-              <Text style={styles.buttonSubtitle}>Meet with a Professional</Text>
-              <Text style={styles.buttonSubtitle}>on a Video Call</Text>
+              <Text style={[styles.buttonTitle, { color: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>Online Therapy</Text>
+              <Text style={[styles.buttonSubtitle, { color: isDarkMode ? '#aaa' : '#666' }]}>Meet with a Professional</Text>
+              <Text style={[styles.buttonSubtitle, { color: isDarkMode ? '#aaa' : '#666' }]}>on a Video Call</Text>
             </View>
             <Image source={require('../images/EntryDiary.png')} style={styles.buttonIcon} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('PeerCounseling')}>
+
+          <TouchableOpacity 
+            style={[styles.button, { backgroundColor: isDarkMode ? '#333' : '#FFFFFF', borderColor: isDarkMode ? '#666' : '#E65100' }]} 
+            onPress={() => navigation.navigate('PeerCounseling')}
+          >
             <View style={styles.buttonContent}>
-              <Text style={styles.buttonTitle}>Peer2Peer Counseling</Text>
-              <Text style={styles.buttonSubtitle}>Casual Conversation with a Peer</Text>
+              <Text style={[styles.buttonTitle, { color: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>Peer2Peer Counseling</Text>
+              <Text style={[styles.buttonSubtitle, { color: isDarkMode ? '#aaa' : '#666' }]}>Casual Conversation with a Peer</Text>
             </View>
             <Image source={require('../images/TherapyPage.png')} style={styles.buttonIcon} />
           </TouchableOpacity>
@@ -47,7 +61,6 @@ const TherapyButton = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAFAFA', // Light gray background for modern look
     padding: 20,
   },
   header: {
@@ -66,13 +79,11 @@ const styles = StyleSheet.create({
   },
   menuText: {
     fontSize: 24,
-    color: '#FF6F00', // Orange for visibility
   },
   title: {
     fontSize: 22,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: '#FF6F00', // Orange for consistency
     marginVertical: 10,
   },
   subtitle: {
@@ -80,7 +91,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textAlign: 'center',
     marginVertical: 10,
-    color: '#333', // Dark gray for readability
   },
   scrollContainer: {
     flex: 1,
@@ -91,16 +101,14 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF', // White background for a clean look
     padding: 15,
     marginBottom: 15,
     borderRadius: 12,
     width: '100%',
     height: 120,
     justifyContent: 'space-between',
-    borderWidth: 2, // Border width
-    borderColor: '#E65100', // Dark orange border
-    elevation: 6, // Shadow for visibility
+    borderWidth: 2,
+    elevation: 6,
   },
   buttonContent: {
     flex: 1,
@@ -110,11 +118,9 @@ const styles = StyleSheet.create({
   buttonTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#FF6F00', // Orange for titles
   },
   buttonSubtitle: {
     fontSize: 14,
-    color: '#666', // Gray for subtitles
   },
   buttonIcon: {
     width: 80,

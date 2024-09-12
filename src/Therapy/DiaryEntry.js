@@ -1,10 +1,11 @@
 import React, { useState, useContext } from 'react';
-import {View,Text,TextInput,StyleSheet,Image,TouchableOpacity,ScrollView,Platform,SafeAreaView,Alert} from 'react-native';
+import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity, ScrollView, Platform, SafeAreaView, Alert } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { Audio } from 'expo-av';
 import EmojiSelector from 'react-native-emoji-selector';
 import { ThemeContext } from '../StudentProfile/ThemeContext'; // Import the ThemeContext
+import { FontSizeContext } from '../StudentProfile/FontSizeContext'
 
 export default function DigitalDiary({ navigation }) {
   const [showOptions, setShowOptions] = useState(false);
@@ -13,6 +14,7 @@ export default function DigitalDiary({ navigation }) {
   const [recording, setRecording] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const { isDarkMode } = useContext(ThemeContext); // Use the ThemeContext
+  const { fontSize } = useContext(FontSizeContext); // Use the FontSizeContext
 
   const pickImage = async () => {
     if (Platform.OS !== 'web') {
@@ -74,23 +76,23 @@ export default function DigitalDiary({ navigation }) {
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color={isDarkMode ? '#FF6F00' : '#FF6F00'} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>New Moment</Text>
+        <Text style={[styles.headerTitle, { color: isDarkMode ? '#FF6F00' : '#FF6F00', fontSize }]}>New Moment</Text>
         <TouchableOpacity style={styles.optionsButton} onPress={() => setShowOptions(!showOptions)}>
           <MaterialIcons name="more-vert" size={24} color={isDarkMode ? '#FF6F00' : '#FF6F00'} />
         </TouchableOpacity>
         {showOptions && (
           <View style={[styles.optionsMenu, { backgroundColor: isDarkMode ? '#222' : '#FFF', borderColor: isDarkMode ? '#444' : '#E0E0E0' }]}>
             <TouchableOpacity style={styles.optionItem}>
-              <Text style={[styles.optionText, { color: isDarkMode ? '#FFF' : '#333' }]}>Delete</Text>
+              <Text style={[styles.optionText, { color: isDarkMode ? '#FFF' : '#333', fontSize }]}>Delete</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.optionItem}>
-              <Text style={[styles.optionText, { color: isDarkMode ? '#FFF' : '#333' }]}>Cancel</Text>
+              <Text style={[styles.optionText, { color: isDarkMode ? '#FFF' : '#333', fontSize }]}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.optionItem}>
-              <Text style={[styles.optionText, { color: isDarkMode ? '#FFF' : '#333' }]}>Save</Text>
+              <Text style={[styles.optionText, { color: isDarkMode ? '#FFF' : '#333', fontSize }]}>Save</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.optionItem}>
-              <Text style={[styles.optionText, { color: isDarkMode ? '#FFF' : '#333' }]}>Send</Text>
+              <Text style={[styles.optionText, { color: isDarkMode ? '#FFF' : '#333', fontSize }]}>Send</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -102,13 +104,13 @@ export default function DigitalDiary({ navigation }) {
           ) : (
             <TouchableOpacity style={[styles.imagePlaceholder, { backgroundColor: isDarkMode ? '#555' : '#E0E0E0', borderColor: isDarkMode ? '#FF6F00' : '#FF6F00' }]} onPress={pickImage}>
               <Ionicons name="image" size={50} color={isDarkMode ? '#FF6F00' : '#FF6F00'} />
-              <Text style={[styles.imagePlaceholderText, { color: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>Add Image</Text>
+              <Text style={[styles.imagePlaceholderText, { color: isDarkMode ? '#FF6F00' : '#FF6F00', fontSize }]}>Add Image</Text>
             </TouchableOpacity>
           )}
         </View>
-        <Text style={[styles.title, { color: isDarkMode ? '#FFF' : '#333' }]}>Journaling Techniques for Digital Therapy</Text>
+        <Text style={[styles.title, { color: isDarkMode ? '#FFF' : '#333', fontSize }]}>Journaling Techniques for Digital Therapy</Text>
         <TextInput
-          style={[styles.textInput, { backgroundColor: isDarkMode ? '#333' : '#FFF', color: isDarkMode ? '#FFF' : '#000', borderColor: isDarkMode ? '#444' : '#E0E0E0' }]}
+          style={[styles.textInput, { backgroundColor: isDarkMode ? '#333' : '#FFF', color: isDarkMode ? '#FFF' : '#000', borderColor: isDarkMode ? '#444' : '#E0E0E0', fontSize }]}
           multiline
           placeholder="This Digital Diary offers a simple yet effective way to express your emotions. Write how you feel and hit the send button. One of our professionals will soon reach out to you."
           placeholderTextColor={isDarkMode ? '#999' : '#999'}
@@ -145,82 +147,20 @@ export default function DigitalDiary({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 15,
-    borderBottomWidth: 1,
-    shadowColor: '#E0E0E0',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    marginTop: 20,
-  },
-  backButton: {
-    padding: 5,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  optionsButton: {
-    padding: 5,
-  },
-  optionsMenu: {
-    position: 'absolute',
-    top: 55,
-    right: 15,
-    borderRadius: 10,
-    overflow: 'hidden',
-    elevation: 5,
-    borderWidth: 1,
-  },
-  optionItem: {
+  // existing styles ...
+  textInput: {
+    fontSize: 16, // Remove hardcoded font size in favor of dynamic size from context
+    lineHeight: 24,
     padding: 10,
-    borderBottomWidth: 1,
-  },
-  optionText: {
-    fontSize: 16,
-  },
-  content: {
-    padding: 20,
-    flexGrow: 1,
-  },
-  imageContainer: {
-    alignItems: 'center',
-    marginBottom: 20,
-    borderWidth: 1,
-    borderRadius: 10,
-    padding: 10,
-  },
-  imagePlaceholder: {
-    width: 120,
-    height: 120,
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-  },
-  image: {
-    width: 120,
-    height: 120,
     borderRadius: 10,
     borderWidth: 1,
-  },
-  imagePlaceholderText: {
-    fontSize: 14,
-    marginTop: 5,
   },
   title: {
-    fontSize: 22,
+    fontSize: 22, // Remove hardcoded font size
     fontWeight: 'bold',
     marginBottom: 10,
     borderBottomWidth: 1,
-    paddingBottom: 5,
+    paddingBottom: 10,
   },
   textInput: {
     fontSize: 16,

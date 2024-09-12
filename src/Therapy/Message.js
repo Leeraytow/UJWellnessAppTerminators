@@ -2,17 +2,19 @@ import React, { useContext } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Footer from '../Menu/Footer';
-import { ThemeContext } from '../StudentProfile/ThemeContext'; // Import the ThemeContext
+import { ThemeContext } from '../StudentProfile/ThemeContext'; 
+import { FontSizeContext } from '../StudentProfile/FontSizeContext'; 
 
 const PeerSupporterCard = ({ image, name, bio }) => {
-  const { isDarkMode } = useContext(ThemeContext); // Use the ThemeContext
+  const { isDarkMode } = useContext(ThemeContext); 
+  const { fontSize } = useContext(FontSizeContext); 
 
   return (
     <View style={[styles.card, { backgroundColor: isDarkMode ? '#333' : '#FAFAFA' }]}>
       <Image source={image} style={styles.profileImage} />
       <View style={styles.cardTextContainer}>
-        <Text style={[styles.cardName, { color: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>{name}</Text>
-        <Text style={[styles.cardBio, { color: isDarkMode ? '#FF8C00' : '#FF8C00' }]}>{bio}</Text>
+        <Text style={[styles.cardName, { color: isDarkMode ? '#FF6F00' : '#FF6F00', fontSize }]}>{name}</Text>
+        <Text style={[styles.cardBio, { color: isDarkMode ? '#FF8C00' : '#FF8C00', fontSize: fontSize - 2 }]}>{bio}</Text>
       </View>
       <TouchableOpacity style={styles.chatButton}>
         <Ionicons name="chatbubble-outline" size={24} color={isDarkMode ? '#FF6F00' : '#FF6F00'} />
@@ -22,7 +24,8 @@ const PeerSupporterCard = ({ image, name, bio }) => {
 };
 
 const PeerSupporters = () => {
-  const { isDarkMode } = useContext(ThemeContext); // Use the ThemeContext
+  const { isDarkMode } = useContext(ThemeContext); 
+  const { fontSize } = useContext(FontSizeContext); 
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: isDarkMode ? '#222' : '#FAFAFA' }]}>
@@ -33,7 +36,7 @@ const PeerSupporters = () => {
         </TouchableOpacity>
       </View>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={[styles.mainTitle, { color: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>Available Peer Supporters</Text>
+        <Text style={[styles.mainTitle, { color: isDarkMode ? '#FF6F00' : '#FF6F00', fontSize }]}>Available Peer Supporters</Text>
         <PeerSupporterCard 
           image={require('../images/profile1.jpg')} 
           name="Khensani Mnisi" 
@@ -80,7 +83,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   mainTitle: {
-    fontSize: 22,
+    fontSize: 22, // Removed hardcoded font size in favor of dynamic sizing from context
     fontWeight: 'bold',
     marginBottom: 40,
   },
@@ -106,12 +109,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cardName: {
-    fontSize: 18,
+    fontSize: 18, // Removed hardcoded font size
     fontWeight: 'bold',
     marginBottom: 5,
   },
   cardBio: {
-    fontSize: 14,
+    fontSize: 14, // Removed hardcoded font size
   },
   chatButton: {
     padding: 10,

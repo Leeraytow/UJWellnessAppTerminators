@@ -2,6 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { ThemeProvider } from './src/StudentProfile/ThemeContext'; 
+import { FontSizeProvider } from './src/StudentProfile/FontSizeContext'; 
 import WelcomeScreen from './src/Logins/WelcomeScreen';
 import StudentLoginScreen from './src/Logins/StudentLoginScreen';
 import StudentRegister from './src/Logins/StudentRegisterScreen';
@@ -46,8 +47,9 @@ const Stack = createStackNavigator();
 export default function App() {
   return (
     <ThemeProvider>
+       <FontSizeProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="StudentLogin">
+        <Stack.Navigator initialRouteName="MainPage">
           <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} options={{ headerShown: false }}/>
           <Stack.Screen name="StudentLogin" component={StudentLoginScreen} options={{ headerShown: false }}/>
           <Stack.Screen name="StudentRegister" component={StudentRegister} options={{ headerShown: false }} />
@@ -88,6 +90,7 @@ export default function App() {
           <Stack.Screen name="AdminSettings" component={AdminSettings} options={{ headerShown: false }} />
         </Stack.Navigator>
       </NavigationContainer>
+      </FontSizeProvider>
     </ThemeProvider>
   );
 }
