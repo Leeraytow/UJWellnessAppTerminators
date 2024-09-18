@@ -1,50 +1,39 @@
 import React from 'react';
 import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, Image, SafeAreaView, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Header from '../Menu/Header';
 
 export default function TherapistLandingScreen() {
   const navigation = useNavigation();
 
   return (
     <SafeAreaView style={styles.container}>
+      <Header />
       <ImageBackground source={require('../images/w.png')} style={styles.background}>
-        {/* Header with Welcome Text */}
-        <View style={styles.headerContainer}>
-          {/* Logo */}
-          <TouchableOpacity style={styles.menuButton} onPress={() => navigation.navigate('Resources')}>
-            <Image source={require('../images/Tmenu.png')} style={[styles.menuIcon, { width: 50, height: 50 }]} />
-          </TouchableOpacity>
-          <View style={styles.logoContainer}>
-            <Image source={require('../images/logo.png')} style={styles.logo} />
-          </View>
-        </View>
-
-        {/* Main Content */}
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
           <View style={styles.mainContent}>
             <View style={styles.appointmentsWrapper}>
               <Text style={styles.welcomeText}>Welcome Therapist!</Text>
               <Text style={styles.sectionTitle}>Upcoming Appointments</Text>
               <View style={styles.appointmentsContainer}>
-                <View style={styles.appointmentItem}>
+                <TouchableOpacity 
+                  style={styles.appointmentItem}
+                  onPress={() => navigation.navigate('UpcomingAppointment')}
+                >
                   <Text style={styles.appointmentText}>Leece Precious - May 10, 2024 - 10:00 AM</Text>
                   <TouchableOpacity style={styles.addButton}>
                     <Text style={styles.addButtonText}>+</Text>
                   </TouchableOpacity>
-                </View>
+                </TouchableOpacity>
               </View>
             </View>
-
-            {/* Additional Content */}
             <View style={styles.additionalContent}>
               <Image source={require('../images/Ttherapist.png')} style={styles.additionalImage} />
             </View>
           </View>
         </ScrollView>
-
-        {/* Tab Navigation */}
         <View style={styles.tabContainer}>
-          <TouchableOpacity style={styles.tabButton}>
+          <TouchableOpacity style={styles.tabButton} onPress={() => navigation.navigate('TherapyProfile')}>
             <Image source={require('../images/Tprofile.png')} style={styles.tabIcon} />
             <Text style={styles.tabButtonText}>Profile</Text>
           </TouchableOpacity>
@@ -52,11 +41,11 @@ export default function TherapistLandingScreen() {
             <Image source={require('../images/Tresource.png')} style={styles.tabIcon} />
             <Text style={styles.tabButtonText}>Resources</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.tabButton}>
+          <TouchableOpacity style={styles.tabButton} onPress={() => navigation.navigate('Appointments')}>
             <Image source={require('../images/Tappointment.png')} style={styles.tabIcon} />
             <Text style={styles.tabButtonText}>Appointments</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.tabButton}>
+          <TouchableOpacity style={styles.tabButton} onPress={() => navigation.navigate('ChatTherapist')}>
             <Image source={require('../images/Tchat.png')} style={styles.tabIcon} />
             <Text style={styles.tabButtonText}>Chat</Text>
           </TouchableOpacity>
@@ -65,7 +54,6 @@ export default function TherapistLandingScreen() {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -111,7 +99,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   appointmentsWrapper: {
-    backgroundColor: '#FFA500',
+    backgroundColor: '#FF6F00',
     borderRadius: 10,
     marginHorizontal: 20,
     marginBottom: 20,

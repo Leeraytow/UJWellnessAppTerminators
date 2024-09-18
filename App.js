@@ -11,6 +11,10 @@ import TherapistRegisterScreen from './src/Logins/TherapistRegisterScreen';
 import TherapistLandingScreen from './src/TherapyPages/TherapistLandingScreen';
 import ResourcesScreen from './src/TherapyPages/Resource';
 import  RegisterScreen from './src/TherapyPages/RegisterScreen';
+import TherapyProfileScreen from './src/TherapyPages/TherapyProfileScreen';
+import AppointmentsScreen from './src/TherapyPages/AppointmentsScreen';
+import ChatTherapist from './src/TherapyPages/ChatTherapist';
+import UpcomingAppointmentScreen from './src/TherapyPages/UpcomingAppointmentScreen';
 import SplashScreen1 from './src/SplashPages/splash1';
 import SplashScreen2 from './src/SplashPages/Splash2';
 import SplashScreen3 from './src/SplashPages/Splash3';
@@ -52,7 +56,7 @@ export default function App() {
     <ThemeProvider>
        <FontSizeProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="MainPage">
+        <Stack.Navigator initialRouteName="TherapistLandingScreen">
           <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} options={{ headerShown: false }}/>
           <Stack.Screen name="StudentLogin" component={StudentLoginScreen} options={{ headerShown: false }}/>
           <Stack.Screen name="StudentRegister" component={StudentRegister} options={{ headerShown: false }} />
@@ -61,6 +65,10 @@ export default function App() {
           <Stack.Screen name="TherapistLandingScreen" component={TherapistLandingScreen} options={{ headerShown: false }} />
           <Stack.Screen name="Resources" component={ResourcesScreen} />
           <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen name="TherapyProfile" component={TherapyProfileScreen} />
+        <Stack.Screen name="Appointments" component={AppointmentsScreen} />
+        <Stack.Screen name="ChatTherapist" component={ChatTherapist} />
+        <Stack.Screen name="UpcomingAppointment" component={UpcomingAppointmentScreen} />
           <Stack.Screen name="PasswordResetScreen" component={PasswordResetScreen} options={{ headerShown: false }}/>
           <Stack.Screen name="EmailVerification" component={EmailVerification} options={{ headerShown: false }}/>
           <Stack.Screen name="SplashScreen1" component={SplashScreen1} options={{ headerShown: false }} />
