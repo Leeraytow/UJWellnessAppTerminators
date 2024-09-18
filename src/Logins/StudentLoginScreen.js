@@ -76,7 +76,7 @@ export default function StudentLoginScreen({ navigation }) {
 
       const isAdmin = Email.endsWith('@gmail.com');
       if (isAdmin) {
-        navigation.navigate('AdminHomeScreen');
+        navigation.navigate('TherapistLandingScreen');
       } else if (Email.endsWith('@student.uj.ac.za')) {
         const usersCollection = collection(db, 'Students');
         const q = query(usersCollection, where('email', '==', Email));
@@ -85,7 +85,7 @@ export default function StudentLoginScreen({ navigation }) {
         if (querySnapshot.size === 1) {
           querySnapshot.forEach((doc) => {
             const userName = doc.data().name;
-            navigation.navigate('MainPage', { userName: userName, userEmail: Email });
+            navigation.navigate('BookingForm', { userName: userName, userEmail: Email });
           });
         } else {
           setError('User not found');

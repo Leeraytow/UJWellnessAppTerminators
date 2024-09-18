@@ -1,12 +1,29 @@
 import React, { useState, useEffect, useContext } from 'react';
-import {StyleSheet,Text,View,ImageBackground,TouchableOpacity,SafeAreaView,TouchableWithoutFeedback,Image,Platform,StatusBar,Dimensions,
-  ScrollView,} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ImageBackground,
+  TouchableOpacity,
+  SafeAreaView,
+  TouchableWithoutFeedback,
+  Image,
+  Platform,
+  StatusBar,
+  Dimensions,
+  ScrollView,
+} from 'react-native';
 import { AsyncStorage } from '@react-native-async-storage/async-storage';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createStackNavigator } from '@react-navigation/stack';
 import Header from './Header';
 import Footer from './Footer';
 import { ThemeContext } from '../StudentProfile/ThemeContext'; // Import the ThemeContext
+import DrawerContent from './DrawerContent'; // Import DrawerContent
+import { auth, db } from '../../src/Configuration/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 const dailyAffirmations = [
   { text: 'You are capable of achieving great things.', image: require('../images/affirmation1.jpg') },
@@ -18,14 +35,14 @@ const dailyAffirmations = [
 
 const { width } = Dimensions.get('window');
 
-const MainPage = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+const Drawer = createDrawerNavigator();
+const Stack = createStackNavigator();
+
+const MainPageContent = () => {
   const [currentAffirmationIndex, setCurrentAffirmationIndex] = useState(0);
   const [username, setUsername] = useState('');
-  const { isDarkMode } = useContext(ThemeContext); 
+  const { isDarkMode } = useContext(ThemeContext);
   const navigation = useNavigation();
-  const route = useRoute();
-  const { userName } = route.params || {}; 
 
   useEffect(() => {
     const checkAffirmation = async () => {
@@ -59,28 +76,36 @@ const MainPage = () => {
   }, []);
 
   useEffect(() => {
-    if (userName) {
-      setUsername(userName.toUpperCase());
-    }
-  }, [userName]);
+    const unsubscribe = auth.onAuthStateChanged(async user => {
+      if (user) {
+        try {
+          const userRef = doc(db, 'Students', user.uid);
+          const docSnap = await getDoc(userRef);
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+          if (docSnap.exists()) {
+            const userData = docSnap.data();
+            setUsername(userData.name.toUpperCase() || ''); // Set the user's name
+          } else {
+            console.log('No such document!');
+          }
+        } catch (error) {
+          console.error('Error fetching user data: ', error);
+        }
+      } else {
+        setUsername(''); // Clear the username if the user is not authenticated
+      }
+    });
 
-  const closeMenu = () => {
-    if (isMenuOpen) {
-      setIsMenuOpen(false);
-    }
-  };
+    // Clean up the listener on component unmount
+    return () => unsubscribe();
+  }, []);
 
   const currentAffirmation = dailyAffirmations[currentAffirmationIndex];
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: isDarkMode ? '#000' : '#fff' }]}>
-      <TouchableWithoutFeedback onPress={closeMenu}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: isDarkMode ? '#000' : '#fff' }]} >
+      <TouchableWithoutFeedback onPress={() => navigation.openDrawer()}>
         <View style={styles.container}>
-          <Header toggleMenu={toggleMenu} isMenuOpen={isMenuOpen} closeMenu={closeMenu} />
           <ScrollView contentContainerStyle={styles.contentContainer}>
             <View style={[styles.content, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
               <Text style={[styles.greeting, { color: isDarkMode ? '#fff' : '#000' }]}>
@@ -94,7 +119,10 @@ const MainPage = () => {
                 <Text style={styles.affirmationText}>{currentAffirmation.text}</Text>
                 <Text style={styles.date}>{moment().format('MMMM D, YYYY')}</Text>
               </ImageBackground>
-              <TouchableOpacity style={[styles.moodButton, { backgroundColor: isDarkMode ? '#FF6F00' : '#FF6F00' }]} onPress={() => navigation.navigate('MoodControl')}>
+              <TouchableOpacity
+                style={[styles.moodButton, { backgroundColor: isDarkMode ? '#FF6F00' : '#FF6F00' }]}
+                onPress={() => navigation.navigate('MoodControl')}
+              >
                 <Text style={styles.moodButtonText}>Click to tell me how you feel</Text>
               </TouchableOpacity>
               <Text style={[styles.toolsText, { color: isDarkMode ? '#fff' : '#000' }]}>Tools</Text>
@@ -230,16 +258,28 @@ const styles = StyleSheet.create({
     shadowRadius: 2, // For shadow on iOS
   },
   toolButtonText: {
-    color: '#000',
-    textAlign: 'center',
     fontSize: 14,
     marginTop: 5,
   },
   buttonImage: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: '100%',
+    height: 100,
+    borderRadius: 10,
   },
 });
+
+const MainPage = () => {
+  return (
+    <Drawer.Navigator
+      drawerContent={props => <DrawerContent {...props} />}
+      screenOptions={{
+        header: () => <Header />,
+        drawerPosition: 'right', // Set the drawer on the right side
+      }}
+    >
+      <Drawer.Screen name="Main" component={MainPageContent} />
+    </Drawer.Navigator>
+  );
+};
 
 export default MainPage;

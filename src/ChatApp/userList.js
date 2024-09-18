@@ -46,8 +46,8 @@ const UserList = ({ navigation }) => {
   };
 
   const handleProfilePress = (user) => {
-    navigation.navigate('Profile', { selectedUser: user });
-  };
+    navigation.navigate('UserProfile', { selectedUser: user });
+  }
 
   const renderItem = ({ item }) => (
     <TouchableOpacity 

@@ -31,9 +31,13 @@ const AdminHomeScreen = ({ navigation }) => {
           <TouchableOpacity style={styles.button} onPress={() => handleNavigation('Reports')}>
             <Text style={styles.buttonText}>Generate Reports</Text>
           </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('UserList')}>
+            <Text style={styles.buttonText}>View Chat</Text>
+          </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={() => handleNavigation('AdminSettings')}>
             <Text style={styles.buttonText}>Admin Settings</Text>
           </TouchableOpacity>
+          
         </View>
       </View>
     </ImageBackground>

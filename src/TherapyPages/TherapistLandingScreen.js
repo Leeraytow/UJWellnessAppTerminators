@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, Image, SafeAreaView, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import ClientsPage from "../ClientsPage/ClientsPage"
 
 export default function TherapistLandingScreen() {
   const navigation = useNavigation();
@@ -44,19 +45,19 @@ export default function TherapistLandingScreen() {
 
         {/* Tab Navigation */}
         <View style={styles.tabContainer}>
-          <TouchableOpacity style={styles.tabButton}>
+          <TouchableOpacity style={styles.tabButton} onPress={() => navigation.navigate('ConfirmMeeting')}>
             <Image source={require('../images/Tprofile.png')} style={styles.tabIcon} />
             <Text style={styles.tabButtonText}>Profile</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.tabButton} onPress={() => navigation.navigate('Resources')}>
+          <TouchableOpacity style={styles.tabButton} onPress={() => navigation.navigate('TherapistAppointments')}>
             <Image source={require('../images/Tresource.png')} style={styles.tabIcon} />
             <Text style={styles.tabButtonText}>Resources</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.tabButton}>
-            <Image source={require('../images/Tappointment.png')} style={styles.tabIcon} />
+          <TouchableOpacity style={styles.tabButton} onPress={() => navigation.navigate('ClientsPage')}>
+           <Image source={require('../images/Tappointment.png')} style={styles.tabIcon} />
             <Text style={styles.tabButtonText}>Appointments</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.tabButton}>
+          <TouchableOpacity style={styles.tabButton} onPress={() => navigation.navigate('TherapistBookings')}>
             <Image source={require('../images/Tchat.png')} style={styles.tabIcon} />
             <Text style={styles.tabButtonText}>Chat</Text>
           </TouchableOpacity>
