@@ -1,144 +1,143 @@
-import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity, ScrollView, Platform, SafeAreaView, Alert } from 'react-native';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import React, { useState, useContext, useRef, useEffect } from 'react';
+import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity, ScrollView, SafeAreaView, Alert, Animated } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { Audio } from 'expo-av';
 import EmojiSelector from 'react-native-emoji-selector';
-import { ThemeContext } from '../StudentProfile/ThemeContext'; // Import the ThemeContext
-import { FontSizeContext } from '../StudentProfile/FontSizeContext'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ThemeContext } from '../StudentProfile/ThemeContext'; 
+import { FontSizeContext } from '../StudentProfile/FontSizeContext';
+import Header from '../Menu/Header'; // Import Header
 
 export default function DigitalDiary({ navigation }) {
-  const [showOptions, setShowOptions] = useState(false);
   const [image, setImage] = useState(null);
   const [text, setText] = useState('');
-  const [recording, setRecording] = useState(null);
+  const [entries, setEntries] = useState([]);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const { isDarkMode } = useContext(ThemeContext); // Use the ThemeContext
-  const { fontSize } = useContext(FontSizeContext); // Use the FontSizeContext
+  const { isDarkMode } = useContext(ThemeContext);
+  const { fontSize } = useContext(FontSizeContext);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
+  // Load entries from AsyncStorage on component mount
+  useEffect(() => {
+    loadEntries();
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
+  // Image Picker Logic
   const pickImage = async () => {
-    if (Platform.OS !== 'web') {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== 'granted') {
-        alert('Sorry, we need camera roll permissions to make this work!');
-        return;
-      }
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission Required', 'Sorry, we need media library permissions to select an image.');
+      return;
     }
 
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
 
     if (!result.canceled) {
-      setImage(result.uri);
+      setImage(result.assets[0].uri);
     }
   };
 
-  const startRecording = async () => {
-    try {
-      const permission = await Audio.requestPermissionsAsync();
-      if (permission.status === 'granted') {
-        await Audio.setAudioModeAsync({
-          allowsRecordingIOS: true,
-          playsInSilentModeIOS: true,
-        });
-        const { recording } = await Audio.Recording.createAsync(
-          Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
-        );
-        setRecording(recording);
-      } else {
-        Alert.alert('Permission to access microphone is required!');
-      }
-    } catch (err) {
-      console.error('Failed to start recording', err);
+  // Save the diary entry
+  const saveEntry = async () => {
+    if (text.trim() === '' && !image) {
+      Alert.alert('Cannot Save', 'Please add text or an image to save.');
+      return;
     }
-  };
 
-  const stopRecording = async () => {
-    setRecording(null);
-    await recording.stopAndUnloadAsync();
-    const uri = recording.getURI();
-    Alert.alert('Recording completed', `Audio saved to ${uri}`);
-  };
+    const newEntry = { text, image, date: new Date().toISOString() };
+    const updatedEntries = [newEntry, ...entries];
 
-  const handleSend = () => {
-    Alert.alert('Sent', 'Your entry has been sent successfully!');
+    setEntries(updatedEntries);
+    await AsyncStorage.setItem('diaryEntries', JSON.stringify(updatedEntries));  // Save entries to AsyncStorage
+
+    Alert.alert('Saved', 'Your diary entry has been saved successfully!');
     setText('');
     setImage(null);
   };
 
+  // Load saved entries from AsyncStorage
+  const loadEntries = async () => {
+    const savedEntries = await AsyncStorage.getItem('diaryEntries');
+    if (savedEntries) {
+      setEntries(JSON.parse(savedEntries));
+    }
+  };
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: isDarkMode ? '#000' : '#FAFAFA' }]}>
-      <View style={[styles.header, { backgroundColor: isDarkMode ? '#222' : '#FFF', borderBottomColor: isDarkMode ? '#444' : '#E0E0E0' }]}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color={isDarkMode ? '#FF6F00' : '#FF6F00'} />
-        </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: isDarkMode ? '#FF6F00' : '#FF6F00', fontSize }]}>New Moment</Text>
-        <TouchableOpacity style={styles.optionsButton} onPress={() => setShowOptions(!showOptions)}>
-          <MaterialIcons name="more-vert" size={24} color={isDarkMode ? '#FF6F00' : '#FF6F00'} />
-        </TouchableOpacity>
-        {showOptions && (
-          <View style={[styles.optionsMenu, { backgroundColor: isDarkMode ? '#222' : '#FFF', borderColor: isDarkMode ? '#444' : '#E0E0E0' }]}>
-            <TouchableOpacity style={styles.optionItem}>
-              <Text style={[styles.optionText, { color: isDarkMode ? '#FFF' : '#333', fontSize }]}>Delete</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.optionItem}>
-              <Text style={[styles.optionText, { color: isDarkMode ? '#FFF' : '#333', fontSize }]}>Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.optionItem}>
-              <Text style={[styles.optionText, { color: isDarkMode ? '#FFF' : '#333', fontSize }]}>Save</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.optionItem}>
-              <Text style={[styles.optionText, { color: isDarkMode ? '#FFF' : '#333', fontSize }]}>Send</Text>
-            </TouchableOpacity>
+      {/* Import Header */}
+      <Header navigation={navigation} title="New Moment" />
+
+      <Animated.View style={[{ opacity: fadeAnim }, styles.contentWrapper]}>
+        <ScrollView contentContainerStyle={styles.content}>
+          <View style={[styles.diaryContainer, { borderColor: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>
+            <View style={[styles.imageContainer, { borderColor: isDarkMode ? '#444' : '#E0E0E0' }]}>
+              {image ? (
+                <Image source={{ uri: image }} style={styles.image} />
+              ) : (
+                <TouchableOpacity
+                  style={[styles.imagePlaceholder, { backgroundColor: isDarkMode ? '#555' : '#E0E0E0' }]}
+                  onPress={pickImage}
+                >
+                  <Ionicons name="image" size={50} color={isDarkMode ? '#FF6F00' : '#FF6F00'} />
+                  <Text style={[styles.imagePlaceholderText, { color: isDarkMode ? '#FF6F00' : '#FF6F00', fontSize }]}>
+                    Add Image
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
+
+            <TextInput
+              style={[styles.textInput, { backgroundColor: isDarkMode ? '#333' : '#FFF', color: isDarkMode ? '#FFF' : '#000' }]}
+              multiline
+              placeholder="Write your thoughts and hit Send."
+              placeholderTextColor={isDarkMode ? '#999' : '#999'}
+              value={text}
+              onChangeText={setText}
+            />
           </View>
+        </ScrollView>
+
+        {/* Emoji Picker */}
+        {showEmojiPicker && (
+          <EmojiSelector
+            onEmojiSelected={(emoji) => setText((prev) => prev + emoji)}
+            showSearchBar={false}
+            columns={8}
+            category="smileys"
+          />
         )}
-      </View>
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={[styles.imageContainer, { borderColor: isDarkMode ? '#444' : '#E0E0E0' }]}>
-          {image ? (
-            <Image source={{ uri: image }} style={[styles.image, { borderColor: isDarkMode ? '#444' : '#E0E0E0' }]} />
-          ) : (
-            <TouchableOpacity style={[styles.imagePlaceholder, { backgroundColor: isDarkMode ? '#555' : '#E0E0E0', borderColor: isDarkMode ? '#FF6F00' : '#FF6F00' }]} onPress={pickImage}>
-              <Ionicons name="image" size={50} color={isDarkMode ? '#FF6F00' : '#FF6F00'} />
-              <Text style={[styles.imagePlaceholderText, { color: isDarkMode ? '#FF6F00' : '#FF6F00', fontSize }]}>Add Image</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-        <Text style={[styles.title, { color: isDarkMode ? '#FFF' : '#333', fontSize }]}>Journaling Techniques for Digital Therapy</Text>
+      </Animated.View>
+
+      {/* WhatsApp-like Bottom Bar */}
+      <View style={[styles.bottomBar, { backgroundColor: isDarkMode ? '#222' : '#FFF' }]}>
+        <TouchableOpacity style={styles.iconButton} onPress={() => setShowEmojiPicker(!showEmojiPicker)}>
+          <Ionicons name="happy-outline" size={24} color={isDarkMode ? '#FF6F00' : '#FF6F00'} />
+        </TouchableOpacity>
+
         <TextInput
-          style={[styles.textInput, { backgroundColor: isDarkMode ? '#333' : '#FFF', color: isDarkMode ? '#FFF' : '#000', borderColor: isDarkMode ? '#444' : '#E0E0E0', fontSize }]}
-          multiline
-          placeholder="This Digital Diary offers a simple yet effective way to express your emotions. Write how you feel and hit the send button. One of our professionals will soon reach out to you."
+          style={[styles.inputField, { backgroundColor: isDarkMode ? '#333' : '#FFF', color: isDarkMode ? '#FFF' : '#000' }]}
+          placeholder="Type a message"
           placeholderTextColor={isDarkMode ? '#999' : '#999'}
           value={text}
           onChangeText={setText}
         />
-        {showEmojiPicker && (
-          <EmojiSelector
-            onEmojiSelected={emoji => setText(prev => prev + emoji)}
-            showSearchBar={false}
-            columns={8}
-          />
-        )}
-      </ScrollView>
-      <View style={[styles.bottomIcons, { backgroundColor: isDarkMode ? '#222' : '#FFF', borderTopColor: isDarkMode ? '#444' : '#E0E0E0' }]}>
-        <TouchableOpacity style={styles.iconButton} onPress={() => setShowEmojiPicker(!showEmojiPicker)}>
-          <Ionicons name="happy-outline" size={24} color={isDarkMode ? '#FF6F00' : '#FF6F00'} />
-        </TouchableOpacity>
+
         <TouchableOpacity style={styles.iconButton} onPress={pickImage}>
           <Ionicons name="attach-outline" size={24} color={isDarkMode ? '#FF6F00' : '#FF6F00'} />
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.iconButton}
-          onPress={recording ? stopRecording : startRecording}
-        >
-          <Ionicons name="mic-outline" size={24} color={isDarkMode ? '#FF6F00' : '#FF6F00'} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton} onPress={handleSend}>
+
+        <TouchableOpacity style={styles.iconButton} onPress={saveEntry}>
           <Ionicons name="send-outline" size={24} color={isDarkMode ? '#FF6F00' : '#FF6F00'} />
         </TouchableOpacity>
       </View>
@@ -147,36 +146,68 @@ export default function DigitalDiary({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  // existing styles ...
-  textInput: {
-    fontSize: 16, // Remove hardcoded font size in favor of dynamic size from context
-    lineHeight: 24,
-    padding: 10,
-    borderRadius: 10,
-    borderWidth: 1,
+  container: {
+    flex: 1,
   },
-  title: {
-    fontSize: 22, // Remove hardcoded font size
-    fontWeight: 'bold',
-    marginBottom: 10,
-    borderBottomWidth: 1,
-    paddingBottom: 10,
+  contentWrapper: {
+    flex: 1,
+    paddingTop: 20,
+  },
+  diaryContainer: {
+    margin: 20,
+    padding: 20,
+    borderWidth: 2,
+    borderRadius: 15,  // Rounded corners for a more diary-like look
+    backgroundColor: '#FFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 10,  // Android shadow
+  },
+  imageContainer: {
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  image: {
+    width: 150,
+    height: 150,
+    borderRadius: 10,
+    borderWidth: 2,
+  },
+  imagePlaceholder: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 300,
+    height: 200,
+    borderRadius: 10,
+    borderWidth: 2,
   },
   textInput: {
     fontSize: 16,
     lineHeight: 24,
-    padding: 10,
+    padding: 50,
     borderRadius: 10,
     borderWidth: 1,
+    marginVertical: 20,
   },
-  bottomIcons: {
+  bottomBar: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
     alignItems: 'center',
-    padding: 10,
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
     borderTopWidth: 1,
   },
   iconButton: {
     padding: 10,
+  },
+  inputField: {
+    flex: 1,
+    paddingHorizontal: 40,
+    paddingVertical: 10,
+    borderRadius: 20,
+    borderWidth: 1,
+    marginHorizontal: 10,
   },
 });

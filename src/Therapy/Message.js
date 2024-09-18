@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Footer from '../Menu/Footer';
 import { ThemeContext } from '../StudentProfile/ThemeContext'; 
 import { FontSizeContext } from '../StudentProfile/FontSizeContext'; 
+import Header from '../Menu/Header';
 
 const PeerSupporterCard = ({ image, name, bio }) => {
   const { isDarkMode } = useContext(ThemeContext); 
@@ -28,12 +29,12 @@ const PeerSupporters = () => {
   const { fontSize } = useContext(FontSizeContext); 
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: isDarkMode ? '#222' : '#FAFAFA' }]}>
+   
+  <SafeAreaView style={[styles.container, { backgroundColor: isDarkMode ? '#222' : '#FAFAFA' }]}>
+       <Header />
       <View style={[styles.header, { backgroundColor: isDarkMode ? '#222' : '#FAFAFA', borderBottomColor: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>
-        <Image source={require('../images/Icon.png')} style={styles.logo} />
-        <TouchableOpacity style={styles.menuButton}>
-          <Ionicons name="menu" size={24} color={isDarkMode ? '#FF6F00' : '#FF6F00'} />
-        </TouchableOpacity>
+       
+        
       </View>
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={[styles.mainTitle, { color: isDarkMode ? '#FF6F00' : '#FF6F00', fontSize }]}>Available Peer Supporters</Text>
@@ -62,15 +63,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    marginTop: 30,
-  },
+  
   logo: {
     width: 30,
     height: 30,
@@ -85,7 +78,7 @@ const styles = StyleSheet.create({
   mainTitle: {
     fontSize: 22, // Removed hardcoded font size in favor of dynamic sizing from context
     fontWeight: 'bold',
-    marginBottom: 40,
+    marginBottom: 20,
   },
   card: {
     flexDirection: 'row',
@@ -95,7 +88,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
     marginVertical: 10,
-    padding: 15,
+    padding: 30,
     alignItems: 'center',
     width: '100%',
   },

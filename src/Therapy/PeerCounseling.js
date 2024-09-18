@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import Footer from '../Menu/Footer'; 
 import { ThemeContext } from '../StudentProfile/ThemeContext'; 
+import Header from '../Menu/Header'; // Import existing Header component
 
 const SupportOption = ({ image, title, description, navigateTo }) => {
   const navigation = useNavigation();
@@ -23,20 +24,18 @@ const SupportOption = ({ image, title, description, navigateTo }) => {
 };
 
 const HelpLine = () => {
-  const navigation = useNavigation();
   const { isDarkMode } = useContext(ThemeContext); // Use the ThemeContext
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: isDarkMode ? '#222' : '#FAFAFA' }]}>
-      <View style={[styles.header, { backgroundColor: isDarkMode ? '#333' : '#FAFAFA', borderBottomColor: isDarkMode ? '#666' : '#FF6F00' }]}>
-        <Image source={require('../images/Icon.png')} style={styles.logo} />
-        <TouchableOpacity style={styles.menuButton} onPress={() => navigation.openDrawer()}>
-          <Ionicons name="menu" size={24} color={isDarkMode ? '#fff' : '#FF6F00'} />
-        </TouchableOpacity>
-      </View>
+      {/* Use imported Header component */}
+      <Header title="HelpLine" navigation={useNavigation()} /> 
+      
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={[styles.mainTitle, { color: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>We are here for You</Text>
         <Text style={[styles.subTitle, { color: isDarkMode ? '#FF8C00' : '#FF8C00' }]}>Choose your suitable option</Text>
+
+        {/* Support options */}
         <SupportOption 
           image={require('../images/MainPage.png')} 
           title="Contact Support" 
@@ -56,6 +55,8 @@ const HelpLine = () => {
           navigateTo="ProfessionalSupport"
         />
       </ScrollView>
+
+      {/* Footer Component */}
       <Footer />
     </SafeAreaView>
   );
@@ -64,22 +65,6 @@ const HelpLine = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingTop: 20, 
-    paddingHorizontal: 10,
-    marginBottom: 80, 
-    borderBottomWidth: 1,
-  },
-  logo: {
-    width: 50,
-    height: 50,
-  },
-  menuButton: {
-    padding: 5,
   },
   content: {
     padding: 20,
@@ -98,7 +83,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 10,
-    padding: 15,
+    padding: 30,
     marginVertical: 10,
     width: '100%',
     borderWidth: 2,

@@ -1,4 +1,3 @@
-// MainPage.js
 import React, { useState, useEffect, useContext } from 'react';
 import {
   StyleSheet,
@@ -21,8 +20,8 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
 import Header from './Header';
 import Footer from './Footer';
-import { ThemeContext } from '../StudentProfile/ThemeContext'; // Import the ThemeContext
-import DrawerContent from './DrawerContent'; // Import DrawerContent
+import { ThemeContext } from '../StudentProfile/ThemeContext'; 
+import DrawerContent from './DrawerContent';
 
 const dailyAffirmations = [
   { text: 'You are capable of achieving great things.', image: require('../images/affirmation1.jpg') },
@@ -33,9 +32,17 @@ const dailyAffirmations = [
 ];
 
 const { width } = Dimensions.get('window');
-
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
+
+// Helper function for storing data
+const storeData = async (key, value) => {
+  try {
+    await AsyncStorage.setItem(key, value);
+  } catch (error) {
+    console.error('Error saving data:', error);
+  }
+};
 
 const MainPageContent = () => {
   const [currentAffirmationIndex, setCurrentAffirmationIndex] = useState(0);
@@ -46,7 +53,7 @@ const MainPageContent = () => {
   const { userName } = route.params || {};
 
   useEffect(() => {
-    const checkAffirmation = async () => {
+    const loadAffirmationData = async () => {
       try {
         const lastIndex = await AsyncStorage.getItem('affirmationIndex');
         const lastDate = await AsyncStorage.getItem('affirmationDate');
@@ -54,19 +61,19 @@ const MainPageContent = () => {
         const storedDate = moment(lastDate, 'YYYY-MM-DD');
 
         let newIndex = 0;
-        if (lastIndex !== null && lastDate !== null && today.diff(storedDate, 'days') < 1) {
+        if (lastIndex !== null && today.diff(storedDate, 'days') < 1) {
           newIndex = parseInt(lastIndex);
         } else {
           newIndex = (parseInt(lastIndex) + 1) % dailyAffirmations.length;
-          await AsyncStorage.setItem('affirmationIndex', newIndex.toString());
-          await AsyncStorage.setItem('affirmationDate', today.format('YYYY-MM-DD'));
+          storeData('affirmationIndex', newIndex.toString());
+          storeData('affirmationDate', today.format('YYYY-MM-DD'));
         }
         setCurrentAffirmationIndex(newIndex);
       } catch (error) {
-        console.error('Failed to load the affirmation index.', error);
+        console.error('Error loading affirmation index:', error);
       }
     };
-    checkAffirmation();
+    loadAffirmationData();
   }, []);
 
   useEffect(() => {
@@ -91,7 +98,7 @@ const MainPageContent = () => {
           <ScrollView contentContainerStyle={styles.contentContainer}>
             <View style={[styles.content, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
               <Text style={[styles.greeting, { color: isDarkMode ? '#fff' : '#000' }]}>
-                HELLO THERE {username}
+                HELLO THERE, {username}
               </Text>
               <ImageBackground
                 source={currentAffirmation.image}
@@ -102,7 +109,7 @@ const MainPageContent = () => {
                 <Text style={styles.date}>{moment().format('MMMM D, YYYY')}</Text>
               </ImageBackground>
               <TouchableOpacity
-                style={[styles.moodButton, { backgroundColor: isDarkMode ? '#FF6F00' : '#FF6F00' }]}
+                style={[styles.moodButton, { backgroundColor: '#FF6F00' }]}
                 onPress={() => navigation.navigate('MoodControl')}
               >
                 <Text style={styles.moodButtonText}>Click to tell me how you feel</Text>
@@ -111,17 +118,17 @@ const MainPageContent = () => {
               <View style={[styles.toolsContainer, { backgroundColor: isDarkMode ? '#444' : '#f0f0f0' }]}>
                 <ToolButton
                   title="Podcast and Videos"
-                  image={require('../images/podcast.jpeg')}
+                  image={require('../images/podcastV.jpg')}
                   onPress={() => navigation.navigate('UserVid')}
                 />
                 <ToolButton
                   title="Therapy"
-                  image={require('../images/therapy.jpeg')}
+                  image={require('../images/therapy12.jpg')}
                   onPress={() => navigation.navigate('TherapyButton')}
                 />
                 <ToolButton
                   title="Community Support"
-                  image={require('../images/community.jpeg')}
+                  image={require('../images/Community-support.jpg')}
                   onPress={() => navigation.navigate('GroupChatApp')}
                 />
                 <ToolButton
@@ -131,7 +138,7 @@ const MainPageContent = () => {
                 />
                 <ToolButton
                   title="Professional Medical Help"
-                  image={require('../images/medical.jpeg')}
+                  image={require('../images/proffesional.jpg')}
                   onPress={() => navigation.navigate('MedicalHelp')}
                 />
                 <ToolButton
@@ -166,7 +173,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flexGrow: 1,
-    paddingBottom: 20, // Ensure there's space for the footer
+    paddingBottom: 20,
   },
   content: {
     padding: 20,
@@ -178,9 +185,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   affirmationBackground: {
-    width: width - 40,
+    width: '100%',
     height: 200,
-    alignSelf: 'center',
     justifyContent: 'center',
     marginBottom: 20,
   },
@@ -233,11 +239,10 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#fff',
     borderRadius: 10,
-    elevation: 2, // For shadow on Android
-    shadowColor: '#000', // For shadow on iOS
-    shadowOffset: { width: 0, height: 2 }, // For shadow on iOS
-    shadowOpacity: 0.2, // For shadow on iOS
-    shadowRadius: 2, // For shadow on iOS
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
   },
   toolButtonText: {
     fontSize: 14,
@@ -256,7 +261,7 @@ const MainPage = () => {
       drawerContent={props => <DrawerContent {...props} />}
       screenOptions={{
         header: () => <Header />,
-        drawerPosition: 'right', // Set the drawer on the right side
+        drawerPosition: 'right',
       }}
     >
       <Drawer.Screen name="Main" component={MainPageContent} />
