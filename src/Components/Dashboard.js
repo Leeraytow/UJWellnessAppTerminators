@@ -11,10 +11,10 @@ const Dashboard = () => {
   const currentDate = moment().format('MMMM D, YYYY');
 
   const patients = [
-    { id: 1, name: 'Maya Nelson', mood: 8, sessionTime: '10:00 -11:00 am', image: require('../assets/Black5.jpeg') },
-    { id: 2, name: 'Ahmed Ehab', mood: 6, sessionTime: '11:00 -12:00 am', image: require('../assets/Black2.jpeg') },
-    { id: 3, name: 'Peter Parker', mood: 8, sessionTime: '01:00 -02:00 pm', image: require('../assets/Black3.jpeg') },
-    { id: 4, name: 'Elsa Jane', mood: 6, sessionTime: '02:00 -03:00 am', image: require('../assets/Black4.jpeg') },
+    { id: 1, name: 'Maya Nelson', mood: 8, sessionTime: '10:00 -11:00 am', image: require('../images/Black5.jpeg') },
+    { id: 2, name: 'Ahmed Ehab', mood: 6, sessionTime: '11:00 -12:00 am', image: require('../images/Black2.jpeg') },
+    { id: 3, name: 'Peter Parker', mood: 8, sessionTime: '01:00 -02:00 pm', image: require('../images/Black3.jpeg') },
+    { id: 4, name: 'Elsa Jane', mood: 6, sessionTime: '02:00 -03:00 am', image: require('../images/Black4.jpeg') },
   ];
 
   const getMoodEmoji = (mood) => {

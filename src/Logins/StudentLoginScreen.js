@@ -85,7 +85,7 @@ export default function StudentLoginScreen({ navigation }) {
         if (querySnapshot.size === 1) {
           querySnapshot.forEach((doc) => {
             const userName = doc.data().name;
-            navigation.navigate('BookingForm', { userName: userName, userEmail: Email });
+            navigation.navigate('MainPage', { userName: userName, userEmail: Email });
           });
         } else {
           setError('User not found');

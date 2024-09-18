@@ -1,18 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, FlatList, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-
-import { collection, query, onSnapshot, addDoc, deleteDoc, doc } from 'firebase/firestore';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db } from '../src/Configuration/firebase';
-
 import * as ImagePicker from 'expo-image-picker';
+import { collection, query, onSnapshot, addDoc, deleteDoc, doc, getDoc } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, auth } from '../Configuration/firebase';
 
 export default function HomeScreen({ navigation }) {
   const [text, setText] = useState('');
-  const [name, setName] = useState('User1'); // Replace with dynamic user name
+  const [name, setName] = useState('');
+  const [profileImage, setProfileImage] = useState(null);
   const [posts, setPosts] = useState([]);
   const [pickedImage, setPickedImage] = useState(null);
+
+  useEffect(() => {
+    const fetchCurrentUserDetails = async () => {
+      const user = auth.currentUser;
+      if (user) {
+        try {
+          const userRef = doc(db, 'Students', user.uid);
+          const docSnap = await getDoc(userRef);
+
+          if (docSnap.exists()) {
+            const userData = docSnap.data();
+            setName(userData.name || 'User');
+            setProfileImage(userData.profileImage || 'https://i.pravatar.cc/300'); // Default image
+          } else {
+            setName('User');
+            setProfileImage('https://i.pravatar.cc/300'); // Default image
+            console.error('No such document!');
+          }
+        } catch (error) {
+          console.error('Error fetching user details: ', error);
+        }
+      } else {
+        console.error('No user is logged in.');
+      }
+    };
+
+    fetchCurrentUserDetails();
+  }, []);
 
   const handlePost = async () => {
     if (text.trim() || pickedImage) {
@@ -23,14 +50,11 @@ export default function HomeScreen({ navigation }) {
           const storage = getStorage();
           const imageRef = ref(storage, `images/${Date.now()}_${name}.jpg`);
 
-          // Convert the image to a Blob format
           const response = await fetch(pickedImage);
           const blob = await response.blob();
 
-          // Upload the image to Firebase Storage
           await uploadBytes(imageRef, blob);
 
-          // Get the download URL of the uploaded image
           imageUrl = await getDownloadURL(imageRef);
         }
 
@@ -39,15 +63,14 @@ export default function HomeScreen({ navigation }) {
           author: name,
           timestamp: new Date(),
           comments: [],
-          profileImage: 'https://i.pravatar.cc/300', // Placeholder image URL
-          image: imageUrl, // Use the download URL from Firebase Storage
+          profileImage,
+          image: imageUrl,
         };
 
-        // Add post to Firestore
         await addDoc(collection(db, 'Posts'), newPost);
 
         setText('');
-        setPickedImage(null); // Reset selected image after posting
+        setPickedImage(null);
       } catch (error) {
         Alert.alert('Post Error', 'Failed to post. Please try again.');
       }
@@ -70,7 +93,6 @@ export default function HomeScreen({ navigation }) {
 
   const handleDelete = async (postId) => {
     try {
-      // Delete post from Firestore
       await deleteDoc(doc(db, 'Posts', postId));
     } catch (error) {
       Alert.alert('Delete Error', 'Failed to delete the post. Please try again.');
@@ -138,6 +160,8 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      {profileImage && <Image source={{ uri: profileImage }} style={styles.profileImage} />}
+      <Text>{name}</Text>
       <TextInput
         style={styles.input}
         placeholder="What's on your mind?"
@@ -195,10 +219,6 @@ const styles = StyleSheet.create({
   },
   postText: {
     fontSize: 18,
-  },
-  postMeta: {
-    fontSize: 12,
-    color: '#666',
   },
   postImage: {
     width: '100%',

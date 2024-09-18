@@ -140,7 +140,7 @@ const MainPageContent = () => {
                 <ToolButton
                   title="Community Support"
                   image={require('../images/community.jpeg')}
-                  onPress={() => navigation.navigate('GroupChatApp')}
+                  onPress={() => navigation.navigate('userList')}
                 />
                 <ToolButton
                   title="Peer-to-Peer Support"

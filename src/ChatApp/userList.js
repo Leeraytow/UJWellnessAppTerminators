@@ -3,26 +3,10 @@ import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Platform, St
 import { collection, getDocs } from 'firebase/firestore';
 import { db, auth } from '../Configuration/firebase';
 import { ThemeContext } from '../StudentProfile/ThemeContext';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const UserList = ({ navigation }) => {
   const [users, setUsers] = useState([]);
   const { isDarkMode } = useContext(ThemeContext);
-  const [isAnonymous, setIsAnonymous] = useState(false);
-
-  useEffect(() => {
-    const loadSettings = async () => {
-      try {
-        const storedAnonymity = await AsyncStorage.getItem('anonymity');
-        if (storedAnonymity !== null) {
-          setIsAnonymous(JSON.parse(storedAnonymity));
-        }
-      } catch (error) {
-        console.error('Failed to load anonymity setting:', error);
-      }
-    };
-    loadSettings();
-  }, []);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -45,30 +29,29 @@ const UserList = ({ navigation }) => {
     navigation.navigate('Chat', { selectedUser: user });
   };
 
-  const handleProfilePress = (user) => {
-    navigation.navigate('UserProfile', { selectedUser: user });
-  }
-
+  const handleImagePress = (userId) => {
+    navigation.navigate('UserProfile', { userId });
+  };
+  
   const renderItem = ({ item }) => (
-    <TouchableOpacity 
-      onPress={() => handleUserPress(item)} 
+    <TouchableOpacity
+      onPress={() => handleUserPress(item)}
       style={[styles.userItem, { backgroundColor: isDarkMode ? '#333' : '#FFF' }]}
     >
-      <TouchableOpacity onPress={() => handleProfilePress(item)}>
-        <Image 
-          source={{ uri: item.profileImage || 'https://www.pngitem.com/pimgs/m/146-1468843_profile-icon-orange-png-transparent-png.png' }} 
-          style={[styles.avatar, { borderColor: isDarkMode ? '#FFA500' : '#FF6F00' }]} 
+      <TouchableOpacity onPress={() => handleImagePress(item.id)}>
+        <Image
+          source={{ uri: item.profileImage }}
+          style={[styles.avatar, { borderColor: isDarkMode ? '#FFA500' : '#FF6F00' }]}
         />
       </TouchableOpacity>
       <Text style={[styles.name, { color: isDarkMode ? '#FFF' : '#333' }]}>
-        {item.id === auth.currentUser.email && !isAnonymous ? 'Myself' : item.name}
+        {item.id === auth.currentUser.email ? 'Myself' : item.name}
       </Text>
     </TouchableOpacity>
   );
-
   return (
     <View style={[styles.container, { backgroundColor: isDarkMode ? '#222' : '#F5F5F5' }]}>
-      <View style={[styles.header, { backgroundColor: isDarkMode ? '#444' : '#FF5733' }]}>
+<View style={[styles.header, { backgroundColor: isDarkMode ? '#444' : '#FF5733' }]}>
         <Text style={styles.headerTitle}>UJWellness Chat</Text>
       </View>
       <FlatList
@@ -115,9 +98,9 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     borderWidth: 1,
     marginRight: 16,
   },

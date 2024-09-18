@@ -1,113 +1,110 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, Image, FlatList, ScrollView } from 'react-native';
-import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Image, FlatList, Platform, StatusBar } from 'react-native';
+import { collection, getDoc, doc, getDocs } from 'firebase/firestore';
 import { db } from '../Configuration/firebase';
-import { ThemeContext } from '../StudentProfile/ThemeContext';
 
 const UserProfile = ({ route }) => {
-    const { userName } = route.params; // The name of the user passed from UserList
-    const [userData, setUserData] = useState(null);
-    const [userPosts, setUserPosts] = useState([]);
-    const { isDarkMode } = useContext(ThemeContext);
+  const { userId } = route.params; // Get userId from navigation params
+  const [user, setUser] = useState(null);
+  const [posts, setPosts] = useState([]);
 
-    useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                if (!userName) {
-                    console.error("userName is undefined");
-                    return;
-                }
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // Fetch user data
+        const userDocRef = doc(db, 'Students', userId);
+        const userDoc = await getDoc(userDocRef);
+        const userData = userDoc.data();
+        setUser(userData);
 
-                // Fetch user data based on name
-                const userQuery = query(collection(db, 'Students'), where('name', '==', userName));
-                const userSnapshot = await getDocs(userQuery);
-                if (!userSnapshot.empty) {
-                    setUserData(userSnapshot.docs[0].data());
-                } else {
-                    console.error("No user found with the given name.");
-                }
+        // Fetch user posts
+        const postsCollection = collection(db, 'Posts');
+        const postsSnapshot = await getDocs(postsCollection);
+        const postsData = postsSnapshot.docs
+          .map(doc => ({ id: doc.id, ...doc.data() }))
+          .filter(post => post.userId === userId);
+        setPosts(postsData);
+      } catch (error) {
+        console.error('Error fetching user data: ', error);
+      }
+    };
 
-                // Fetch user posts
-                const postsQuery = query(collection(db, 'Posts'), where('userName', '==', userName));
-                const postsSnapshot = await getDocs(postsQuery);
-                const posts = postsSnapshot.docs.map(doc => doc.data());
-                setUserPosts(posts);
+    fetchUserData();
+  }, [userId]);
 
-            } catch (error) {
-                console.error("Error fetching user data: ", error);
-            }
-        };
+  if (!user) {
+    return <Text>Loading...</Text>;
+  }
 
-        fetchUserData();
-    }, [userName]);
+  return (
+    <View style={styles.container}>
+      <Image source={{ uri: user.profileImage }} style={styles.profileImage} />
+      <Text style={styles.username}>{user.username}</Text>
+      <Text style={styles.details}>Gender: {user.gender}</Text>
+      <Text style={styles.details}>Age: {user.age}</Text>
+      <Text style={styles.details}>Date of Birth: {user.dateOfBirth}</Text>
 
-    if (!userData) {
-        return <Text>Loading...</Text>;
-    }
-
-    return (
-        <ScrollView style={[styles.container, { backgroundColor: isDarkMode ? '#222' : '#FFF' }]}>
-            <View style={styles.profileContainer}>
-                <Image 
-                    source={{ uri: userData.profileImage || require('../images/profile.png') }} 
-                    style={styles.avatar} 
-                />
-                <Text style={[styles.name, { color: isDarkMode ? '#FFF' : '#333' }]}>{userData.name || 'No Name'}</Text>
-                <Text style={[styles.detail, { color: isDarkMode ? '#CCC' : '#555' }]}>Gender: {userData.gender || 'N/A'}</Text>
-                <Text style={[styles.detail, { color: isDarkMode ? '#CCC' : '#555' }]}>Age: {userData.age || 'N/A'}</Text>
-                <Text style={[styles.detail, { color: isDarkMode ? '#CCC' : '#555' }]}>Date of Birth: {userData.dob || 'N/A'}</Text>
-            </View>
-            <Text style={[styles.postsHeader, { color: isDarkMode ? '#FFF' : '#333' }]}>Posts</Text>
-            <FlatList
-                data={userPosts}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item }) => (
-                    <View style={styles.postContainer}>
-                        <Text style={[styles.postText, { color: isDarkMode ? '#FFF' : '#333' }]}>{item.text || 'No Content'}</Text>
-                    </View>
-                )}
-            />
-        </ScrollView>
-    );
+      <Text style={styles.postsHeader}>Posts:</Text>
+      <FlatList
+        data={posts}
+        renderItem={({ item }) => (
+          <View style={styles.postContainer}>
+            <Text style={styles.postContent}>{item.content}</Text>
+          </View>
+        )}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.postsList}
+      />
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-    },
-    profileContainer: {
-        alignItems: 'center',
-        marginBottom: 24,
-    },
-    avatar: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        marginBottom: 16,
-    },
-    name: {
-        fontSize: 24,
-        fontWeight: 'bold',
-    },
-    detail: {
-        fontSize: 16,
-        marginBottom: 8,
-    },
-    postsHeader: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 16,
-    },
-    postContainer: {
-        padding: 16,
-        backgroundColor: '#EEE',
-        borderRadius: 8,
-        marginBottom: 8,
-    },
-    postText: {
-        fontSize: 16,
-    },
+  container: {
+    flex: 1,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+    padding: 16,
+    backgroundColor: '#F5F5F5',
+  },
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    alignSelf: 'center',
+    marginBottom: 16,
+  },
+  username: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  details: {
+    fontSize: 16,
+    marginBottom: 4,
+  },
+  postsHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginVertical: 16,
+  },
+  postsList: {
+    paddingBottom: 16,
+  },
+  postContainer: {
+    padding: 16,
+    backgroundColor: '#FFF',
+    borderRadius: 8,
+    marginBottom: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  postContent: {
+    fontSize: 16,
+  },
 });
 
 export default UserProfile;

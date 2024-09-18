@@ -5,7 +5,7 @@ import Footer from '../Menu/Footer';
 import { ThemeContext } from '../StudentProfile/ThemeContext'; 
 import ProductsScreen from '../test2';
 import Store from '../test';
-import HomeScreen from '../HomeScreen';
+import HomeScreen from '../CommunitySupport/HomeScreen';
 
 const HelpLine = () => {
   const { isDarkMode } = useContext(ThemeContext);
