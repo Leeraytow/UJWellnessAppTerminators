@@ -76,7 +76,7 @@ export default function StudentLoginScreen({ navigation }) {
 
       const isAdmin = Email.endsWith('@gmail.com');
       if (isAdmin) {
-        navigation.navigate('TherapistLandingScreen');
+        navigation.navigate('ClientsPage');
       } else if (Email.endsWith('@student.uj.ac.za')) {
         const usersCollection = collection(db, 'Students');
         const q = query(usersCollection, where('email', '==', Email));

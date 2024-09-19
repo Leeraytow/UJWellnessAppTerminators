@@ -1,11 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, Image, SafeAreaView, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-<<<<<<< HEAD
 import ClientsPage from "../ClientsPage/ClientsPage"
-=======
 import Header from '../Menu/Header';
->>>>>>> ef5b8894fa8c5dee77fec3b59d4e9acb3161efbe
 
 export default function TherapistLandingScreen() {
   const navigation = useNavigation();
@@ -37,11 +34,7 @@ export default function TherapistLandingScreen() {
           </View>
         </ScrollView>
         <View style={styles.tabContainer}>
-<<<<<<< HEAD
-          <TouchableOpacity style={styles.tabButton} onPress={() => navigation.navigate('ConfirmMeeting')}>
-=======
           <TouchableOpacity style={styles.tabButton} onPress={() => navigation.navigate('TherapyProfile')}>
->>>>>>> ef5b8894fa8c5dee77fec3b59d4e9acb3161efbe
             <Image source={require('../images/Tprofile.png')} style={styles.tabIcon} />
             <Text style={styles.tabButtonText}>Profile</Text>
           </TouchableOpacity>
@@ -49,19 +42,11 @@ export default function TherapistLandingScreen() {
             <Image source={require('../images/Tresource.png')} style={styles.tabIcon} />
             <Text style={styles.tabButtonText}>Resources</Text>
           </TouchableOpacity>
-<<<<<<< HEAD
-          <TouchableOpacity style={styles.tabButton} onPress={() => navigation.navigate('ClientsPage')}>
-           <Image source={require('../images/Tappointment.png')} style={styles.tabIcon} />
-            <Text style={styles.tabButtonText}>Appointments</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.tabButton} onPress={() => navigation.navigate('TherapistBookings')}>
-=======
           <TouchableOpacity style={styles.tabButton} onPress={() => navigation.navigate('Appointments')}>
             <Image source={require('../images/Tappointment.png')} style={styles.tabIcon} />
             <Text style={styles.tabButtonText}>Appointments</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.tabButton} onPress={() => navigation.navigate('ChatTherapist')}>
->>>>>>> ef5b8894fa8c5dee77fec3b59d4e9acb3161efbe
             <Image source={require('../images/Tchat.png')} style={styles.tabIcon} />
             <Text style={styles.tabButtonText}>Chat</Text>
           </TouchableOpacity>

@@ -20,15 +20,10 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
 import Header from './Header';
 import Footer from './Footer';
-<<<<<<< HEAD
 import { ThemeContext } from '../StudentProfile/ThemeContext'; // Import the ThemeContext
 import DrawerContent from './DrawerContent'; // Import DrawerContent
 import { auth, db } from '../../src/Configuration/firebase';
 import { doc, getDoc } from 'firebase/firestore';
-=======
-import { ThemeContext } from '../StudentProfile/ThemeContext'; 
-import DrawerContent from './DrawerContent';
->>>>>>> ef5b8894fa8c5dee77fec3b59d4e9acb3161efbe
 
 const dailyAffirmations = [
   { text: 'You are capable of achieving great things.', image: require('../images/affirmation1.jpg') },
@@ -152,13 +147,8 @@ const MainPageContent = () => {
                 />
                 <ToolButton
                   title="Community Support"
-<<<<<<< HEAD
                   image={require('../images/community.jpeg')}
                   onPress={() => navigation.navigate('userList')}
-=======
-                  image={require('../images/Community-support.jpg')}
-                  onPress={() => navigation.navigate('GroupChatApp')}
->>>>>>> ef5b8894fa8c5dee77fec3b59d4e9acb3161efbe
                 />
                 <ToolButton
                   title="Peer-to-Peer Support"

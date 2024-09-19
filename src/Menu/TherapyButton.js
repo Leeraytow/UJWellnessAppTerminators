@@ -45,13 +45,8 @@ const TherapyButton = ({ navigation }) => {
 
           {/* Online Therapy Button */}
           <TouchableOpacity 
-<<<<<<< HEAD
-            style={[styles.button, { backgroundColor: isDarkMode ? '#333' : '#FFFFFF', borderColor: isDarkMode ? '#666' : '#E65100' }]} 
-            onPress={() => navigation.navigate('Therapists')}
-=======
             style={[styles.button, { backgroundColor: isDarkMode ? '#2C2C2C' : '#FFFFFF', borderColor: isDarkMode ? '#555555' : '#FF6F00' }]} 
             onPress={() => navigation.navigate('OnlineTherapy')}
->>>>>>> ef5b8894fa8c5dee77fec3b59d4e9acb3161efbe
           >
             <View style={styles.buttonContent}>
               <Text style={[styles.buttonTitle, { color: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>
