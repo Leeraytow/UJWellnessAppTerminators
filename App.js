@@ -13,7 +13,15 @@ import TherapistScreen from './src/Logins/TherapistLoginScreen';
 import TherapistRegisterScreen from './src/Logins/TherapistRegisterScreen';
 import TherapistLandingScreen from './src/TherapyPages/TherapistLandingScreen';
 import ResourcesScreen from './src/TherapyPages/Resource';
+<<<<<<< HEAD
 import RegisterScreen from './src/TherapyPages/RegisterScreen';
+=======
+import  RegisterScreen from './src/TherapyPages/RegisterScreen';
+import TherapyProfileScreen from './src/TherapyPages/TherapyProfileScreen';
+import AppointmentsScreen from './src/TherapyPages/AppointmentsScreen';
+import ChatTherapist from './src/TherapyPages/ChatTherapist';
+import UpcomingAppointmentScreen from './src/TherapyPages/UpcomingAppointmentScreen';
+>>>>>>> ef5b8894fa8c5dee77fec3b59d4e9acb3161efbe
 import SplashScreen1 from './src/SplashPages/splash1';
 import SplashScreen2 from './src/SplashPages/Splash2';
 import SplashScreen3 from './src/SplashPages/Splash3';
@@ -81,6 +89,7 @@ export default function App() {
 
   return (
     <ThemeProvider>
+<<<<<<< HEAD
       <FontSizeProvider>
         <NavigationContainer>
           <Stack.Navigator initialRouteName={user ? "MainPage" : "StudentLogin"}>
@@ -138,6 +147,58 @@ export default function App() {
 
           </Stack.Navigator>
         </NavigationContainer>
+=======
+       <FontSizeProvider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="TherapistLandingScreen">
+          <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} options={{ headerShown: false }}/>
+          <Stack.Screen name="StudentLogin" component={StudentLoginScreen} options={{ headerShown: false }}/>
+          <Stack.Screen name="StudentRegister" component={StudentRegister} options={{ headerShown: false }} />
+          <Stack.Screen name="TherapistScreen" component={TherapistScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="TherapistRegisterScreen" component={TherapistRegisterScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="TherapistLandingScreen" component={TherapistLandingScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="Resources" component={ResourcesScreen} />
+          <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen name="TherapyProfile" component={TherapyProfileScreen} />
+        <Stack.Screen name="Appointments" component={AppointmentsScreen} />
+        <Stack.Screen name="ChatTherapist" component={ChatTherapist} />
+        <Stack.Screen name="UpcomingAppointment" component={UpcomingAppointmentScreen} />
+          <Stack.Screen name="PasswordResetScreen" component={PasswordResetScreen} options={{ headerShown: false }}/>
+          <Stack.Screen name="EmailVerification" component={EmailVerification} options={{ headerShown: false }}/>
+          <Stack.Screen name="SplashScreen1" component={SplashScreen1} options={{ headerShown: false }} />
+          <Stack.Screen name="SplashScreen2" component={SplashScreen2} options={{ headerShown: false }} />
+          <Stack.Screen name="SplashScreen3" component={SplashScreen3} options={{ headerShown: false }} />
+          <Stack.Screen name="MainPage" component={MainPage} options={{ headerShown: false }} />
+          <Stack.Screen name="RegEmailVerification" component={RegEmailVerification} options={{ headerShown: false }} />
+          <Stack.Screen name="OnlineTherapy" component={OnlineTherapyPage} options={{ headerShown: false }} />
+          <Stack.Screen name="PeerCounseling" component={PeerCounselingPage} options={{ headerShown: false }} />
+          <Stack.Screen name="DigitalDiary" component={DigitalDiary} options={{ headerShown: false }} />
+          <Stack.Screen name="Message" component={MessageScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="ContactSupport" component={ContactSupportScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="MoodControl" component={MoodControl} options={{ headerShown: false }} />
+          <Stack.Screen name="TherapyButton" component={TherapyButton} options={{ headerShown: false }} />
+          <Stack.Screen name="ProfessionalSupport" component={ProffesionalSupport} options={{ headerShown: false }} />
+          <Stack.Screen name="GroupChatApp" component={GroupChatApp} options={{ headerShown: false }} />
+          <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
+          <Stack.Screen name="MyProfile" component={MyProfile} options={{ headerShown: false }} />
+          <Stack.Screen name="AccessibilitySettings" component={AccessibilitySettings} options={{ headerShown: false }} />
+          <Stack.Screen name="CustomizableSettings" component={CustomizableSettings} options={{ headerShown: false }} />
+          <Stack.Screen name="Feedback" component={Feedback} options={{ headerShown: false }} />
+          <Stack.Screen name="Emergency" component={Emergency} options={{ headerShown: false }} />
+          <Stack.Screen name="SecurityInfo" component={SecurityInfo} options={{ headerShown: false }} />
+          <Stack.Screen name="HelpLine" component={HelpLine} options={{ headerShown: false }} />
+          <Stack.Screen name="MedicalHelp" component={MedicalHelp} options={{ headerShown: false }} />
+          <Stack.Screen name="UserVid" component={UserVid} options={{ headerShown: false }} />
+          <Stack.Screen name="Chat" component={Chat}/>
+          <Stack.Screen name="userList" component={UserList} options={{ headerShown: false }} />
+          <Stack.Screen name="AdminHomeScreen" component={AdminHomeScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="Users" component={Users} options={{ headerShown: false }} />
+          <Stack.Screen name="UserFeedback" component={UserFeedback} options={{ headerShown: false }} />
+          <Stack.Screen name="UserHistory" component={UserHistory} options={{ headerShown: false }} />
+          <Stack.Screen name="AdminSettings" component={AdminSettings} options={{ headerShown: false }} />
+        </Stack.Navigator>
+      </NavigationContainer>
+>>>>>>> ef5b8894fa8c5dee77fec3b59d4e9acb3161efbe
       </FontSizeProvider>
     </ThemeProvider>
   );

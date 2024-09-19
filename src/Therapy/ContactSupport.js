@@ -2,10 +2,11 @@ import React, { useContext } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Footer from '../Menu/Footer';
-import { ThemeContext } from '../StudentProfile/ThemeContext'; // Import the ThemeContext
+import { ThemeContext } from '../StudentProfile/ThemeContext'; 
+import Header from '../Menu/Header'; // Adjust the import path
 
 const PeerSupporterCard = ({ image, name, phone, bio }) => {
-  const { isDarkMode } = useContext(ThemeContext); // Use the ThemeContext
+  const { isDarkMode } = useContext(ThemeContext);
   return (
     <View style={[styles.card, { backgroundColor: isDarkMode ? '#333' : '#FAFAFA', borderColor: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>
       <Image source={image} style={styles.profileImage} />
@@ -22,16 +23,11 @@ const PeerSupporterCard = ({ image, name, phone, bio }) => {
 };
 
 const PeerSupporters = () => {
-  const { isDarkMode } = useContext(ThemeContext); // Use the ThemeContext
+  const { isDarkMode } = useContext(ThemeContext);
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: isDarkMode ? '#000' : '#FAFAFA' }]}>
-      <View style={[styles.header, { backgroundColor: isDarkMode ? '#222' : '#FAFAFA', borderBottomColor: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>
-        <Image source={require('../images/Icon.png')} style={styles.logo} />
-        <TouchableOpacity style={styles.menuButton}>
-          <Ionicons name="menu" size={24} color={isDarkMode ? '#FF6F00' : '#FF6F00'} />
-        </TouchableOpacity>
-      </View>
+      <Header />
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={[styles.mainTitle, { color: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>Available Peer Supporters</Text>
         <PeerSupporterCard 
@@ -67,22 +63,6 @@ const PeerSupporters = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    marginTop: 30,
-  },
-  logo: {
-    width: 30,
-    height: 30,
-  },
-  menuButton: {
-    padding: 5,
   },
   content: {
     padding: 20,

@@ -1,4 +1,3 @@
-// Header.js
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, SafeAreaView, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -24,6 +23,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginTop: 50, // Adds space at the top to move the header down
   },
   headerLeft: {
     flexDirection: 'row',
