@@ -90,7 +90,7 @@ export default function App() {
     <ThemeProvider>
       <FontSizeProvider>
         <NavigationContainer>
-        <Stack.Navigator initialRouteName="MainPage">
+        <Stack.Navigator initialRouteName="StudentLogin">
             <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} options={{ headerShown: false }} />
             <Stack.Screen name="StudentLogin" component={StudentLoginScreen} options={{ headerShown: false }} />
             <Stack.Screen name="StudentRegister" component={StudentRegister} options={{ headerShown: false }} />
