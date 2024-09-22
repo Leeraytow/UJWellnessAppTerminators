@@ -1,36 +1,54 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput, Animated, SafeAreaView, ScrollView, Alert,emotions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput, Animated, SafeAreaView, ScrollView, Alert } from 'react-native';
 import { MaterialIcons, Feather } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Footer from '../Menu/Footer';
 import Header from '../Menu/Header';
 import { Ionicons } from '@expo/vector-icons'; 
 
 const MainScreen = () => {
   const navigation = useNavigation();
+  const route = useRoute();
   const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState('Marie');
+  const [name, setName] = useState(''); // Set initial name to an empty string
   const [fadeAnim] = useState(new Animated.Value(0));
   const [pickedImage, setPickedImage] = useState(null);
 
+  // Fetch real user name from AsyncStorage or route params
+  useEffect(() => {
+    const loadUserName = async () => {
+      try {
+        const storedName = await AsyncStorage.getItem('userName');
+        if (storedName) {
+          setName(storedName);
+        } else if (route.params?.userName) {
+          setName(route.params.userName);
+          await AsyncStorage.setItem('userName', route.params.userName);
+        }
+      } catch (error) {
+        console.error('Error fetching user name:', error);
+      }
+    };
+
+    loadUserName();
+  }, [route.params]);
+
   const toggleEditing = () => setIsEditing(!isEditing);
 
-  const handleEditName = () => {
+  const handleEditName = async () => {
     toggleEditing();
     if (isEditing) {
       console.log('Name Updated:', name);
+      try {
+        await AsyncStorage.setItem('userName', name); // Save updated name
+      } catch (error) {
+        console.error('Error saving user name:', error);
+      }
     }
   };
-  const emotions = [
-    { id: 1, emoji: '😊', label: 'Happy' },
-    { id: 2, emoji: '😢', label: 'Sad' },
-    { id: 3, emoji: '😡', label: 'Angry' },
-    { id: 4, emoji: '😴', label: 'Tired' },
-    { id: 5, emoji: '😎', label: 'Cool' },
-  ];
-  
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -59,6 +77,15 @@ const MainScreen = () => {
     }).start();
   }, [fadeAnim]);
 
+  // Example emotions data
+  const emotions = [
+    { id: 1, emoji: '😊', label: 'Happy' },
+    { id: 2, emoji: '😢', label: 'Sad' },
+    { id: 3, emoji: '😡', label: 'Angry' },
+    { id: 4, emoji: '😴', label: 'Tired' },
+    { id: 5, emoji: '😎', label: 'Cool' },
+  ];
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <Header />
@@ -77,10 +104,14 @@ const MainScreen = () => {
               </View>
 
               <TouchableOpacity onPress={pickImage} style={styles.profileImageContainer}>
-                <Image
-                  source={{ uri: pickedImage || 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png' }}
-                  style={styles.profileImage}
-                />
+              <Image
+  source={{ uri: pickedImage || 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png' }}
+  style={styles.profileImage}
+  onError={(e) => {
+    console.error('Error loading image:', e.nativeEvent.error);
+    setPickedImage(null); // Optional: clear image if there's an error
+  }}
+/>
               </TouchableOpacity>
             </View>
 
@@ -101,6 +132,7 @@ const MainScreen = () => {
               </TouchableOpacity>
             </View>
 
+            {/* Appointments */}
             <TouchableOpacity onPress={() => navigation.navigate('AppointmentStudent')}>
               <LinearGradient colors={['#7DDFF8', '#B1ADE2']} style={styles.appointmentsContainer}>
                 <Text style={styles.sectionTitle}>Next Appointments</Text>
@@ -124,17 +156,17 @@ const MainScreen = () => {
               </LinearGradient>
             </TouchableOpacity>
 
+            {/* Emotions */}
             <View style={styles.emotionsSection}>
               <Text style={styles.sectionFeel}>How do you feel?</Text>
               <View style={styles.emotionsRow}>
-                {/* Emotions map */}
                 {emotions.map((emotion) => (
                   <TouchableOpacity key={emotion.id} style={styles.emotionButton}>
                     <Text style={styles.emojiText}>{emotion.emoji}</Text>
                   </TouchableOpacity>
                 ))}
                 <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('MoodControl')}>
-                <Ionicons name="add-circle" size={40} color="#6a1b9a" />
+                  <Ionicons name="add-circle" size={40} color="#6a1b9a" />
                 </TouchableOpacity>
               </View>
               <TouchableOpacity style={styles.tapToRecord}>
@@ -142,6 +174,7 @@ const MainScreen = () => {
               </TouchableOpacity>
             </View>
 
+            {/* Diary */}
             <TouchableOpacity onPress={() => navigation.navigate('DigitalDiary')}>
               <LinearGradient colors={['#fbc2eb', '#a6c1ee']} style={styles.diaryContainer}>
                 <Text style={styles.sectionTitle}>Diary</Text>
@@ -157,6 +190,7 @@ const MainScreen = () => {
     </SafeAreaView>
   );
 };
+
 
 const styles = StyleSheet.create({
   safeArea: {
