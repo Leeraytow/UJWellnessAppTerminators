@@ -1,291 +1,343 @@
-import React, { useState, useEffect, useContext } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  ImageBackground,
-  TouchableOpacity,
-  SafeAreaView,
-  TouchableWithoutFeedback,
-  Image,
-  Platform,
-  StatusBar,
-  Dimensions,
-  ScrollView,
-} from 'react-native';
-import { AsyncStorage } from '@react-native-async-storage/async-storage';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput, Animated, SafeAreaView, ScrollView, Alert,emotions } from 'react-native';
+import { MaterialIcons, Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import moment from 'moment';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import { createStackNavigator } from '@react-navigation/stack';
-import Header from './Header';
-import Footer from './Footer';
-import { ThemeContext } from '../StudentProfile/ThemeContext'; // Import the ThemeContext
-import DrawerContent from './DrawerContent'; // Import DrawerContent
-import { auth, db } from '../../src/Configuration/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { LinearGradient } from 'expo-linear-gradient';
+import * as ImagePicker from 'expo-image-picker';
+import Footer from '../Menu/Footer';
+import Header from '../Menu/Header';
+import { Ionicons } from '@expo/vector-icons'; 
 
-const dailyAffirmations = [
-  { text: 'You are capable of achieving great things.', image: require('../images/affirmation1.jpg') },
-  { text: 'Every day is a new opportunity to grow and improve.', image: require('../images/affirmation2.webp') },
-  { text: 'You are worthy of love and respect.', image: require('../images/affirmation3.jpg') },
-  { text: 'Believe in yourself and all that you are.', image: require('../images/affirmation4.jpg') },
-  { text: 'You have the power to create the life you want.', image: require('../images/affirmation5.jpg') },
-];
-
-const { width } = Dimensions.get('window');
-const Drawer = createDrawerNavigator();
-const Stack = createStackNavigator();
-
-// Helper function for storing data
-const storeData = async (key, value) => {
-  try {
-    await AsyncStorage.setItem(key, value);
-  } catch (error) {
-    console.error('Error saving data:', error);
-  }
-};
-
-const MainPageContent = () => {
-  const [currentAffirmationIndex, setCurrentAffirmationIndex] = useState(0);
-  const [username, setUsername] = useState('');
-  const { isDarkMode } = useContext(ThemeContext);
+const MainScreen = () => {
   const navigation = useNavigation();
+  const [isEditing, setIsEditing] = useState(false);
+  const [name, setName] = useState('Marie');
+  const [fadeAnim] = useState(new Animated.Value(0));
+  const [pickedImage, setPickedImage] = useState(null);
 
-  useEffect(() => {
-    const loadAffirmationData = async () => {
-      try {
-        const lastIndex = await AsyncStorage.getItem('affirmationIndex');
-        const lastDate = await AsyncStorage.getItem('affirmationDate');
-        const today = moment().startOf('day');
-        const storedDate = moment(lastDate, 'YYYY-MM-DD');
+  const toggleEditing = () => setIsEditing(!isEditing);
 
-        let newIndex = 0;
-        if (lastIndex !== null && today.diff(storedDate, 'days') < 1) {
-          newIndex = parseInt(lastIndex);
-        } else {
-          newIndex = (parseInt(lastIndex) + 1) % dailyAffirmations.length;
-          storeData('affirmationIndex', newIndex.toString());
-          storeData('affirmationDate', today.format('YYYY-MM-DD'));
-        }
-        setCurrentAffirmationIndex(newIndex);
-      } catch (error) {
-        console.error('Error loading affirmation index:', error);
-      }
-    };
-    loadAffirmationData();
-  }, []);
+  const handleEditName = () => {
+    toggleEditing();
+    if (isEditing) {
+      console.log('Name Updated:', name);
+    }
+  };
+  const emotions = [
+    { id: 1, emoji: '😊', label: 'Happy' },
+    { id: 2, emoji: '😢', label: 'Sad' },
+    { id: 3, emoji: '😡', label: 'Angry' },
+    { id: 4, emoji: '😴', label: 'Tired' },
+    { id: 5, emoji: '😎', label: 'Cool' },
+  ];
+  
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentAffirmationIndex(prevIndex => (prevIndex + 1) % dailyAffirmations.length);
-    }, 6000);
-    return () => clearInterval(interval);
-  }, []);
+  const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission Required', 'Sorry, we need media library permissions to select an image.');
+      return;
+    }
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async user => {
-      if (user) {
-        try {
-          const userRef = doc(db, 'Students', user.uid);
-          const docSnap = await getDoc(userRef);
-
-          if (docSnap.exists()) {
-            const userData = docSnap.data();
-            setUsername(userData.name.toUpperCase() || ''); // Set the user's name
-          } else {
-            console.log('No such document!');
-          }
-        } catch (error) {
-          console.error('Error fetching user data: ', error);
-        }
-      } else {
-        setUsername(''); // Clear the username if the user is not authenticated
-      }
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
     });
 
-    // Clean up the listener on component unmount
-    return () => unsubscribe();
-  }, []);
+    if (!result.canceled) {
+      setPickedImage(result.assets[0].uri);
+    }
+  };
 
-  const currentAffirmation = dailyAffirmations[currentAffirmationIndex];
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 800,
+      useNativeDriver: true,
+    }).start();
+  }, [fadeAnim]);
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: isDarkMode ? '#000' : '#fff' }]} >
-      <TouchableWithoutFeedback onPress={() => navigation.openDrawer()}>
-        <View style={styles.container}>
-          <ScrollView contentContainerStyle={styles.contentContainer}>
-            <View style={[styles.content, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
-              <Text style={[styles.greeting, { color: isDarkMode ? '#fff' : '#000' }]}>
-                HELLO THERE, {username}
-              </Text>
-              <ImageBackground
-                source={currentAffirmation.image}
-                style={styles.affirmationBackground}
-                imageStyle={{ borderRadius: 10 }}
-              >
-                <Text style={styles.affirmationText}>{currentAffirmation.text}</Text>
-                <Text style={styles.date}>{moment().format('MMMM D, YYYY')}</Text>
-              </ImageBackground>
-              <TouchableOpacity
-                style={[styles.moodButton, { backgroundColor: '#FF6F00' }]}
-                onPress={() => navigation.navigate('MoodControl')}
-              >
-                <Text style={styles.moodButtonText}>Click to tell me how you feel</Text>
-              </TouchableOpacity>
-              <Text style={[styles.toolsText, { color: isDarkMode ? '#fff' : '#000' }]}>Tools</Text>
-              <View style={[styles.toolsContainer, { backgroundColor: isDarkMode ? '#444' : '#f0f0f0' }]}>
-                <ToolButton
-                  title="Podcast and Videos"
-                  image={require('../images/podcastV.jpg')}
-                  onPress={() => navigation.navigate('UserVid')}
-                />
-                <ToolButton
-                  title="Therapy"
-                  image={require('../images/therapy12.jpg')}
-                  onPress={() => navigation.navigate('TherapyButton')}
-                />
-                <ToolButton
-                  title="Community Support"
-                  image={require('../images/community.jpeg')}
-                  onPress={() => navigation.navigate('userList')}
-                />
-                <ToolButton
-                  title="Peer-to-Peer Support"
-                  image={require('../images/peer.jpeg')}
-                  onPress={() => navigation.navigate('userList')}
-                />
-                <ToolButton
-                  title="Professional Medical Help"
-                  image={require('../images/proffesional.jpg')}
-                  onPress={() => navigation.navigate('MedicalHelp')}
-                />
-                <ToolButton
-                  title="Help Line"
-                  image={require('../images/help.jpeg')}
-                  onPress={() => navigation.navigate('HelpLine')}
-                />
+    <SafeAreaView style={styles.safeArea}>
+      <Header />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <LinearGradient colors={['#E0B0FF', '#8ec5fc']} style={styles.container}>
+          <Animated.View style={[styles.wrapper, { opacity: fadeAnim }]}>
+            {/* Header */}
+            <View style={styles.header}>
+              <View style={styles.iconsContainer}>
+                <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
+                  <Feather name="bell" size={24} color="#6a1b9a" style={styles.icon} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('Messages')}>
+                  <Feather name="message-circle" size={24} color="#6a1b9a" />
+                </TouchableOpacity>
               </View>
+
+              <TouchableOpacity onPress={pickImage} style={styles.profileImageContainer}>
+                <Image
+                  source={{ uri: pickedImage || 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png' }}
+                  style={styles.profileImage}
+                />
+              </TouchableOpacity>
             </View>
-          </ScrollView>
-          <Footer />
-        </View>
-      </TouchableWithoutFeedback>
+
+            <View style={styles.nameContainer}>
+              {isEditing ? (
+                <TextInput
+                  value={name}
+                  onChangeText={setName}
+                  style={styles.nameInput}
+                  placeholder="Enter your name"
+                  placeholderTextColor="gray"
+                />
+              ) : (
+                <Text style={styles.name}>Welcome, {name}</Text>
+              )}
+              <TouchableOpacity onPress={handleEditName} style={styles.editIcon}>
+                <MaterialIcons name="edit-square" size={24} color="#6a1b9a" />
+              </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity onPress={() => navigation.navigate('AppointmentStudent')}>
+              <LinearGradient colors={['#7DDFF8', '#B1ADE2']} style={styles.appointmentsContainer}>
+                <Text style={styles.sectionTitle}>Next Appointments</Text>
+                <View style={styles.appointmentCards}>
+                  <View style={styles.appointmentCard}>
+                    <Text style={styles.appointmentDate}>03 Feb</Text>
+                    <Text style={styles.appointmentDetails}>16:00</Text>
+                    <Text style={styles.appointmentDetails}>Online Session</Text>
+                  </View>
+                  <View style={styles.appointmentCard}>
+                    <Text style={styles.appointmentDate}>10 Feb</Text>
+                    <Text style={styles.appointmentDetails}>14:00</Text>
+                    <Text style={styles.appointmentDetails}>Face to Face</Text>
+                  </View>
+                  <View style={styles.appointmentCard}>
+                    <Text style={styles.appointmentDate}>17 Feb</Text>
+                    <Text style={styles.appointmentDetails}>11:30</Text>
+                    <Text style={styles.appointmentDetails}>Online Session</Text>
+                  </View>
+                </View>
+              </LinearGradient>
+            </TouchableOpacity>
+
+            <View style={styles.emotionsSection}>
+              <Text style={styles.sectionFeel}>How do you feel?</Text>
+              <View style={styles.emotionsRow}>
+                {/* Emotions map */}
+                {emotions.map((emotion) => (
+                  <TouchableOpacity key={emotion.id} style={styles.emotionButton}>
+                    <Text style={styles.emojiText}>{emotion.emoji}</Text>
+                  </TouchableOpacity>
+                ))}
+                <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('MoodControl')}>
+                <Ionicons name="add-circle" size={40} color="#6a1b9a" />
+                </TouchableOpacity>
+              </View>
+              <TouchableOpacity style={styles.tapToRecord}>
+                <Text style={styles.tapToRecordText}>Tap to record</Text>
+              </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity onPress={() => navigation.navigate('DigitalDiary')}>
+              <LinearGradient colors={['#fbc2eb', '#a6c1ee']} style={styles.diaryContainer}>
+                <Text style={styles.sectionTitle}>Diary</Text>
+                <Text style={styles.diaryText}>
+                  Your emotions matter. Log your thoughts today for a personalized resource to support your mental well-being.
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </Animated.View>
+        </LinearGradient>
+      </ScrollView>
+      <Footer />
     </SafeAreaView>
   );
 };
 
-const ToolButton = ({ title, image, onPress }) => (
-  <TouchableOpacity style={styles.toolButton} onPress={onPress}>
-    <Image source={image} style={styles.buttonImage} />
-    <Text style={styles.toolButtonText}>{title}</Text>
-  </TouchableOpacity>
-);
-
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+    backgroundColor: '#f8f9fa',
   },
   container: {
     flex: 1,
-  },
-  contentContainer: {
-    flexGrow: 1,
-    paddingBottom: 20,
-  },
-  content: {
     padding: 20,
-  },
-  greeting: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  affirmationBackground: {
-    width: '100%',
-    height: 200,
     justifyContent: 'center',
-    marginBottom: 20,
   },
-  affirmationText: {
-    fontSize: 16,
-    color: '#fff',
-    fontWeight: 'bold',
-    textAlign: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    padding: 10,
-    borderRadius: 10,
-  },
-  date: {
-    fontSize: 12,
-    textAlign: 'center',
-    color: '#fff',
-    marginTop: 10,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    padding: 5,
-    borderRadius: 10,
-  },
-  moodButton: {
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginVertical: 20,
-  },
-  moodButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  toolsText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 18,
-  },
-  toolsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    borderRadius: 10,
-    padding: 10,
-  },
-  toolButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
-    width: '48%',
-    padding: 10,
+  wrapper: {
     backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 40,
+    shadowColor: '#800080',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
+    alignItems: 'center',
+    width: '100%',
+    borderWidth: 2,
+    borderColor: '#6a1b9a',
+    marginTop: 10,
+  },
+  header: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  profileImageContainer: {
+    marginBottom: 5,
+  },
+  profileImage: {
+    width: 90,
+    height: 90,
+    borderRadius: 80,
+    borderColor: '#9966CC',
+    borderWidth: 3,
+  },
+  nameContainer: {
+    alignItems: 'center',
+    position: 'relative',
+    width: '100%',
+  },
+  name: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#720e9e',
+    textAlign: 'center',
+    marginBottom: 9,
+  },
+  nameInput: {
+    fontSize: 22,
+    borderBottomWidth: 1,
+    borderBottomColor: '#6a1b9a',
+    color: '#6a1b9a',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  editIcon: {
+    position: 'absolute',
+    right: 30,
+    bottom: 13,
+  },
+  iconsContainer: {
+    position: 'absolute',
+    left: -20,
+    top: -25,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  icon: {
+    marginRight: 6,
+  },
+  appointmentsContainer: {
+    padding: 20,
+    borderRadius: 10,
+    marginBottom:30,
+    width: '90%',
+    backgroundColor: '#ffffff',
+  },
+  appointmentCards: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: -11,
+  },
+  appointmentCard: {
+    backgroundColor: '#fff',
+    padding: 7,
     borderRadius: 10,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
+    shadowOpacity: 10,
+    shadowRadius: 15,
+    elevation: 10,
+    width: 95,
+    alignItems: 'center',
   },
-  toolButtonText: {
+  appointmentDate: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#647DEE',
+  },
+  appointmentDetails: {
     fontSize: 14,
+    color: '#647DEE',
     marginTop: 5,
+    textAlign: 'center',
   },
-  buttonImage: {
+  emotionsSection: {
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    padding: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.8,
+    shadowRadius: 1.41,
+    elevation: 2,
+    width: '120%', // Set width to create a rectangle
+    height: 80,  // Set a fixed height for the rectangle
+    marginBottom: 20, // Add margin to create space below
+},
+
+emotionsRow: {
+  flexDirection: 'row',
+  justifyContent: 'flex-start', // Adjust alignment to left-center
+  alignItems: 'center',
+  flexWrap: 'nowrap', // Ensure all elements are on the same line
+  marginLeft: 190, // Align under the other container
+  marginTop: -40,  // Move the row upwards
+},
+
+  emotionButton: {
+     marginRight: -19,
+  },
+  emojiText: {
+    fontSize: 30,
+  },
+  addButton: {
+    backgroundColor: 'white',
+    padding: 6,
+    borderRadius: 20,
+    marginLeft: -6,
+  },
+  plusText: {
+    fontSize: 15,
+    color: '#fff',
+  },
+  tapToRecord: {
+    marginTop: -30,
+  },
+  tapToRecordText: {
+    fontSize: 14,
+    color: '#666',
+  },
+  diaryContainer: {
+    padding: 20,
+    borderRadius: 15,
     width: '100%',
-    height: 100,
-    borderRadius: 10,
+    backgroundColor: '#fff',
+    marginBottom: -10,
+  },
+  diaryText: {
+    fontSize: 16,
+    color: '#6a1b9a',
+    marginTop: 1,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'white',
+    marginBottom: 30,
+  },
+  sectionFeel: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'black',
+    marginBottom: 30,
   },
 });
 
-const MainPage = () => {
-  return (
-    <Drawer.Navigator
-      drawerContent={props => <DrawerContent {...props} />}
-      screenOptions={{
-        header: () => <Header />,
-        drawerPosition: 'right',
-      }}
-    >
-      <Drawer.Screen name="Main" component={MainPageContent} />
-    </Drawer.Navigator>
-  );
-};
-
-export default MainPage;
+export default MainScreen;

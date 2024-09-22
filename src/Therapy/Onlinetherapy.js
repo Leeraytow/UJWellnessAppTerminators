@@ -10,7 +10,7 @@ const BookingCompleted = () => {
         <View style={[styles.container, { backgroundColor: isDarkMode ? '#222' : '#f5f5f5' }]}>
             <View style={[styles.header, { backgroundColor: isDarkMode ? '#333' : '#FF6F00' }]}>
                 <Image
-                    source={require('../images/Icon.png')}
+                    source={require('../images/icon.png')}
                     style={styles.logo}
                 />
                 <TouchableOpacity style={styles.menuButton}>

@@ -31,6 +31,9 @@ import ContactSupportScreen from './src/Therapy/ContactSupport';
 import ProfessionalSupport from './src/Therapy/ProffesionalSupport';
 import MessageScreen from './src/Therapy/Message';
 import MainPage from './src/Menu/MainPage';
+import AppointmentStudent from './src/Menu/AppointmentStudent';
+import Notifications from './src/Menu/Notifications'; 
+import Messages from './src/Menu/Messages'; 
 import MoodControl from './src/Menu/MoodControl';
 import TherapyButton from './src/Menu/TherapyButton';
 // import GroupChatApp from './src/ChatApp/GroupChat';
@@ -87,7 +90,7 @@ export default function App() {
     <ThemeProvider>
       <FontSizeProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName={user ? "MainPage" : "StudentLogin"}>
+        <Stack.Navigator initialRouteName="MainPage">
             <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} options={{ headerShown: false }} />
             <Stack.Screen name="StudentLogin" component={StudentLoginScreen} options={{ headerShown: false }} />
             <Stack.Screen name="StudentRegister" component={StudentRegister} options={{ headerShown: false }} />
@@ -102,6 +105,9 @@ export default function App() {
             <Stack.Screen name="SplashScreen2" component={SplashScreen2} options={{ headerShown: false }} />
             <Stack.Screen name="SplashScreen3" component={SplashScreen3} options={{ headerShown: false }} />
             <Stack.Screen name="MainPage" component={MainPage}   options={{ headerShown: false }} />
+            <Stack.Screen name="AppointmentStudent" component={AppointmentStudent}   options={{ headerShown: false }} />
+            <Stack.Screen name="Notifications" component={Notifications}   options={{ headerShown: false }} />
+            <Stack.Screen name="Messages" component={Messages} options={{ headerShown: false }} />
             <Stack.Screen name="RegEmailVerification" component={RegEmailVerification} options={{ headerShown: false }} />
             <Stack.Screen name="OnlineTherapy" component={OnlineTherapyPage} options={{ headerShown: false }} />
             <Stack.Screen name="PeerCounseling" component={PeerCounselingPage} options={{ headerShown: false }} />

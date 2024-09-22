@@ -57,7 +57,7 @@ const SplashScreen1 = () => {
                 <Image source={require('../images/UJ.png')} style={styles.logo}/>
                 <View>
                     <Animated.Image
-                        source={require('../images/Icon.png')} style={[styles.icon, { transform: [{ rotate: spin }] }]}
+                        source={require('../images/icon.png')} style={[styles.icon, { transform: [{ rotate: spin }] }]}
                     />
                 </View>
                 <View style={styles.lineContainer}>

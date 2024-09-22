@@ -15,7 +15,7 @@ const ProffesionalSupport = () => {
                     <Text style={[styles.backButtonText, { color: isDarkMode ? '#fff' : '#fff' }]}>←</Text>
                 </TouchableOpacity>
                 <Image
-                    source={require('../images/Icon.png')}
+                    source={require('../images/icon.png')}
                     style={styles.logo}
                 />
                 <TouchableOpacity style={styles.menuButton}>

@@ -24,10 +24,9 @@ export default function HomeScreen({ navigation }) {
           if (docSnap.exists()) {
             const userData = docSnap.data();
             setName(userData.name || 'User');
-            setProfileImage(userData.profileImage || 'https://i.pravatar.cc/300'); // Default image
-          } else {
+            setProfileImage(userData.profileImage || 'https://i.pravatar.cc/300'); 
             setName('User');
-            setProfileImage('https://i.pravatar.cc/300'); // Default image
+            setProfileImage('https://i.pravatar.cc/300'); 
             console.error('No such document!');
           }
         } catch (error) {
