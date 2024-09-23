@@ -1,42 +1,83 @@
-import React, { useState } from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'; // Added MaterialCommunityIcons
+import React, { useState, useRef } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import { Ionicons } from '@expo/vector-icons'; 
 import { useNavigation } from '@react-navigation/native';
 
 const Footer = () => {
   const [activeIndex, setActiveIndex] = useState(null);
   const navigation = useNavigation();
 
+  // Create an animated value for the bounce effect
+  const bounceValue = useRef(new Animated.Value(1)).current;
+
   const handlePress = (index, route) => {
     setActiveIndex(index);
     navigation.navigate(route);
   };
 
+  const handleAddPress = () => {
+    // Start the bounce animation when the "+" icon is pressed
+    Animated.sequence([
+      Animated.spring(bounceValue, {
+        toValue: 1.4, // Larger scale up
+        friction: 3, // Bounce effect
+        useNativeDriver: true,
+      }),
+      Animated.spring(bounceValue, {
+        toValue: 1, // Scale back to normal
+        friction: 3,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      // Navigate to the Mood page after the bounce animation completes
+      navigation.navigate('Mood');
+    });
+  };
+
   return (
     <View style={styles.footer}>
+      {/* Home Button */}
       <TouchableOpacity
         style={[styles.footerButton, activeIndex === 0 && styles.activeButton]}
         onPress={() => handlePress(0, 'MainPage')}
       >
-        <Ionicons name="home-sharp" size={28} color={activeIndex === 0 ? '#FF6F00' : '#6e6e6e'} />
+        <Ionicons name="home-outline" size={15} color={activeIndex === 0 ? '#7B61FF' : '#9b9b9b'} />
+        <Text style={styles.buttonLabel}>Home</Text>
       </TouchableOpacity>
+
+      {/* Tools Button */}
       <TouchableOpacity
         style={[styles.footerButton, activeIndex === 1 && styles.activeButton]}
-        onPress={() => handlePress(1, 'Notifications')}
+        onPress={() => handlePress(1, 'Tools')}
       >
-        <Ionicons name="notifications" size={28} color={activeIndex === 1 ? '#FF6F00' : '#6e6e6e'} />
+        <Ionicons name="construct-outline" size={15} color={activeIndex === 1 ? '#7B61FF' : '#9b9b9b'} />
+        <Text style={styles.buttonLabel}>Tools</Text>
       </TouchableOpacity>
+
+      {/* Add Mood Button with bounce animation */}
+      <TouchableOpacity onPress={() => navigation.navigate('MoodControl')} style={styles.addButton}>
+        <Animated.View style={{ transform: [{ scale: bounceValue }] }}>
+          <Ionicons name="add-circle" size={40} color="#6a1b9a" />
+        </Animated.View>
+        <Text style={styles.buttonLabel}>Add Mood</Text>
+      </TouchableOpacity>
+
+      {/* Chat Button */}
       <TouchableOpacity
         style={[styles.footerButton, activeIndex === 2 && styles.activeButton]}
         onPress={() => handlePress(2, 'Chat')}
       >
-        <MaterialCommunityIcons name="chat-processing" size={28} color={activeIndex === 2 ? '#FF6F00' : '#6e6e6e'} />
+        <Ionicons name="chatbubble-outline" size={15} color={activeIndex === 2 ? '#7B61FF' : '#9b9b9b'} />
+        <Text style={styles.buttonLabel}>Chat</Text>
       </TouchableOpacity>
+
+      {/* Profile Button */}
       <TouchableOpacity
         style={[styles.footerButton, activeIndex === 3 && styles.activeButton]}
         onPress={() => handlePress(3, 'Profile')}
       >
-        <Ionicons name="person-circle" size={28} color={activeIndex === 3 ? '#FF6F00' : '#6e6e6e'} />
+        <Ionicons name="person-outline" size={15} color={activeIndex === 3 ? '#7B61FF' : '#9b9b9b'} />
+        <Text style={styles.buttonLabel}>Profile</Text>
       </TouchableOpacity>
     </View>
   );
@@ -46,24 +87,36 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    backgroundColor: '#fff', // White background for the footer
-    padding: 10,
-    borderTopWidth: 2,
-    borderTopColor: '#FF6F00', // Orange border on top
-    shadowColor: '#000', // Subtle shadow for a more professional look
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    paddingVertical: 1,
+    borderTopWidth: 1,
+    borderTopColor: '#7B61FF',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 5,
   },
   footerButton: {
-    padding: 8, // Increased padding for better touch area
+    alignItems: 'center',
+    padding: 10,
   },
   activeButton: {
-    borderRadius: 50, // Circular highlight for active button
+    borderRadius: 50,
     borderWidth: 2,
-    borderColor: '#FF6F00', // Orange highlight for active button
-    backgroundColor: '#fff', // Ensure background stays white
+    borderColor: '#6a1b9a',
+    backgroundColor: '#fff',
+  },
+  addButton: {
+    padding: 8,
+    position: 'relative',
+    alignItems: 'center',
+  },
+  buttonLabel: {
+    fontSize: 12,
+    color: '#9b9b9b',
+    marginTop: 4,
   },
 });
 

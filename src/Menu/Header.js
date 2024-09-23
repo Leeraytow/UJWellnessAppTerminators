@@ -10,7 +10,7 @@ const Header = ({ navigation }) => {
         <Text style={styles.headerText}>UJWellness</Text>
       </View>
       <TouchableOpacity onPress={() => navigation.openDrawer()} style={styles.menuBtn}>
-        <Ionicons name="menu" size={28} color="white" />
+        <Ionicons name="menu" size={28} color="purple" />
       </TouchableOpacity>
     </View>
   );
@@ -18,7 +18,7 @@ const Header = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: '#FF6F00',
+    backgroundColor: 'white',
     padding: 10,
     flexDirection: 'row',
     alignItems: 'center',
@@ -36,12 +36,13 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   headerText: {
-    color: '#fff',
+    color: '#6a1b9a',
     fontSize: 18,
     fontWeight: 'bold',
   },
   menuBtn: {
     padding: 10,
+    
   },
   separator: {
     height: 1,

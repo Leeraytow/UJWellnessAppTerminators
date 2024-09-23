@@ -154,20 +154,44 @@ const ProfileImageUpdate = ({ navigation }) => {
         {
           text: 'Sign Out',
           onPress: () => {
-            signOut(auth)
-              .then(() => {
-                console.log('User signed out');
-                navigation.replace('StudentLogin'); // Redirect to the Login screen after sign out
-              })
-              .catch(error => {
-                console.error('Error signing out: ', error);
-              });
+            setLoading(true);  // Show loading while signing out
+  
+            const user = auth.currentUser;
+  
+            // Ensure user is logged in before proceeding
+            if (user) {
+              // Update the "active" status to false in Firestore
+              const userRef = firestore().collection('Students').doc(user.uid);
+              userRef
+                .update({ active: false })
+                .then(() => {
+                  console.log('User status set to inactive');
+  
+                  // Proceed with sign-out after updating status
+                  signOut(auth)
+                    .then(() => {
+                      console.log('User signed out');
+                      navigation.replace('StudentLogin');  // Redirect to login screen
+                    })
+                    .catch(error => {
+                      console.error('Error signing out: ', error);
+                    })
+                    .finally(() => {
+                      setLoading(false);  // Stop loading after sign-out attempt
+                    });
+                })
+                .catch(error => {
+                  console.error('Error updating user status: ', error);
+                  setLoading(false);  // Stop loading if update fails
+                });
+            }
           },
         },
       ],
       { cancelable: true }
     );
   };
+  
 
 const fallbackImage= "https://imgs.search.brave.com/iy-sEupdI8V7_1q3MjjWqpGGNTZ53DPoppz8Eascl-M/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/cG5naXRlbS5jb20v/cGltZ3MvbS8xNDYt/MTQ2ODg0M19wcm9m/aWxlLWljb24tb3Jh/bmdlLXBuZy10cmFu/c3BhcmVudC1wbmcu/cG5n"
   const handlePressIn = () => {

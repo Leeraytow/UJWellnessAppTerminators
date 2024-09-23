@@ -50,49 +50,49 @@ export default function StudentRegisterScreen() {
       setError('Required fields are missing');
       return;
     }
-
+  
     if (!validateEmail(email)) {
       setError('Please Enter Your Student Email');
       return;
     }
-
+  
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
     }
-
+  
     if (!validatePassword(password)) {
       setError('Password must be at least 8 characters long, contain at least one uppercase letter, special character and a number.');
       return;
     }
-
+  
     setLoading(true);
     try {
       // Step 1: Create user account
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-
+  
       // Step 2: Send email verification
       await sendEmailVerification(user);
-      await signOut(auth);
-
-      // Step 3: Save user data to Firestore
+      await signOut(auth); // Log out user after verification
+  
+      // Step 3: Save user data to Firestore with the "active" field
       const userRef = doc(collection(db, 'Students'), user.uid);
       await setDoc(userRef, {
         name: username,
         email: email,
-        profilePicture: ""
-        // verified: false, 
+        profilePicture: "",
+        active: false,  // Set active to false during registration
       });
-
+  
       navigation.navigate('RegEmailVerification', { userEmail: email, userName: username, uid: user.uid });
-
     } catch (error) {
       setError(error.message);
     } finally {
       setLoading(false);
     }
   }
+  
 
   return (
     <View style={styles.container}>
@@ -128,9 +128,7 @@ export default function StudentRegisterScreen() {
           <TouchableOpacity style={styles.registerButton} onPress={createAccount}>
             <Text style={styles.registerButtonText}>Sign up</Text>
           </TouchableOpacity>
-          <View style={styles.socialIconsContainer}>
-            {/* Social icons here */}
-          </View>
+        
         </View>
       </ImageBackground>
     </View>
@@ -153,6 +151,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     margin: 20,
     shadowColor: '#000',
+    
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
@@ -192,12 +191,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#FF6F00',
     paddingVertical: 15,
     borderRadius: 10,
+   
   },
   registerButtonText: {
     color: 'white',
     fontSize: 18,
     fontWeight: '600',
     textAlign: 'center',
+    
   },
   socialIconsContainer: {
     flexDirection: 'row',

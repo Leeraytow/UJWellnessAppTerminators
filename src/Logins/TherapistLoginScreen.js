@@ -275,7 +275,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFA500', // Orange color
     paddingVertical: 15,
     borderRadius: 10,
+    marginTop: 20,
     marginBottom: 15,
+   
   },
   loginButtonText: {
     color: 'white',

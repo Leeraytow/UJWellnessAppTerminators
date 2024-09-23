@@ -1,32 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Image, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, signOut, sendPasswordResetEmail } from "firebase/auth";
+import { collection, doc, setDoc, query, where, getDocs } from 'firebase/firestore';
 import { auth, db } from '../Configuration/firebase';
+import CustomCheckbox from './CustomCheckbox';
 
-const Header = () => (
-  <View>
-    <View style={styles.logoContainer}>
-      <Image source={require('../images/logo.png')} style={styles.logo} />
-    </View>
-    <View style={styles.textContainer}>
-      <Text style={styles.title}>Welcome back, Champ!</Text>
-      <Text style={styles.subtitle}>It's time to feel better!</Text>
-    </View>
-  </View>
-);
-
-export default function StudentLoginScreen({ navigation }) {
+export default function StudentAuthScreen({ navigation }) {
+  const [isLogin, setIsLogin] = useState(true);
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
   useEffect(() => {
     if (loading) {
-      handleLogin();
+      isLogin ? handleLogin() : handleRegister();
     }
   }, [loading]);
 
@@ -46,42 +39,41 @@ export default function StudentLoginScreen({ navigation }) {
 
   const handleLogin = async () => {
     const Email = email.trim();
-
+  
     if (!Email || !password) {
       setError('All fields are required');
-      setTimeout(() => setError(''), 12000);
-      setLoading(false);
-      return;
-    } else if (!validateEmail(Email)) {
-      setError('Invalid email address');
-      setTimeout(() => setError(''), 12000);
-      setLoading(false);
-      return;
-    } else if (!validatePassword(password)) {
-      setError('Password must be at least 8 characters long, contain at least one uppercase letter, special character, and a number.');
-      setTimeout(() => setError(''), 12000);
       setLoading(false);
       return;
     }
-
+  
+    if (!validateEmail(Email)) {
+      setError('Invalid email address');
+      setLoading(false);
+      return;
+    }
+  
     try {
       const userCredential = await signInWithEmailAndPassword(auth, Email, password);
       const user = userCredential.user;
-
+  
       if (!user.emailVerified) {
         setError('Please verify your email before logging in.');
-        setLoading(false); 
+        setLoading(false);
         return navigation.navigate('EmailVerification', { userEmail: Email });
       }
-
+  
+      // Set "active" to true upon login
+      const userRef = doc(db, 'Students', user.uid);
+      await setDoc(userRef, { active: true }, { merge: true });
+  
       const isAdmin = Email.endsWith('@gmail.com');
       if (isAdmin) {
-        navigation.navigate('TherapistLandingScreen');
+        navigation.navigate('AdminHomeScreen');
       } else if (Email.endsWith('@student.uj.ac.za')) {
         const usersCollection = collection(db, 'Students');
         const q = query(usersCollection, where('email', '==', Email));
         const querySnapshot = await getDocs(q);
-
+  
         if (querySnapshot.size === 1) {
           querySnapshot.forEach((doc) => {
             const userName = doc.data().name;
@@ -99,67 +91,127 @@ export default function StudentLoginScreen({ navigation }) {
       setLoading(false);
     }
   };
+  
 
-  const initiateLogin = () => {
-    setError(''); // Reset any previous errors
-    setLoading(true); // This will trigger useEffect and initiate login
+  const handleSubmit = () => {
+    setError('');
+    setLoading(true);
   };
 
-  const handleRegisterPress = () => {
-    navigation.navigate('StudentRegister');
+  const toggleAuthMode = () => {
+    setIsLogin(!isLogin);
+    setError('');
   };
 
-  const handleForgotPasswordPress = () => {
-    navigation.navigate('PasswordResetScreen', { userEmail: email });
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setError('Please enter your email address');
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setError('Password reset email sent. Please check your inbox.');
+    } catch (error) {
+      setError('Error sending password reset email: ' + error.message);
+    }
   };
 
   return (
     <View style={styles.container}>
-      <ImageBackground source={require('../images/background.png')} style={styles.background}>
-        <View style={styles.loginContainer}>
-          <Header />
+      <ImageBackground source={require('../images/background12.jpeg')} style={styles.background}>
+        <View style={styles.authContainer}>
+          <View style={styles.tabContainer}>
+            <TouchableOpacity
+              style={[styles.tab, isLogin && styles.activeTab]}
+              onPress={() => setIsLogin(true)}
+            >
+              <Text style={[styles.tabText, isLogin && styles.activeTabText]}>Sign In</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.tab, !isLogin && styles.activeTab]}
+              onPress={() => setIsLogin(false)}
+            >
+              <Text style={[styles.tabText, !isLogin && styles.activeTabText]}>Sign Up</Text>
+            </TouchableOpacity>
+          </View>
+
+          <Text style={styles.title}>{isLogin ? 'Welcome Back!' : 'Create An Account'}</Text>
+
+          {!isLogin && (
+            <View style={styles.inputContainer}>
+              <Icon name="user" size={20} color="#000" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Full Name"
+                onChangeText={setFullName}
+                value={fullName}
+              />
+            </View>
+          )}
 
           <View style={styles.inputContainer}>
+            <Icon name="envelope" size={20} color="#000" style={styles.inputIcon} />
             <TextInput
               style={styles.input}
               placeholder="Email"
-              onChangeText={(text) => setEmail(text)}
-            />
-            <Image
-              source={require('../images/email.png')}
-              style={styles.inputIcon}
+              onChangeText={setEmail}
+              value={email}
+              keyboardType="email-address"
             />
           </View>
 
           <View style={styles.inputContainer}>
+            <Icon name="lock" size={20} color="#000" style={styles.inputIcon} />
             <TextInput
               style={styles.input}
               placeholder="Password"
               secureTextEntry={!showPassword}
-              onChangeText={(text) => setPassword(text)}
+              onChangeText={setPassword}
+              value={password}
             />
-            <TouchableOpacity onPress={togglePasswordVisibility} style={styles.inputIcon}>
-              <Icon name={showPassword ? 'eye' : 'eye-slash'} size={20} color="black" />
+            <TouchableOpacity onPress={togglePasswordVisibility} style={styles.eyeIcon}>
+              <Icon name={showPassword ? 'eye' : 'eye-slash'} size={20} color="#000" />
             </TouchableOpacity>
           </View>
 
-          <View style={styles.rememberForgotContainer}>
-            <TouchableOpacity style={styles.forgotPasswordButton} onPress={handleForgotPasswordPress}>
-              <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-            </TouchableOpacity>
-          </View>
+          {!isLogin && (
+            <View style={styles.inputContainer}>
+              <Icon name="lock" size={20} color="#000" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Confirm Password"
+                secureTextEntry={!showPassword}
+                onChangeText={setConfirmPassword}
+                value={confirmPassword}
+              />
+            </View>
+          )}
 
-          <TouchableOpacity style={styles.loginButton} onPress={initiateLogin}>
-            <Text style={styles.loginButtonText}>Sign in</Text>
+          {isLogin && (
+            <View style={styles.rememberForgotContainer}>
+              <View style={styles.rememberMeContainer}>
+                <CustomCheckbox
+                  value={rememberMe}
+                  onValueChange={setRememberMe}
+                />
+                <Text style={styles.rememberMeText}>Remember me</Text>
+              </View>
+              <TouchableOpacity onPress={handleForgotPassword}>
+                <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+            <Text style={styles.submitButtonText}>{isLogin ? 'Sign In' : 'Sign Up'}</Text>
           </TouchableOpacity>
 
-          {loading && <ActivityIndicator size="large" color="#FFA500" />}
+          {loading && <ActivityIndicator size="large" color="#8A2BE2" />}
 
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-          <TouchableOpacity style={styles.createAccountWrapper} onPress={handleRegisterPress}>
-            <Text style={styles.createAccountText}>Don't have an account? Create one</Text>
-          </TouchableOpacity>
+        
         </View>
       </ImageBackground>
     </View>
@@ -169,100 +221,187 @@ export default function StudentLoginScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F2F4F8',
   },
   background: {
     flex: 1,
     resizeMode: 'cover',
     justifyContent: 'center',
+    alignItems: 'center',
   },
-  loginContainer: {
+  authContainer: {
     backgroundColor: 'white',
-    padding: 30,
+    padding: 20,
     borderRadius: 15,
-    minWidth: 300,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    width: '90%',
+    maxWidth: 400,
+    alignItems: 'center',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
     shadowOpacity: 0.25,
-    shadowRadius: 4,
+    shadowRadius: 3.84,
     elevation: 5,
   },
-  logoContainer: {
-    alignItems: 'center',
+  tabContainer: {
+    flexDirection: 'row',
     marginBottom: 20,
   },
-  logo: {
-    width: 100,
-    height: 100,
-    marginBottom: 10,
+  tab: {
+    flex: 1,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  activeTab: {
+    borderBottomWidth: 2,
+    borderBottomColor: '#8A2BE2',
+  },
+  tabText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  activeTabText: {
+    color: '#8A2BE2',
+    fontWeight: 'bold',
   },
   title: {
     fontSize: 24,
-    color: '#333',
     fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#555',
-    textAlign: 'center',
+    marginBottom: 20,
+    color: '#333',
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 15,
-    backgroundColor: '#F8F8F8',
+    backgroundColor: '#fff',
     borderRadius: 10,
-    paddingHorizontal: 15,
+    marginVertical: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5, // For Android shadow
   },
   input: {
     flex: 1,
-    paddingVertical: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
     fontSize: 16,
+    color: '#000',
   },
   inputIcon: {
-    width: 20,
-    height: 20,
-    marginRight: 10
+    marginRight: 10,
+  },
+  eyeIcon: {
+    paddingHorizontal: 10,
+  },
+  inputIcon: {
+    marginRight: 10,
+  },
+  input: {
+    flex: 1,
+    height: 38,
+  },
+  eyeIcon: {
+    padding: 10,
   },
   rememberForgotContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    marginBottom: 15,
+  },
+  rememberMeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  rememberMeText: {
+    marginLeft: 8,
+    color: '#777',
+  },
+  forgotPasswordText: {
+    color: 'red',
+    fontSize: 14,
+  },
+  submitButton: {
+    backgroundColor: '#8A2BE2',
+    paddingVertical: 12,
+    borderRadius: 8,
+    width: '100%',
+    alignItems: 'center',
+    marginBottom: 15,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  submitButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: {width: -1, height: 1},
+    textShadowRadius: 10
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 10,
+  },
+  orText: {
+    color: '#777',
+    marginVertical: 15,
+  },
+  socialButtonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
     marginBottom: 20,
   },
-  forgotPasswordButton: {
-    alignSelf: 'flex-end',
+  socialButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    width: '48%',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 3,
   },
-  forgotPasswordText: {
-    color: '#777',
+  socialIcon: {
+    width: 24,
+    height: 24,
+    marginRight: 10,
+  },
+  socialButtonText: {
+    color: '#333',
+    fontSize: 14,
+    fontWeight: 'bold',
+    textShadowColor: 'rgba(0, 0, 0, 0.1)',
+    textShadowOffset: {width: 1, height: 1},
+    textShadowRadius: 1
+  },
+  toggleAuthText: {
+    color: '#8A2BE2',
     fontSize: 14,
   },
-  loginButton: {
-    backgroundColor: '#FF6F00',
-    paddingVertical: 15,
-    borderRadius: 10,
-    marginBottom: 15,
-  },
-  loginButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  createAccountWrapper: {
-    borderTopColor: 'rgba(255, 165, 0, 0.5)',
-    borderTopWidth: 1,
-    paddingTop: 20,
-    marginTop: 15,
-  },
-  createAccountText: {
-    color: '#FF6F00',
-    fontSize: 16,
-    textAlign: 'center',
-  },
-  errorText: {
-    color: 'red',
-    marginTop: 13,
-  },
+
+  
 });
