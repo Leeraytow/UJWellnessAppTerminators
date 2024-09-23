@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, Button, ActivityIndicator, StyleSheet, Modal, FlatList } from 'react-native';
-import { collection, query, getDocs, updateDoc, doc } from 'firebase/firestore';
+import { collection, query, getDocs } from 'firebase/firestore';
 import { db } from '../Configuration/firebase';
 import { ThemeContext } from '../StudentProfile/ThemeContext';
 import { Calendar } from 'react-native-calendars';
@@ -20,18 +20,23 @@ const TherapistAppointments = () => {
         const querySnapshot = await getDocs(q);
 
         const appointmentsData = {};
-        querySnapshot.forEach(doc => {
+        querySnapshot.forEach((doc) => {
           const data = doc.data();
-          const dateKey = new Date(data.meetingDate.seconds * 1000).toISOString().split('T')[0]; // Format to YYYY-MM-DD
-          if (!appointmentsData[dateKey]) {
-            appointmentsData[dateKey] = [];
+          const meetingDate = data.meetingDate; // Using the stored date string directly
+          
+          // Create an array of appointments for each date
+          if (!appointmentsData[meetingDate]) {
+            appointmentsData[meetingDate] = [];
           }
-          appointmentsData[dateKey].push({ id: doc.id, ...data });
+          appointmentsData[meetingDate].push({
+            ...data,
+            id: doc.id,  // optional, if you want to keep track of doc id
+          });
         });
 
         setAppointments(appointmentsData);
       } catch (error) {
-        console.error("Error fetching appointments: ", error);
+        console.error('Error fetching appointments: ', error);
       } finally {
         setLoading(false);
       }
@@ -41,35 +46,20 @@ const TherapistAppointments = () => {
   }, []);
 
   const handleDayPress = (day) => {
-    const dateKey = day.dateString;
+    const dateKey = new Date(day.dateString).toDateString(); // Format selected date to match Firestore format
     setSelectedDate(dateKey);
     setSelectedAppointments(appointments[dateKey] || []);
     setShowModal(true);
   };
 
-  const handleCompleteAppointment = async (appointmentId) => {
-    try {
-      const appointmentDoc = doc(db, 'Bookings', appointmentId);
-      await updateDoc(appointmentDoc, { status: 'Completed' });
-      setSelectedAppointments(prevAppointments =>
-        prevAppointments.map(appt =>
-          appt.id === appointmentId ? { ...appt, status: 'Completed' } : appt
-        )
-      );
-    } catch (error) {
-      console.error("Error updating appointment status: ", error);
-    }
-  };
-
   const renderAppointmentItem = ({ item }) => (
     <View style={styles.appointmentItem}>
-      <Text>Time: {new Date(item.meetingTime.seconds * 1000).toLocaleTimeString()}</Text>
+      <Text>Name: {item.name}</Text>
+      <Text>Student Number: {item.studentNumber}</Text>
+      <Text>Meeting Type: {item.meetingType}</Text>
+      <Text>Time: {item.meetingTime}</Text>
       <Text>Venue: {item.venue || 'Online'}</Text>
-      <Text>Link: {item.googleMeetLink || 'N/A'}</Text>
       <Text>Status: {item.status}</Text>
-      {item.status !== 'Completed' && (
-        <Button title="Mark as Completed" onPress={() => handleCompleteAppointment(item.id)} />
-      )}
     </View>
   );
 
@@ -81,17 +71,13 @@ const TherapistAppointments = () => {
         <>
           <Calendar
             onDayPress={handleDayPress}
-            markedDates={Object.keys(appointments).reduce((acc, date) => {
-              acc[date] = { marked: true };
-              return acc;
-            }, {})}
             theme={{
               todayTextColor: '#00adf5',
               arrowColor: 'orange',
               monthTextColor: 'black',
               textDayFontSize: 16,
               textMonthFontSize: 16,
-              textDayHeaderFontSize: 16
+              textDayHeaderFontSize: 16,
             }}
           />
           <Modal
@@ -106,7 +92,7 @@ const TherapistAppointments = () => {
                 <FlatList
                   data={selectedAppointments}
                   renderItem={renderAppointmentItem}
-                  keyExtractor={(item) => item.id}
+                  keyExtractor={(item) => item.studentNumber} // Use studentNumber as the unique key
                 />
                 <Button title="Close" onPress={() => setShowModal(false)} />
               </View>

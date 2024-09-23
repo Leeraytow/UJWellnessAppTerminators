@@ -11,6 +11,8 @@ const BookingForm = ({ navigation }) => {
   const [meetingType, setMeetingType] = useState('');
   const [email, setEmail] = useState(''); // Email will be set automatically
   const [hasPendingAppointment, setHasPendingAppointment] = useState(false);
+  const [loading, setLoading] = useState(false)
+
 
   useEffect(() => {
     const checkPendingAppointment = async () => {
@@ -69,8 +71,7 @@ const BookingForm = ({ navigation }) => {
         status: 'Pending', // Default status
         createdAt: Timestamp.now(),
       });
-      Alert.alert('Booking Successful', 'Your appointment has been booked successfully.');
-      navigation.goBack();
+      navigation.navigate("BookingCompleted");
     } catch (error) {
       console.error('Error adding booking: ', error);
       Alert.alert('Error', 'Failed to submit booking.');
@@ -131,7 +132,10 @@ const BookingForm = ({ navigation }) => {
         <Text style={styles.submitButtonText}>Submit</Text>
       </TouchableOpacity>
 
+
       <View>
+      {loading && <ActivityIndicator size="large" color="#FFA500" />}
+
         <TouchableOpacity style={styles.submitButton} onPress={() => navigation.navigate('ScheduledAppointments')}>
           <Text style={styles.submitButtonText}>Scheduled Appointments</Text>
         </TouchableOpacity>

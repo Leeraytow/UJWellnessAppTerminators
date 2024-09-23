@@ -24,13 +24,10 @@ const BookingCompleted = () => {
                         style={styles.image}
                     />
                     <Text style={[styles.bookingText, { color: isDarkMode ? '#fff' : '#fff' }]}>Booking Completed</Text>
+                    <Text style> The Therapist Will get back to You</Text>
                 </View>
-                <TouchableOpacity style={[styles.button, { backgroundColor: isDarkMode ? '#555' : '#FF6F00' }]}>
-                    <Text style={styles.buttonText}>Start Video Call with a Therapist</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.button, { backgroundColor: isDarkMode ? '#555' : '#FF6F00' }]}>
-                    <Text style={styles.buttonText}>Start Chatting with a Therapist</Text>
-                </TouchableOpacity>
+               
+               
             </View>
             <Footer />
         </View>

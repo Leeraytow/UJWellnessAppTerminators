@@ -13,7 +13,7 @@ import TherapistScreen from './src/Logins/TherapistLoginScreen';
 import TherapistRegisterScreen from './src/Logins/TherapistRegisterScreen';
 import TherapistLandingScreen from './src/TherapyPages/TherapistLandingScreen';
 import ResourcesScreen from './src/TherapyPages/Resource';
-import  RegisterScreen from './src/TherapyPages/RegisterScreen';
+import RegisterScreen from './src/TherapyPages/RegisterScreen';
 import TherapyProfileScreen from './src/TherapyPages/TherapyProfileScreen';
 import AppointmentsScreen from './src/TherapyPages/AppointmentsScreen';
 import ChatTherapist from './src/TherapyPages/ChatTherapist';
@@ -25,7 +25,7 @@ import PasswordResetScreen from './src/Logins/PasswordResetScreen';
 import EmailVerification from './src/Logins/EmailVerificationScreen';
 import RegEmailVerification from './src/Logins/RegEmailVerificationScreen';
 import DigitalDiary from './src/Therapy/DiaryEntry';
-import OnlineTherapyPage from './src/Therapy/Onlinetherapy';
+import BookingCompleted from './src/Therapy/BookingCompleted';
 import PeerCounselingPage from './src/Therapy/PeerCounseling';
 import ContactSupportScreen from './src/Therapy/ContactSupport'; 
 import ProfessionalSupport from './src/Therapy/ProffesionalSupport';
@@ -44,7 +44,7 @@ import SecurityInfo from './src/StudentProfile/SecurityInformation';
 import HelpLine from './src/HelpLine/Help';
 import MedicalHelp from './src/MedicalHelp/MedicalHelp';
 import UserVid from './src/Videos/UserVideos';
-import Chat from './src/ChatApp/Chat'
+import Chat from './src/ChatApp/Chat';
 import UserList from './src/ChatApp/userList';
 import Users from './src/Admin/Users';
 import UserFeedback from './src/Admin/UserFeedback';
@@ -53,27 +53,39 @@ import UserHistory from './src/Admin/UserHistory';
 import UserProfile from './src/ChatApp/userProfile';
 import AdminSettings from './src/Admin/AdminSettings';
 import BookingForm from "./src/BookingSystem/BookingForm";
-import TherapistBookings from "./src/BookingSystem/TherapistBookings";
+import VerifyBookings from "./src/BookingSystem/VerifyBookings";
 import ConfirmMeeting from "./src/BookingSystem/ConfirmMeeting";
 import ScheduledAppointments from "./src/BookingSystem/ScheduledAppointments";
 import TherapistAppointments from './src/BookingSystem/TherapistAppointments';
 import ClientsPage from './src/ClientsPage/ClientsPage';
+import Mainpost from './src/CommunitySupport/postmain';
 
 const Stack = createStackNavigator();
 
 export default function App() {
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState(null);
+  const [initialRoute, setInitialRoute] = useState("StudentLogin");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
+      if (user) {
+        setUser(user);
+        // Check email domain to set initial route
+        if (user.email.endsWith('@gmail.com')) {
+          setInitialRoute('TherapistLandingScreen');
+        } else {
+          setInitialRoute('MainPage');
+        }
+      } else {
+        setInitialRoute('StudentLogin');
+      }
       if (initializing) setInitializing(false);
     });
 
     // Clean up the subscription
     return () => unsubscribe();
-  }, []);
+  }, [initializing]);
 
   if (initializing) {
     return (
@@ -87,7 +99,7 @@ export default function App() {
     <ThemeProvider>
       <FontSizeProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName={user ? "MainPage" : "StudentLogin"}>
+          <Stack.Navigator initialRouteName={initialRoute}>
             <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} options={{ headerShown: false }} />
             <Stack.Screen name="StudentLogin" component={StudentLoginScreen} options={{ headerShown: false }} />
             <Stack.Screen name="StudentRegister" component={StudentRegister} options={{ headerShown: false }} />
@@ -101,9 +113,9 @@ export default function App() {
             <Stack.Screen name="SplashScreen1" component={SplashScreen1} options={{ headerShown: false }} />
             <Stack.Screen name="SplashScreen2" component={SplashScreen2} options={{ headerShown: false }} />
             <Stack.Screen name="SplashScreen3" component={SplashScreen3} options={{ headerShown: false }} />
-            <Stack.Screen name="MainPage" component={MainPage}   options={{ headerShown: false }} />
+            <Stack.Screen name="MainPage" component={MainPage} options={{ headerShown: false }} />
             <Stack.Screen name="RegEmailVerification" component={RegEmailVerification} options={{ headerShown: false }} />
-            <Stack.Screen name="OnlineTherapy" component={OnlineTherapyPage} options={{ headerShown: false }} />
+            <Stack.Screen name="BookingCompleted" component={BookingCompleted} options={{ headerShown: false }} />
             <Stack.Screen name="PeerCounseling" component={PeerCounselingPage} options={{ headerShown: false }} />
             <Stack.Screen name="DigitalDiary" component={DigitalDiary} options={{ headerShown: false }} />
             <Stack.Screen name="Message" component={MessageScreen} options={{ headerShown: false }} />
@@ -131,18 +143,16 @@ export default function App() {
             <Stack.Screen name="UserProfile" component={UserProfile} options={{ headerShown: false }} />
             <Stack.Screen name="AdminSettings" component={AdminSettings} options={{ headerShown: false }} />
             <Stack.Screen name="TherapyProfile" component={TherapyProfileScreen} />
-        <Stack.Screen name="Appointments" component={AppointmentsScreen} />
-        <Stack.Screen name="ChatTherapist" component={ChatTherapist} />
-        <Stack.Screen name="UpcomingAppointment" component={UpcomingAppointmentScreen} />
-          <Stack.Screen name="BookingForm" component={BookingForm} options={{ headerShown: false }} />
-          <Stack.Screen name="TherapistBookings" component={TherapistBookings} options={{ headerShown: false }} />
-          <Stack.Screen name="ConfirmMeeting" component={ConfirmMeeting} options={{ headerShown: false }} />
-          <Stack.Screen name="ScheduledAppointments" component={ScheduledAppointments} options={{ headerShown: false }} />
-          <Stack.Screen name="TherapistAppointments" component={TherapistAppointments} options={{ headerShown: false }}/>
-
-          <Stack.Screen name="ClientsPage" component={ClientsPage} options={{ headerShown: false }} />
-
-
+            <Stack.Screen name="Appointments" component={AppointmentsScreen} />
+            <Stack.Screen name="ChatTherapist" component={ChatTherapist} />
+            <Stack.Screen name="UpcomingAppointment" component={UpcomingAppointmentScreen} />
+            <Stack.Screen name="BookingForm" component={BookingForm} options={{ headerShown: false }} />
+            <Stack.Screen name="VerifyBookings" component={VerifyBookings} options={{ headerShown: false }} />
+            <Stack.Screen name="ConfirmMeeting" component={ConfirmMeeting} options={{ headerShown: false }} />
+            <Stack.Screen name="ScheduledAppointments" component={ScheduledAppointments} options={{ headerShown: false }} />
+            <Stack.Screen name="TherapistAppointments" component={TherapistAppointments} options={{ headerShown: false }} />
+            <Stack.Screen name="ClientsPage" component={ClientsPage} options={{ headerShown: false }} />
+            <Stack.Screen name="MainPost" component={Mainpost} options={{ headerShown: false }} />
           </Stack.Navigator>
         </NavigationContainer>
       </FontSizeProvider>

@@ -4,7 +4,7 @@ import { collection, getDocs, updateDoc, doc } from 'firebase/firestore';
 import { db } from '../Configuration/firebase';
 import { ThemeContext } from '../StudentProfile/ThemeContext';
 
-const TherapistBookingPage = ({ navigation }) => {
+const VerifyBookings = ({ navigation }) => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const { isDarkMode } = useContext(ThemeContext);
@@ -64,4 +64,4 @@ const TherapistBookingPage = ({ navigation }) => {
   );
 };
 
-export default TherapistBookingPage;
+export default VerifyBookings;

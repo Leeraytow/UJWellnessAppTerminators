@@ -9,8 +9,26 @@ export default function TherapistLandingScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header />
-      <ImageBackground source={require('../images/w.png')} style={styles.background}>
+      <ClientsPage />
+      <View style={styles.tabContainer}>
+          <TouchableOpacity style={styles.tabButton} onPress={() => navigation.navigate('TherapyProfile')}>
+            <Image source={require('../images/Tprofile.png')} style={styles.tabIcon} />
+            <Text style={styles.tabButtonText}>Profile</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.tabButton} onPress={() => navigation.navigate('Therapist')}>
+            <Image source={require('../images/Tresource.png')} style={styles.tabIcon} />
+            <Text style={styles.tabButtonText}>Resources</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.tabButton} onPress={() => navigation.navigate('Appointments')}>
+            <Image source={require('../images/Tappointment.png')} style={styles.tabIcon} />
+            <Text style={styles.tabButtonText}>Appointments</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.tabButton} onPress={() => navigation.navigate('ChatTherapist')}>
+            <Image source={require('../images/Tchat.png')} style={styles.tabIcon} />
+            <Text style={styles.tabButtonText}>Chat</Text>
+          </TouchableOpacity>
+        </View>
+      {/* <ImageBackground source={require('../images/w.png')} style={styles.background}>
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
           <View style={styles.mainContent}>
             <View style={styles.appointmentsWrapper}>
@@ -51,7 +69,7 @@ export default function TherapistLandingScreen() {
             <Text style={styles.tabButtonText}>Chat</Text>
           </TouchableOpacity>
         </View>
-      </ImageBackground>
+      </ImageBackground> */}
     </SafeAreaView>
   );
 }

@@ -1,41 +1,71 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, TextInput,Platform,StatusBar } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, TextInput, Platform, StatusBar } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import moment from 'moment';
 import { useNavigation } from '@react-navigation/native';
+import { collection, query, getDocs, where } from 'firebase/firestore'; // Firestore methods
+import { db } from '../Configuration/firebase'; // Adjust the import path to your Firebase config file
 
 const Dashboard = () => {
-  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [pendingAppointments, setPendingAppointments] = useState(0);
+  const [confirmedAppointments, setConfirmedAppointments] = useState(0);
+  const [students, setStudents] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const navigation = useNavigation(); // Initialize navigation
   const currentDate = moment().format('MMMM D, YYYY');
 
-  const patients = [
-    { id: 1, name: 'Maya Nelson', mood: 8, sessionTime: '10:00 -11:00 am', image: require('../images/Black5.jpeg') },
-    { id: 2, name: 'Ahmed Ehab', mood: 6, sessionTime: '11:00 -12:00 am', image: require('../images/Black2.jpeg') },
-    { id: 3, name: 'Peter Parker', mood: 8, sessionTime: '01:00 -02:00 pm', image: require('../images/Black3.jpeg') },
-    { id: 4, name: 'Elsa Jane', mood: 6, sessionTime: '02:00 -03:00 am', image: require('../images/Black4.jpeg') },
-  ];
+  // Fetch appointments and students
+  useEffect(() => {
+    const fetchAppointmentsAndStudents = async () => {
+      try {
+        // Fetch pending appointments
+        const bookingsCollection = collection(db, 'Bookings');
+        const pendingQuery = query(bookingsCollection, where('status', '==', 'pending'));
+        const pendingSnapshot = await getDocs(pendingQuery);
+        setPendingAppointments(pendingSnapshot.size); // Set pending appointments count
 
-  const getMoodEmoji = (mood) => {
-    if (mood >= 8) return '😃';
-    if (mood >= 6) return '😊';
-    if (mood >= 4) return '😐';
-    if (mood >= 2) return '😟';
-    return '😢';
-  };
+        // Fetch confirmed appointments
+        const confirmedQuery = query(bookingsCollection, where('status', '==', 'Confirmed'));
+        const confirmedSnapshot = await getDocs(confirmedQuery);
+        const confirmedBookings = confirmedSnapshot.docs.map(doc => doc.data());
+        setConfirmedAppointments(confirmedSnapshot.size); // Set confirmed appointments count
 
-  const handlePatientClick = (patient) => {
-    setSelectedPatient(patient);
-    navigation.navigate('Patient', { patient }); // Navigate to Patient screen
-  };
+        // Fetch students
+        const studentsCollection = collection(db, 'Students');
+        const studentsSnapshot = await getDocs(studentsCollection);
+        const studentList = studentsSnapshot.docs.map(doc => {
+          const studentData = doc.data();
+          // Find confirmed booking for the student
+          const studentBooking = confirmedBookings.find(booking => booking.studentNumber === studentData.studentNumber);
+          
+          // Add session time if booking exists
+          if (studentBooking) {
+            studentData.sessionTime = moment(studentBooking.meetingTime).format('MMMM D, YYYY h:mm A');
+          } else {
+            studentData.sessionTime = 'No session';
+          }
 
-  const filteredPatients = patients.filter((patient) =>
-    patient.name.toLowerCase().includes(searchQuery.toLowerCase())
+          return studentData;
+        });
+        setStudents(studentList); // Set students state
+      } catch (error) {
+        console.error('Error fetching data: ', error);
+      }
+    };
+
+    fetchAppointmentsAndStudents();
+  }, []); // Fetch only once on component mount
+
+  const filteredStudents = students.filter((student) =>
+    student.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleStudentClick = (student) => {
+    // Add your logic to handle student click if needed
+    console.log('Student clicked:', student);
+  };
+
   return (
-    
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Icon name="menu" size={24} color="#fff" />
@@ -47,61 +77,66 @@ const Dashboard = () => {
 
       <TextInput
         style={styles.searchBar}
-        placeholder="Search for a patient by name..."
+        placeholder="Search for a student by name..."
         value={searchQuery}
         onChangeText={setSearchQuery}
       />
 
       <View style={styles.statsContainer}>
-        <TouchableOpacity style={styles.statBox}>
-          <Text style={styles.statNumber}>{patients.length}</Text>
+        <TouchableOpacity style={styles.statBox} onPress={() => navigation.navigate("TherapistAppointments")}>
+          <Text style={styles.statNumber}>{confirmedAppointments}</Text>
           <Text style={styles.statLabel}>Appointments</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.statBox}>
           <Text style={styles.statNumber}>18</Text>
           <Text style={styles.statLabel}>Patient Diaries</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.statBox}>
-          <Text style={styles.statNumber}>4</Text>
-          <Text style={styles.statLabel}>Urgent Cases</Text>
+        <TouchableOpacity style={styles.statBox} onPress={() => navigation.navigate("ConfirmMeeting")}>
+          <Text style={styles.statNumber}>{pendingAppointments}</Text>
+          <Text style={styles.statLabel}>Pending Appointments</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.statBox}>
-          <Text style={styles.statNumber}>{patients.length}</Text>
+          <Text style={styles.statNumber}>{students.length}</Text>
           <Text style={styles.statLabel}>Mood Logs</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.tableHeader}>
-        <Text style={styles.tableHeaderText}>Patient</Text>
+        <Text style={styles.tableHeaderText}>Student</Text>
         <Text style={styles.tableHeaderText}>Mood</Text>
         <Text style={styles.tableHeaderText}>Session Time</Text>
       </View>
 
       <View style={styles.patientTable}>
-        {filteredPatients.map((patient) => (
-          <TouchableOpacity key={patient.id} style={styles.tableRow} onPress={() => handlePatientClick(patient)}>
+        {filteredStudents.map((student, index) => (
+          <TouchableOpacity key={index} style={styles.tableRow} onPress={() => handleStudentClick(student)}>
             <View style={styles.patientCell}>
-              <Image source={patient.image} style={styles.patientImage} />
-              <Text style={styles.patientName}>{patient.name}</Text>
+              <Image source={{ uri: student.profileImage }} style={styles.patientImage} />
+              <Text style={styles.patientName}>{student.name}</Text>
             </View>
             <View style={styles.moodCell}>
-              <Text style={styles.moodEmoji}>{getMoodEmoji(patient.mood)}</Text>
-              <Text style={styles.moodScore}>{patient.mood.toFixed(1)}</Text>
+              <Text style={styles.moodEmoji}>{getMoodEmoji(student.mood)}</Text>
             </View>
-            <Text style={styles.sessionTimeCell}>{patient.sessionTime}</Text>
+            <Text style={styles.sessionTimeCell}>{student.sessionTime}</Text>
           </TouchableOpacity>
         ))}
       </View>
-  
     </ScrollView>
   );
+};
+
+const getMoodEmoji = (mood) => {
+  if (mood >= 8) return '😃';
+  if (mood >= 6) return '😊';
+  if (mood >= 4) return '😐';
+  if (mood >= 2) return '😟';
+  return '😢';
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   header: {
@@ -121,10 +156,10 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textAlign: 'center',
     marginVertical: 10,
-    color: '#000', // Dark orange color
+    color: '#000',
   },
   searchBar: {
-    backgroundColor: '#FFCC99', 
+    backgroundColor: '#FFCC99',
     borderRadius: 8,
     padding: 10,
     margin: 16,
@@ -135,11 +170,11 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     padding: 16,
-    backgroundColor: '#fff', // Dark orange color
+    backgroundColor: '#fff',
   },
   statBox: {
     width: '48%',
-    backgroundColor: '#FF8C00', // Dark orange color
+    backgroundColor: '#FF8C00',
     borderRadius: 8,
     padding: 16,
     marginBottom: 16,
@@ -157,7 +192,7 @@ const styles = StyleSheet.create({
   tableHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#FF8C00', // Dark orange color
+    backgroundColor: '#FF8C00',
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderBottomWidth: 1,
@@ -186,7 +221,7 @@ const styles = StyleSheet.create({
   patientCell: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: '40%',
+    width: '50%',
   },
   patientImage: {
     width: 40,
@@ -209,38 +244,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginRight: 8,
   },
-  moodScore: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#000',
-  },
   sessionTimeCell: {
-    width: '30%',
+    width: '20%',
     textAlign: 'center',
     fontSize: 12,
-    color: '#666',
+    color: '#000',
   },
-  tabContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    backgroundColor: '#FFF',
-    borderTopWidth: 1,
-    borderTopColor: '#DDD',
-    paddingVertical: 10,
-    width: '100%',
-  },
-  tabButton: {
-    alignItems: 'center',
-  },
-  tabIcon: {
-    width: 24,
-    height: 24,
-    marginBottom: 5,
-  },
-  tabButtonText: {
-    fontSize: 12,
-  }
 });
 
 export default Dashboard;
