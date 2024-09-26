@@ -1,216 +1,184 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, SafeAreaView, ScrollView, TouchableWithoutFeedback, Dimensions, Platform, StatusBar } from 'react-native';
-import { LineChart } from 'react-native-chart-kit';
-import { Calendar } from 'react-native-calendars';
+import { View, StyleSheet, TouchableOpacity, Text, SafeAreaView, ScrollView, TextInput, Alert, Linking } from 'react-native';
 import moment from 'moment';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import Header from './Header';
 import Footer from './Footer';
 import Emoji from './Emoji';
 import { ThemeContext } from '../StudentProfile/ThemeContext';
+import * as SecureStore from 'expo-secure-store';
+import StudentMoodHistory from './MoodHistory';
 
 const MoodControl = () => {
   const { isDarkMode } = useContext(ThemeContext);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedEmotion, setSelectedEmotion] = useState(null);
   const [moodData, setMoodData] = useState({});
   const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
-
-  const route = useRoute();
+  const [note, setNote] = useState('');
   const navigation = useNavigation();
 
   useEffect(() => {
-    if (route.params?.selectedEmotion) {
-      setSelectedEmotion(route.params.selectedEmotion);
-      const selectedEmotionValue = emotions.find(emotion => emotion.id === route.params.selectedEmotion).value;
-      setMoodData(prevData => ({
-        ...prevData,
-        [selectedDate]: selectedEmotionValue
-      }));
-    }
-  }, [route.params]);
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-  const closeMenu = () => {
-    if (isMenuOpen) {
-      setIsMenuOpen(false);
-    }
-  };
+    const fetchMoodData = async () => {
+      try {
+        const data = await SecureStore.getItemAsync('moodHistory');
+        if (data) {
+          setMoodData(JSON.parse(data));
+        }
+      } catch (error) {
+        console.error('Error fetching mood data:', error);
+      }
+    };
+    fetchMoodData();
+  }, []);
 
   const emotions = [
-    { emoji: '😃', label: 'Excited', id: 1, value: 5 },
-    { emoji: '😊', label: 'Happy', id: 2, value: 4 },
-    { emoji: '😍', label: 'Loved', id: 3, value: 3 },
-    { emoji: '😐', label: 'Bored', id: 4, value: 2 },
-    { emoji: '😨', label: 'Anxious', id: 5, value: 1 },
-    { emoji: '😟', label: 'Worried', id: 6, value: 0 },
-    { emoji: '😠', label: 'Angry', id: 7, value: -1 },
-    { emoji: '😩', label: 'Frustrated', id: 8, value: -2 },
-    { emoji: '😢', label: 'Sad', id: 9, value: -3 },
+    { emoji: '😃', label: 'Excited', id: 1, value: 8 },
+    { emoji: '😊', label: 'Happy', id: 2, value: 7 },
+    { emoji: '😐', label: 'Discouraged', id: 3, value: 6 },
+    { emoji: '😟', label: 'Worried', id: 5, value: 5 },
+    { emoji: '😢', label: 'Sad', id: 8, value: 4 },
+    { emoji: '😨', label: 'Anxious', id: 4, value: 3 },
+    { emoji: '😩', label: 'Frustrated', id: 7, value: 1 },
+    { emoji: '😠', label: 'Angry', id: 6, value: 2 },
+    { emoji: '💔', label: 'Suicidal', id: 9, value: 0 },
   ];
+
+  const suicidePreventionNumber = 'tel:0607628321'; 
 
   const handleEmojiPress = (id) => {
     setSelectedEmotion(id);
-    const selectedEmotionValue = emotions.find(emotion => emotion.id === id).value;
-    setMoodData(prevData => ({
-      ...prevData,
-      [selectedDate]: selectedEmotionValue
-    }));
+
+    if (id === 9) {
+      Alert.alert(
+        'Contact Suicide Prevention',
+        'You have selected the "Suicidal" emotion. Would you like to call the suicide prevention hotline?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Call',
+            onPress: () => Linking.openURL(suicidePreventionNumber),
+          },
+        ],
+        { cancelable: true }
+      );
+    }
   };
 
-  const handleDayPress = (day) => {
-    setSelectedDate(day.dateString);
+  const handleSaveMood = async () => {
+    if (!selectedEmotion || !note) {
+      Alert.alert('Please select an emotion and write a note.');
+      return;
+    }
+
+    const selectedEmotionData = emotions.find(emotion => emotion.id === selectedEmotion);
+    const newEntry = {
+      date: selectedDate,
+      emotion: selectedEmotionData.label,
+      emoji: selectedEmotionData.emoji,
+      note,
+    };
+
+    const updatedMoodData = { ...moodData, [selectedDate]: newEntry };
+
+    try {
+      await SecureStore.setItemAsync('moodHistory', JSON.stringify(updatedMoodData));
+      setMoodData(updatedMoodData);
+      setNote('');
+      Alert.alert('Mood saved successfully!');
+    } catch (error) {
+      console.error('Error saving mood data:', error);
+      Alert.alert('Error saving mood data.');
+    }
   };
 
-  const chartConfig = {
-    backgroundGradientFrom: isDarkMode ? "#333" : "#fff",
-    backgroundGradientTo: isDarkMode ? "#333" : "#fff",
-    color: (opacity = 1) => isDarkMode ? `rgba(255, 255, 255, ${opacity})` : `rgba(0, 0, 0, ${opacity})`,
-    strokeWidth: 2,
-    barPercentage: 0.5,
-    useShadowColorFromDataset: false,
-    propsForDots: {
-      r: "6",
-      strokeWidth: "2",
-      stroke: isDarkMode ? "#00f" : "#f00" // Use contrasting colors for dots
-    },
-    propsForBackgroundLines: {
-      stroke: isDarkMode ? "#444" : "#eee", // Lighten gridlines for better contrast
-      strokeDasharray: "" // Solid gridlines
-    },
+  const navigateToHistory = () => {
+    navigation.navigate('StudentMoodHistory');
   };
-
-  const screenWidth = Dimensions.get("window").width;
-
-  const chartData = Object.entries(moodData).sort(([a], [b]) => moment(a).diff(moment(b)));
 
   return (
-    <SafeAreaView style={[styles.SafeArea, { backgroundColor: isDarkMode ? '#000' : '#fff' }]}>
-      <TouchableWithoutFeedback onPress={closeMenu}>
-        <View style={[styles.container, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
-          <Header toggleMenu={toggleMenu} isMenuOpen={isMenuOpen} closeMenu={closeMenu} />
-          
-          <ScrollView contentContainerStyle={styles.contentContainer}>
-            <Text style={[styles.heading, { color: isDarkMode ? '#fff' : '#000' }]}>How are you feeling right now?</Text>
-            <View style={styles.emojiGrid}>
-              {emotions.map((emotion) => (
-                <Emoji
-                  key={emotion.id}
-                  emoji={emotion.emoji}
-                  label={emotion.label}
-                  onPress={() => handleEmojiPress(emotion.id)}
-                  isSelected={selectedEmotion === emotion.id}
-                />
-              ))}
-            </View>
-
-            <Calendar
-              onDayPress={handleDayPress}
-              markedDates={{
-                [selectedDate]: { selected: true, selectedColor: isDarkMode ? '#00adf5' : '#00adf5' },
-                ...Object.keys(moodData).reduce((acc, date) => ({
-                  ...acc,
-                  [date]: { marked: true, dotColor: isDarkMode ? '#50cebb' : '#50cebb' }
-                }), {})
-              }}
-              theme={{
-                calendarBackground: isDarkMode ? '#333' : '#fff',
-                textSectionTitleColor: isDarkMode ? '#b6c1cd' : '#2d4150',
-                todayTextColor: isDarkMode ? '#00adf5' : '#00adf5',
-                dayTextColor: isDarkMode ? '#fff' : '#2d4150',
-                arrowColor: isDarkMode ? '#fff' : '#2d4150',
-                monthTextColor: isDarkMode ? '#fff' : '#2d4150',
-                textDisabledColor: isDarkMode ? '#d9e1e8' : '#d9e1e8',
-              }}
-              style={styles.calendar}
+    <SafeAreaView style={styles.container}>
+      <Header />
+      <ScrollView contentContainerStyle={styles.contentContainer}>
+        <Text style={styles.heading}>How are you feeling?</Text>
+        <View style={styles.emojiGrid}>
+          {emotions.map((emotion) => (
+            <Emoji
+              key={emotion.id}
+              emoji={emotion.emoji}
+              label={emotion.label}
+              onPress={() => handleEmojiPress(emotion.id)}
+              isSelected={selectedEmotion === emotion.id}
             />
-
-            {chartData.length > 0 && (
-              <View style={styles.chartContainer}>
-                <LineChart
-                  data={{
-                    labels: chartData.map(([date]) => moment(date).format('DD MMM')),
-                    datasets: [{
-                      data: chartData.map(([, value]) => value)
-                    }]
-                  }}
-                  width={screenWidth * 0.9}
-                  height={220}
-                  chartConfig={chartConfig}
-                  bezier
-                  style={styles.chart}
-                  fromZero
-                  withDots
-                  withInnerLines
-                  withVerticalLabels
-                  withHorizontalLabels
-                />
-                <Text style={styles.chartLabel}>Mood Over Time</Text>
-              </View>
-            )}
-          </ScrollView>
-
-          <Footer />
+          ))}
         </View>
-      </TouchableWithoutFeedback>
+        <TextInput
+          style={styles.textInput}
+          placeholder="Why do you feel this way?"
+          value={note}
+          onChangeText={setNote}
+          multiline
+        />
+        <TouchableOpacity style={styles.saveButton} onPress={handleSaveMood}>
+          <Text style={styles.saveButtonText}>Save Mood</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.historyButton} onPress={StudentMoodHistory}>
+          <Text style={styles.historyButtonText}>View All Mood Logs</Text>
+        </TouchableOpacity>
+      </ScrollView>
+      <Footer />
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  SafeArea: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-  },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f5f5f5',
   },
   contentContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 30,
   },
   heading: {
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
   },
   emojiGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'center',
-    width: '100%',
-    paddingHorizontal: 10,
+    justifyContent: 'space-between',
   },
-  moodIcon: {
-    flex: 1,
+  textInput: {
+    backgroundColor: '#fff',
+    padding: 10,
+    borderRadius: 8,
+    height: 100,
+    marginVertical: 20,
+    textAlignVertical: 'top',
+  },
+  saveButton: {
+    backgroundColor: '#ffa500',
+    borderRadius: 8,
+    padding: 15,
     alignItems: 'center',
-    justifyContent: 'center',
+    marginVertical: 10,
   },
-  moodIconEmoji: {
-    fontSize: 24,
+  saveButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
-  calendar: {
-    width: '100%',
-    marginTop: 20,
-  },
-  chartContainer: {
-    marginTop: 20,
+  historyButton: {
+    backgroundColor: '#333',
+    borderRadius: 8,
+    padding: 15,
     alignItems: 'center',
   },
-  chart: {
-    borderRadius: 16,
-  },
-  chartLabel: {
-    fontSize: 16,
-    color: '#888',
-    marginTop: 10,
-    textAlign: 'center',
+  historyButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 

@@ -41,7 +41,7 @@ const Footer = () => {
         style={[styles.footerButton, activeIndex === 0 && styles.activeButton]}
         onPress={() => handlePress(0, 'MainPage')}
       >
-        <Ionicons name="home-outline" size={15} color={activeIndex === 0 ? '#7B61FF' : '#9b9b9b'} />
+        <Ionicons name="home-outline" size={15} color={activeIndex === 0 ? '#FF5F1F' : '#9b9b9b'} />
         <Text style={styles.buttonLabel}>Home</Text>
       </TouchableOpacity>
 
@@ -50,14 +50,14 @@ const Footer = () => {
         style={[styles.footerButton, activeIndex === 1 && styles.activeButton]}
         onPress={() => handlePress(1, 'Tools')}
       >
-        <Ionicons name="construct-outline" size={15} color={activeIndex === 1 ? '#7B61FF' : '#9b9b9b'} />
+        <Ionicons name="construct-outline" size={15} color={activeIndex === 1 ? '#FF5F1F' : '#9b9b9b'} />
         <Text style={styles.buttonLabel}>Tools</Text>
       </TouchableOpacity>
 
       {/* Add Mood Button with bounce animation */}
       <TouchableOpacity onPress={() => navigation.navigate('MoodControl')} style={styles.addButton}>
         <Animated.View style={{ transform: [{ scale: bounceValue }] }}>
-          <Ionicons name="add-circle" size={40} color="#6a1b9a" />
+          <Ionicons name="add-circle" size={40} color="#FF5F1F" />
         </Animated.View>
         <Text style={styles.buttonLabel}>Add Mood</Text>
       </TouchableOpacity>
@@ -67,7 +67,7 @@ const Footer = () => {
         style={[styles.footerButton, activeIndex === 2 && styles.activeButton]}
         onPress={() => handlePress(2, 'Chat')}
       >
-        <Ionicons name="chatbubble-outline" size={15} color={activeIndex === 2 ? '#7B61FF' : '#9b9b9b'} />
+        <Ionicons name="chatbubble-outline" size={15} color={activeIndex === 2 ? '#FF5F1F' : '#9b9b9b'} />
         <Text style={styles.buttonLabel}>Chat</Text>
       </TouchableOpacity>
 
@@ -76,7 +76,7 @@ const Footer = () => {
         style={[styles.footerButton, activeIndex === 3 && styles.activeButton]}
         onPress={() => handlePress(3, 'Profile')}
       >
-        <Ionicons name="person-outline" size={15} color={activeIndex === 3 ? '#7B61FF' : '#9b9b9b'} />
+        <Ionicons name="person-outline" size={15} color={activeIndex === 3 ? '#FF5F1F' : '#9b9b9b'} />
         <Text style={styles.buttonLabel}>Profile</Text>
       </TouchableOpacity>
     </View>
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingVertical: 1,
     borderTopWidth: 1,
-    borderTopColor: '#7B61FF',
+    borderTopColor: '#FF5F1F',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
   activeButton: {
     borderRadius: 50,
     borderWidth: 2,
-    borderColor: '#6a1b9a',
+    borderColor: '#FF5F1F',
     backgroundColor: '#fff',
   },
   addButton: {
