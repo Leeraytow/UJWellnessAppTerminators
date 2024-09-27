@@ -81,7 +81,7 @@ export default function StudentRegisterScreen() {
       await setDoc(userRef, {
         name: username,
         email: email,
-        profilePicture: "",
+        profilePicture:  require('../images/profile.png'),
         active: false,  // Set active to false during registration
       });
   

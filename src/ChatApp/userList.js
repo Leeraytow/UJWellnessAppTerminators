@@ -45,7 +45,7 @@ const UserList = ({ navigation }) => {
         />
       </TouchableOpacity>
       <Text style={[styles.name, { color: isDarkMode ? '#FFF' : '#333' }]}>
-        {item.id === auth.currentUser.email ? 'Myself' : item.name}
+        {item.id === auth.currentUser.email ? 'Me, Myself and I' : item.name}
       </Text>
       {item.active && (
         <View style={styles.activeDot} />
@@ -55,7 +55,7 @@ const UserList = ({ navigation }) => {
   
   return (
     <View style={[styles.container, { backgroundColor: isDarkMode ? '#222' : '#F5F5F5' }]}>
-<View style={[styles.header, { backgroundColor: isDarkMode ? '#444' : '#FF5733' }]}>
+      <View style={[styles.header, { backgroundColor: isDarkMode ? '#444' : '#FF5733' }]}>
         <Text style={styles.headerTitle}>UJWellness Chat</Text>
       </View>
       <FlatList
@@ -88,6 +88,7 @@ const styles = StyleSheet.create({
   },
   list: {
     padding: 16,
+    position: 'relative',
   },
   userItem: {
     flexDirection: 'row',
@@ -112,13 +113,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   activeDot: {
+    position: 'absolute',
     width: 12,
     height: 12,
     borderRadius: 6,
     backgroundColor: 'green',
-    marginLeft: 8,
+    top: 20, // Fixed vertical position
+    right: 16, // Adjusted to move further right inside the user item
   },
-  
 });
 
 export default UserList;
