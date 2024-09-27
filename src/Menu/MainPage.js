@@ -8,66 +8,116 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Footer from '../Menu/Footer';
 import Header from '../Menu/Header';
 import { Ionicons } from '@expo/vector-icons'; 
+import { doc, getDoc, updateDoc, deleteDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { db, auth } from '../Configuration/firebase'; // Ensure you have your Firebase config imported
 
 const MainScreen = () => {
   const navigation = useNavigation();
-  const route = useRoute();
+
   const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState(''); // Set initial name to an empty string
+  const [name, setName] = useState('');
   const [fadeAnim] = useState(new Animated.Value(0));
   const [pickedImage, setPickedImage] = useState(null);
+  const [appointments, setAppointments] = useState([]); // State for storing appointments
+  const [currentImage, setCurrentImage] = useState(null);
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  
 
-  // Fetch real user name from AsyncStorage or route params
+
+
+
   useEffect(() => {
-    const loadUserName = async () => {
-      try {
-        const storedName = await AsyncStorage.getItem('userName');
-        if (storedName) {
-          setName(storedName);
-        } else if (route.params?.userName) {
-          setName(route.params.userName);
-          await AsyncStorage.setItem('userName', route.params.userName);
+    const fetchCurrentImage = async () => {
+      const user = auth.currentUser;
+      if (user) {
+        try {
+          const userRef = doc(db, 'Students', user.uid);
+          const docSnap = await getDoc(userRef);
+
+          if (docSnap.exists()) {
+            const userData = docSnap.data();
+            setCurrentImage(userData.profileImage || null);
+          }
+        } catch (error) {
+          console.error('Error fetching user profile image: ', error);
         }
-      } catch (error) {
-        console.error('Error fetching user name:', error);
       }
     };
 
-    loadUserName();
-  }, [route.params]);
+    fetchCurrentImage();
+  }, []);
 
-  const toggleEditing = () => setIsEditing(!isEditing);
-
-  const handleEditName = async () => {
-    toggleEditing();
-    if (isEditing) {
-      console.log('Name Updated:', name);
+  useEffect(() => {
+    const fetchUserData = async () => {
       try {
-        await AsyncStorage.setItem('userName', name); // Save updated name
+        const user = auth.currentUser;
+        if (user) {
+          const userRef = doc(db, 'Students', user.uid);
+          const docSnap = await getDoc(userRef);
+
+          if (docSnap.exists()) {
+            const userData = docSnap.data();
+            setUsername(userData.name || ''); // Set the user's name
+            setEmail(userData.email || '');   // Set the user's email
+          } else {
+            console.log('No such document!');
+          }
+        }
       } catch (error) {
-        console.error('Error saving user name:', error);
+        console.error('Error fetching user data: ', error);
       }
-    }
-  };
+    };
 
-  const pickImage = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permission Required', 'Sorry, we need media library permissions to select an image.');
-      return;
-    }
+    fetchUserData();
+  }, []);
 
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
+  // Fetch appointments from Firestore
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      const user = auth.currentUser; // Get the current user
+      if (!user) {
+        console.log("No user is logged in.");
+        return;
+      }
 
-    if (!result.canceled) {
-      setPickedImage(result.assets[0].uri);
-    }
-  };
+      const email = user.email; // Get the email directly from the user object
+      console.log('User Email:', email); // Debugging output
+
+      const appointmentsRef = collection(db, 'Bookings');
+
+      const q = query(
+        appointmentsRef,
+        where('email', '==', email),
+        where('status', '==', 'Confirmed') // Add this line to filter for confirmed appointments
+      );
+
+
+      try {
+        const querySnapshot = await getDocs(q);
+        const fetchedAppointments = [];
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          fetchedAppointments.push({
+            id: doc.id,
+            date: data.meetingDate,
+            time: data.meetingTime,
+            type: data.meetingType,
+          });
+        });
+        console.log('Fetched Appointments:', fetchedAppointments); // Debugging output
+        setAppointments(fetchedAppointments);
+      } catch (error) {
+        console.error('Error fetching appointments:', error);
+      }
+    };
+
+    fetchAppointments();
+  }, []);
+
+
+
+ 
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -102,57 +152,32 @@ const MainScreen = () => {
                   <Feather name="message-circle" size={24} color="#FF5F1F" />
                 </TouchableOpacity>
               </View>
-
-              <TouchableOpacity onPress={pickImage} style={styles.profileImageContainer}>
-              <Image
-  source={{ uri: pickedImage || 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png' }}
-  style={styles.profileImage}
-  onError={(e) => {
-    console.error('Error loading image:', e.nativeEvent.error);
-    setPickedImage(null); // Optional: clear image if there's an error
-  }}
-/>
-              </TouchableOpacity>
+              <Image  source={{ uri: currentImage }}  style={[styles.profilePicture]} /> 
             </View>
 
             <View style={styles.nameContainer}>
-              {isEditing ? (
-                <TextInput
-                  value={name}
-                  onChangeText={setName}
-                  style={styles.nameInput}
-                  placeholder="Enter your name"
-                  placeholderTextColor="gray"
-                />
-              ) : (
-                <Text style={styles.name}>Welcome, {name}</Text>
-              )}
-              <TouchableOpacity onPress={handleEditName} style={styles.editIcon}>
-                <MaterialIcons name="edit-square" size={24} color="#FF5F1F" />
-              </TouchableOpacity>
+            
+                <Text style={styles.name}>Welcome, {username}</Text>
+              
             </View>
 
             {/* Appointments */}
             <TouchableOpacity onPress={() => navigation.navigate('AppointmentStudent')}>
               <LinearGradient colors={['#F9886C', '#FBFBFB']} style={styles.appointmentsContainer}>
                 <Text style={styles.sectionTitle}>Next Appointments</Text>
-                <View style={styles.appointmentCards}>
-                  <View style={styles.appointmentCard}>
-                    <Text style={styles.appointmentDate}>03 Feb</Text>
-                    <Text style={styles.appointmentDetails}>16:00</Text>
-                    <Text style={styles.appointmentDetails}>Online Session</Text>
+                {appointments.length > 0 ? (
+                  <View style={styles.appointmentCards}>
+                    {appointments.slice(0, 3).map((appointment) => ( // Limit to 3 appointments
+                      <View key={appointment.id} style={styles.appointmentCard}>
+                        <Text style={styles.appointmentDate}>{appointment.date}</Text>
+                        <Text style={styles.appointmentDetails}>{appointment.time}</Text>
+                        <Text style={styles.appointmentDetails}>{appointment.type}</Text>
+                      </View>
+                    ))}
                   </View>
-                  <View style={styles.appointmentCard}>
-                    <Text style={styles.appointmentDate}>10 Feb</Text>
-                    <Text style={styles.appointmentDetails}>14:00</Text>
-                    <Text style={styles.appointmentDetails}>Face to Face</Text>
-                  </View>
-                  <View style={styles.appointmentCard}>
-                    <Text style={styles.appointmentDate}>17 Feb</Text>
-                    <Text style={styles.appointmentDetails}>11:30</Text>
-                    <Text style={styles.appointmentDetails}>Online Session</Text>
-                  </View>
-                </View>
+                ) : (
+                  <Text style={styles.noAppointmentsText}>No upcoming appointments.</Text>
+                )}
               </LinearGradient>
             </TouchableOpacity>
 
@@ -237,6 +262,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     position: 'relative',
     width: '100%',
+   
   },
   name: {
     fontSize: 24,
@@ -372,6 +398,20 @@ emotionsRow: {
     color: 'black',
     marginBottom: 30,
   },
+  noAppointmentsText: {
+    fontSize: 16,
+    color: '#FF5F1F', // or any color you prefer
+    textAlign: 'center', // Center align the message
+    marginTop: 10, // Add some space above
+  },
+  profilePicture: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    borderWidth: 3,
+    marginBottom: 0,
+  },
+  
 });
 
 export default MainScreen;

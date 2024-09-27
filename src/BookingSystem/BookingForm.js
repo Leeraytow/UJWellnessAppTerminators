@@ -115,8 +115,8 @@ const BookingForm = ({ navigation }) => {
       <Text style={styles.label}>Meeting Type</Text>
       <View style={styles.buttonRow}>
         <TouchableOpacity
-          style={[styles.button, meetingType === 'faceToFace' && styles.selectedButton]}
-          onPress={() => handleSelectType('faceToFace')}
+          style={[styles.button, meetingType === 'FaceToFace' && styles.selectedButton]}
+          onPress={() => handleSelectType('FaceToFace')}
         >
           <Text style={styles.buttonText}>Face to Face</Text>
         </TouchableOpacity>

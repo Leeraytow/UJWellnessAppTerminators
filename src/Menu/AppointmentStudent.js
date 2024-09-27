@@ -1,15 +1,54 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Footer from '../Menu/Footer';
 import Header from '../Menu/Header';
-
-const appointments = [
-  { id: '1', date: '2024-10-01', time: '10:00 AM', sessionType: 'Online' },
-  { id: '2', date: '2024-10-05', time: '1:00 PM', sessionType: 'Face-to-Face' },
-];
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { auth, db } from '../Configuration/firebase'; 
 
 const AppointmentsScreen = () => {
+  const [appointments, setAppointments] = useState([]);
+
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      const user = auth.currentUser; 
+      if (!user) {
+        console.log("No user is logged in.");
+        return;
+      }
+
+      const email = user.email; 
+      console.log('User Email:', email); 
+
+      const appointmentsRef = collection(db, 'Bookings');
+      const q = query(
+        appointmentsRef,
+        where('email', '==', email),
+        where('status', '==', 'Confirmed') // Only show confirmed appointments
+      );
+
+      try {
+        const querySnapshot = await getDocs(q);
+        const fetchedAppointments = [];
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          fetchedAppointments.push({
+            id: doc.id,
+            date: data.meetingDate,
+            time: data.meetingTime,
+            sessionType: data.meetingType, // Make sure to map this field correctly
+          });
+        });
+        console.log('Fetched Appointments:', fetchedAppointments); // Debugging output
+        setAppointments(fetchedAppointments);
+      } catch (error) {
+        console.error('Error fetching appointments:', error);
+      }
+    };
+
+    fetchAppointments();
+  }, []);
+
   const renderAppointment = ({ item }) => (
     <View style={styles.appointmentItem}>
       <Text style={styles.dateText}>{item.date}</Text>
@@ -63,10 +102,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 20,
     shadowColor: '#000',
-    shadowOpacity: 10, // Reduced shadow opacity for subtlety
-    shadowRadius: 18,    // Reduced shadow radius
-    shadowOffset: { width: 0, height: 2 }, // Added offset for depth
-    elevation: 20,       // Reduced elevation for a lighter effect
+    shadowOpacity: 10,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 20,
     flexDirection: 'column',
     alignItems: 'flex-start',
   },
