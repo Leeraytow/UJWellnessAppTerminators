@@ -20,6 +20,8 @@ const ProfileImageUpdate = ({ navigation }) => {
   
   const [pickedImage, setPickedImage] = useState(null);
   const [currentImage, setCurrentImage] = useState(null);
+  const [loading, setLoading] = useState(false);
+
 
   useEffect(() => {
     const fetchCurrentImage = async () => {
@@ -141,7 +143,6 @@ const ProfileImageUpdate = ({ navigation }) => {
 
     fetchUserData();
   }, []);
-
   const handleSignOut = () => {
     Alert.alert(
       'Confirm Sign Out',
@@ -161,9 +162,8 @@ const ProfileImageUpdate = ({ navigation }) => {
             // Ensure user is logged in before proceeding
             if (user) {
               // Update the "active" status to false in Firestore
-              const userRef = firestore().collection('Students').doc(user.uid);
-              userRef
-                .update({ active: false })
+              const userRef = doc(db, 'Students', user.uid); // Updated to use Firestore doc ref
+              updateDoc(userRef, { active: false })
                 .then(() => {
                   console.log('User status set to inactive');
   
@@ -191,7 +191,6 @@ const ProfileImageUpdate = ({ navigation }) => {
       { cancelable: true }
     );
   };
-  
 
 const fallbackImage= "https://imgs.search.brave.com/iy-sEupdI8V7_1q3MjjWqpGGNTZ53DPoppz8Eascl-M/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/cG5naXRlbS5jb20v/cGltZ3MvbS8xNDYt/MTQ2ODg0M19wcm9m/aWxlLWljb24tb3Jh/bmdlLXBuZy10cmFu/c3BhcmVudC1wbmcu/cG5n"
   const handlePressIn = () => {

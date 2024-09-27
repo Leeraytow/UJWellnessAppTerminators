@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, FlatList, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as ImagePicker from 'expo-image-picker';
-import { collection, query, onSnapshot, addDoc, deleteDoc, doc, getDoc } from 'firebase/firestore';
+import { collection, query, onSnapshot, addDoc, deleteDoc, doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, auth } from '../Configuration/firebase';
+import { sendNotificationToUser } from './NotificationService'; // Import the updated notification function
 
 export default function HomeScreen({ navigation }) {
   const [text, setText] = useState('');
@@ -12,6 +13,7 @@ export default function HomeScreen({ navigation }) {
   const [profileImage, setProfileImage] = useState(null);
   const [posts, setPosts] = useState([]);
   const [pickedImage, setPickedImage] = useState(null);
+  const [currentUserEmail, setCurrentUserEmail] = useState('');
 
   useEffect(() => {
     const fetchCurrentUserDetails = async () => {
@@ -20,20 +22,17 @@ export default function HomeScreen({ navigation }) {
         try {
           const userRef = doc(db, 'Students', user.uid);
           const docSnap = await getDoc(userRef);
-
           if (docSnap.exists()) {
             const userData = docSnap.data();
             setName(userData.name || 'User');
-            setProfileImage(userData.profileImage || 'https://i.pravatar.cc/300'); 
-            setName('User');
-            setProfileImage('https://i.pravatar.cc/300'); 
+            setProfileImage(userData.profileImage || 'https://i.pravatar.cc/300');
+            setCurrentUserEmail(user.email);
+          } else {
             console.error('No such document!');
           }
         } catch (error) {
           console.error('Error fetching user details: ', error);
         }
-      } else {
-        console.error('No user is logged in.');
       }
     };
 
@@ -41,6 +40,12 @@ export default function HomeScreen({ navigation }) {
   }, []);
 
   const handlePost = async () => {
+    const user = auth.currentUser;
+    if (!user) {
+      Alert.alert('Post Error', 'No user is logged in.');
+      return;
+    }
+
     if (text.trim() || pickedImage) {
       try {
         let imageUrl = null;
@@ -53,20 +58,23 @@ export default function HomeScreen({ navigation }) {
           const blob = await response.blob();
 
           await uploadBytes(imageRef, blob);
-
           imageUrl = await getDownloadURL(imageRef);
         }
 
         const newPost = {
           text,
           author: name,
+          email: user.email,
           timestamp: new Date(),
           comments: [],
-          profileImage,
+          profileImage: user.photoURL || 'https://i.pravatar.cc/300',
           image: imageUrl,
         };
 
         await addDoc(collection(db, 'Posts'), newPost);
+
+        // Send notification to all users
+        await sendNotificationToUser(user.uid, `New post from ${name}: ${text}`);
 
         setText('');
         setPickedImage(null);
@@ -99,6 +107,8 @@ export default function HomeScreen({ navigation }) {
   };
 
   const renderItem = ({ item }) => {
+    const isCurrentUserPost = item.email === currentUserEmail;
+
     return (
       <View style={styles.postContainer}>
         <View style={styles.headerContainer}>
@@ -129,10 +139,11 @@ export default function HomeScreen({ navigation }) {
             <Icon name="share-outline" size={24} color="#333" />
             <Text style={styles.iconLabel}>Share</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton} onPress={() => handleDelete(item.id)}>
-            <Icon name="trash-outline" size={24} color="red" />
-            <Text style={styles.iconLabel}>Delete</Text>
-          </TouchableOpacity>
+          {isCurrentUserPost && (
+            <TouchableOpacity style={styles.iconButton} onPress={() => handleDelete(item.id)}>
+              <Icon name="trash-outline" size={24} color="red" />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     );
@@ -223,12 +234,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 200,
     marginTop: 10,
-    borderRadius: 5,
-  },
-  selectedImage: {
-    width: '100%',
-    height: 200,
-    marginBottom: 10,
     borderRadius: 5,
   },
   postList: {

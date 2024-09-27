@@ -47,8 +47,12 @@ const UserList = ({ navigation }) => {
       <Text style={[styles.name, { color: isDarkMode ? '#FFF' : '#333' }]}>
         {item.id === auth.currentUser.email ? 'Myself' : item.name}
       </Text>
+      {item.active && (
+        <View style={styles.activeDot} />
+      )}
     </TouchableOpacity>
   );
+  
   return (
     <View style={[styles.container, { backgroundColor: isDarkMode ? '#222' : '#F5F5F5' }]}>
 <View style={[styles.header, { backgroundColor: isDarkMode ? '#444' : '#FF5733' }]}>
@@ -107,6 +111,14 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 18,
   },
+  activeDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: 'green',
+    marginLeft: 8,
+  },
+  
 });
 
 export default UserList;

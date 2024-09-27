@@ -65,7 +65,7 @@ const Footer = () => {
       {/* Chat Button */}
       <TouchableOpacity
         style={[styles.footerButton, activeIndex === 2 && styles.activeButton]}
-        onPress={() => handlePress(2, 'Chat')}
+        onPress={() => handlePress(2, 'userList')}
       >
         <Ionicons name="chatbubble-outline" size={15} color={activeIndex === 2 ? '#7B61FF' : '#9b9b9b'} />
         <Text style={styles.buttonLabel}>Chat</Text>

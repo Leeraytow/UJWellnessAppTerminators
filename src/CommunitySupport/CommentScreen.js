@@ -1,53 +1,98 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, FlatList, StyleSheet } from 'react-native';
-import { format } from 'date-fns';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Button, FlatList, Alert, StyleSheet } from 'react-native';
+import { collection, doc, updateDoc, onSnapshot, arrayUnion } from 'firebase/firestore';
+import { auth, db } from '../Configuration/firebase';
 
 export default function CommentsScreen({ route }) {
   const { post } = route.params;
-  const [comment, setComment] = useState('');
-  const [name, setName] = useState('User2'); 
-  const [comments, setComments] = useState(post.comments);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState('');
+  const [username, setUsername] = useState('');
 
-  const handleComment = () => {
-    if (comment.trim()) {
-      const newComment = {
-        id: Date.now().toString(),
-        text: comment,
-        author: name,
-        timestamp: new Date(),
-      };
-      const updatedComments = [...comments, newComment];
-      setComments(updatedComments);
-      setComment('');
-    
+  useEffect(() => {
+    // Fetch comments for the post
+    const postRef = doc(db, 'Posts', post.id);
+    const unsubscribe = onSnapshot(postRef, (snapshot) => {
+      if (snapshot.exists()) {
+        setComments(snapshot.data().comments || []);
+      }
+    });
+    return () => unsubscribe();
+  }, [post.id]);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        try {
+          const userRef = doc(db, 'Students', user.uid);
+          const docSnap = await getDoc(userRef);
+
+          if (docSnap.exists()) {
+            const userData = docSnap.data();
+            setUsername(userData.name.toUpperCase() || ''); // Set the user's name
+          } else {
+            console.log('No such document!');
+          }
+        } catch (error) {
+          console.error('Error fetching user data: ', error);
+        }
+      } else {
+        setUsername(''); // Clear the username if the user is not authenticated
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleAddComment = async () => {
+    const user = auth.currentUser;
+    if (!user) {
+      Alert.alert('Comment Error', 'No user is logged in.');
+      return;
+    }
+
+    if (newComment.trim()) {
+      try {
+        const postRef = doc(db, 'Posts', post.id);
+        await updateDoc(postRef, {
+          comments: arrayUnion({
+            author: username || 'Anonymous',  // Use the fetched username
+            email: user.email,
+            text: newComment,
+            timestamp: new Date(),
+          }),
+        });
+        setNewComment('');
+      } catch (error) {
+        Alert.alert('Comment Error', 'Failed to add comment. Please try again.');
+      }
+    } else {
+      Alert.alert('Comment Error', 'Comment cannot be empty.');
     }
   };
 
   const renderItem = ({ item }) => (
     <View style={styles.commentContainer}>
-      <Text style={styles.commentText}>{item.text}</Text>
-      <Text style={styles.commentMeta}>Commented by {item.author} on {format(item.timestamp, 'MMMM do, yyyy - h:mm a')}</Text>
+      <Text style={styles.commentAuthor}>{item.author} ({item.email})</Text>
+      <Text>{item.text}</Text>
     </View>
   );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.postText}>{post.text}</Text>
-      <Text style={styles.postMeta}>Posted by {post.author} on {format(post.timestamp, 'MMMM do, yyyy - h:mm a')}</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Write a comment..."
-        value={comment}
-        onChangeText={setComment}
-        multiline
-      />
-      <Button title="Comment" onPress={handleComment} />
       <FlatList
         data={comments}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        style={styles.commentList}
+        keyExtractor={(item, index) => index.toString()}
+        ListEmptyComponent={<Text>No comments yet.</Text>}
       />
+      <TextInput
+        style={styles.input}
+        placeholder="Add a comment..."
+        value={newComment}
+        onChangeText={setNewComment}
+      />
+      <Button title="Comment" onPress={handleAddComment} />
     </View>
   );
 }
@@ -57,36 +102,18 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
-  postText: {
-    fontSize: 18,
-    marginBottom: 10,
-  },
-  postMeta: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 10,
-  },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
     padding: 10,
     marginBottom: 10,
-    minHeight: 40,
   },
   commentContainer: {
-    padding: 10,
+    padding: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
-  commentText: {
-    fontSize: 16,
-  },
-  commentMeta: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 5,
-  },
-  commentList: {
-    marginTop: 20,
+  commentAuthor: {
+    fontWeight: 'bold',
   },
 });
