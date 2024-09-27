@@ -12,8 +12,17 @@ import StudentRegister from './src/Logins/StudentRegisterScreen';
 import TherapistScreen from './src/Logins/TherapistLoginScreen'; 
 import TherapistRegisterScreen from './src/Logins/TherapistRegisterScreen';
 import TherapistLandingScreen from './src/TherapyPages/TherapistLandingScreen';
+import  TherapyTechniques from './src/TherapyPages/TherapyTechniques';
+import CBTDetails from './src/TherapyPages/CBTDetails';
+import DBTDetails from './src/TherapyPages/DBTDetails';
+import MBSRDetails from './src/TherapyPages/MBSRDetails';
+import ACTDetails from './src/TherapyPages/ACTDetails';
+import ExposureDetails from './src/TherapyPages/ExposureDetails';
+import NarrativeDetails from './src/TherapyPages/NarrativeDetails';
+import SomaticDetails from './src/TherapyPages/SomaticDetails';
+import GestaltDetails from './src/TherapyPages/GestaltDetails';
 import ResourcesScreen from './src/TherapyPages/Resource';
-import RegisterScreen from './src/TherapyPages/RegisterScreen';
+import  RegisterScreen from './src/TherapyPages/SessionRecord';
 import TherapyProfileScreen from './src/TherapyPages/TherapyProfileScreen';
 import AppointmentsScreen from './src/TherapyPages/AppointmentsScreen';
 import ChatTherapist from './src/TherapyPages/ChatTherapist';
@@ -34,6 +43,7 @@ import MainPage from './src/Menu/MainPage';
 import AppointmentStudent from './src/Menu/AppointmentStudent';
 import Notifications from './src/Menu/Notifications'; 
 import Messages from './src/Menu/Messages'; 
+
 import MoodControl from './src/Menu/MoodControl';
 import TherapyButton from './src/Menu/TherapyButton';
 // import GroupChatApp from './src/ChatApp/GroupChat';
@@ -102,15 +112,24 @@ export default function App() {
     <ThemeProvider>
       <FontSizeProvider>
         <NavigationContainer>
-        <Stack.Navigator initialRouteName={initialRoute}>
+        <Stack.Navigator initialRouteName="MainPage">
             <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} options={{ headerShown: false }} />
             <Stack.Screen name="StudentLogin" component={StudentLoginScreen} options={{ headerShown: false }} />
             <Stack.Screen name="StudentRegister" component={StudentRegister} options={{ headerShown: false }} />
             <Stack.Screen name="TherapistScreen" component={TherapistScreen} options={{ headerShown: false }} />
             <Stack.Screen name="TherapistRegisterScreen" component={TherapistRegisterScreen} options={{ headerShown: false }} />
             <Stack.Screen name="TherapistLandingScreen" component={TherapistLandingScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="TherapyTechniques" component={TherapyTechniques} />
+            <Stack.Screen name="CBTDetails" component={CBTDetails} options={{ headerShown: false }} />
+        <Stack.Screen name="DBTDetails" component={DBTDetails} options={{ headerShown: false }} />
+        <Stack.Screen name="MBSRDetails" component={MBSRDetails} options={{ headerShown: false }} />
+        <Stack.Screen name="ACTDetails" component={ACTDetails} options={{ headerShown: false }} />
+        <Stack.Screen name="ExposureDetails" component={ExposureDetails} options={{ headerShown: false }} />
+        <Stack.Screen name="NarrativeDetails" component={NarrativeDetails} options={{ headerShown: false }} />
+        <Stack.Screen name="SomaticDetails" component={SomaticDetails} options={{ headerShown: false }} />
+        <Stack.Screen name="GestaltDetails" component={GestaltDetails} options={{ headerShown: false }} />
             <Stack.Screen name="Resources" component={ResourcesScreen} />
-            <Stack.Screen name="Register" component={RegisterScreen} />
+            <Stack.Screen name="Session Information" component={RegisterScreen} />
             <Stack.Screen name="PasswordResetScreen" component={PasswordResetScreen} options={{ headerShown: false }} />
             <Stack.Screen name="EmailVerification" component={EmailVerification} options={{ headerShown: false }} />
             <Stack.Screen name="SplashScreen1" component={SplashScreen1} options={{ headerShown: false }} />

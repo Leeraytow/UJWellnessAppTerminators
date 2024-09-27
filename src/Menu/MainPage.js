@@ -90,16 +90,16 @@ const MainScreen = () => {
     <SafeAreaView style={styles.safeArea}>
       <Header />
       <ScrollView showsVerticalScrollIndicator={false}>
-        <LinearGradient colors={['#E0B0FF', '#8ec5fc']} style={styles.container}>
+        <LinearGradient colors={['#FFBE0B', '#F42B03']} style={styles.container}>
           <Animated.View style={[styles.wrapper, { opacity: fadeAnim }]}>
             {/* Header */}
             <View style={styles.header}>
               <View style={styles.iconsContainer}>
                 <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
-                  <Feather name="bell" size={24} color="#6a1b9a" style={styles.icon} />
+                  <Feather name="bell" size={24} color="#FF5F1F" style={styles.icon} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => navigation.navigate('Messages')}>
-                  <Feather name="message-circle" size={24} color="#6a1b9a" />
+                  <Feather name="message-circle" size={24} color="#FF5F1F" />
                 </TouchableOpacity>
               </View>
 
@@ -128,13 +128,13 @@ const MainScreen = () => {
                 <Text style={styles.name}>Welcome, {name}</Text>
               )}
               <TouchableOpacity onPress={handleEditName} style={styles.editIcon}>
-                <MaterialIcons name="edit-square" size={24} color="#6a1b9a" />
+                <MaterialIcons name="edit-square" size={24} color="#FF5F1F" />
               </TouchableOpacity>
             </View>
 
             {/* Appointments */}
             <TouchableOpacity onPress={() => navigation.navigate('AppointmentStudent')}>
-              <LinearGradient colors={['#7DDFF8', '#B1ADE2']} style={styles.appointmentsContainer}>
+              <LinearGradient colors={['#F9886C', '#FBFBFB']} style={styles.appointmentsContainer}>
                 <Text style={styles.sectionTitle}>Next Appointments</Text>
                 <View style={styles.appointmentCards}>
                   <View style={styles.appointmentCard}>
@@ -166,7 +166,7 @@ const MainScreen = () => {
                   </TouchableOpacity>
                 ))}
                 <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('MoodControl')}>
-                  <Ionicons name="add-circle" size={40} color="#6a1b9a" />
+                  <Ionicons name="add-circle" size={40} color="#FF5F1F" />
                 </TouchableOpacity>
               </View>
               <TouchableOpacity style={styles.tapToRecord}>
@@ -176,7 +176,7 @@ const MainScreen = () => {
 
             {/* Diary */}
             <TouchableOpacity onPress={() => navigation.navigate('DigitalDiary')}>
-              <LinearGradient colors={['#fbc2eb', '#a6c1ee']} style={styles.diaryContainer}>
+              <LinearGradient colors={['#FE5858', '#EE9617']} style={styles.diaryContainer}>
                 <Text style={styles.sectionTitle}>Diary</Text>
                 <Text style={styles.diaryText}>
                   Your emotions matter. Log your thoughts today for a personalized resource to support your mental well-being.
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     borderWidth: 2,
-    borderColor: '#6a1b9a',
+    borderColor: '#FF5F1F',
     marginTop: 10,
   },
   header: {
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
     width: 90,
     height: 90,
     borderRadius: 80,
-    borderColor: '#9966CC',
+    borderColor: '#FF5F1F',
     borderWidth: 3,
   },
   nameContainer: {
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#720e9e',
+    color: '#FF5F1F',
     textAlign: 'center',
     marginBottom: 9,
   },
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     borderBottomWidth: 1,
     borderBottomColor: '#6a1b9a',
-    color: '#6a1b9a',
+    color: '#FF5F1F',
     textAlign: 'center',
     marginBottom: 10,
   },
@@ -294,11 +294,11 @@ const styles = StyleSheet.create({
   appointmentDate: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#647DEE',
+    color: '#FF5F1F',
   },
   appointmentDetails: {
     fontSize: 14,
-    color: '#647DEE',
+    color: '#EC5800',
     marginTop: 5,
     textAlign: 'center',
   },
@@ -357,7 +357,7 @@ emotionsRow: {
   },
   diaryText: {
     fontSize: 16,
-    color: '#6a1b9a',
+    color: 'black',
     marginTop: 1,
   },
   sectionTitle: {
