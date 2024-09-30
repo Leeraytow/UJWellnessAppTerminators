@@ -9,7 +9,7 @@ import { db } from '../Configuration/firebase'; // Adjust the import path to you
 const Dashboard = () => {
   const [pendingAppointments, setPendingAppointments] = useState(0);
   const [confirmedAppointments, setConfirmedAppointments] = useState(0);
-  const [students, setStudents] = useState([]);
+  const [studentsWithBookings, setStudentsWithBookings] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const navigation = useNavigation(); // Initialize navigation
   const currentDate = moment().format('MMMM D, YYYY');
@@ -20,7 +20,7 @@ const Dashboard = () => {
       try {
         // Fetch pending appointments
         const bookingsCollection = collection(db, 'Bookings');
-        const pendingQuery = query(bookingsCollection, where('status', '==', 'pending'));
+        const pendingQuery = query(bookingsCollection, where('status', '==', 'Pending'));
         const pendingSnapshot = await getDocs(pendingQuery);
         setPendingAppointments(pendingSnapshot.size); // Set pending appointments count
 
@@ -28,26 +28,35 @@ const Dashboard = () => {
         const confirmedQuery = query(bookingsCollection, where('status', '==', 'Confirmed'));
         const confirmedSnapshot = await getDocs(confirmedQuery);
         const confirmedBookings = confirmedSnapshot.docs.map(doc => doc.data());
-        setConfirmedAppointments(confirmedSnapshot.size); // Set confirmed appointments count
 
-        // Fetch students
-        const studentsCollection = collection(db, 'Students');
-        const studentsSnapshot = await getDocs(studentsCollection);
-        const studentList = studentsSnapshot.docs.map(doc => {
-          const studentData = doc.data();
-          // Find confirmed booking for the student
-          const studentBooking = confirmedBookings.find(booking => booking.studentNumber === studentData.studentNumber);
-          
-          // Add session time if booking exists
-          if (studentBooking) {
-            studentData.sessionTime = moment(studentBooking.meetingTime).format('MMMM D, YYYY h:mm A');
-          } else {
-            studentData.sessionTime = 'No session';
+        const updatedStudentsWithBookings = [];
+
+        // Fetch each student's details based on their studentNumber and confirmed bookings
+        for (const booking of confirmedBookings) {
+          const studentEmail = `${booking.studentNumber}@student.uj.ac.za`;
+
+          // Fetch the student's data from the Students collection using the email
+          const studentQuery = query(collection(db, 'Students'), where('email', '==', studentEmail));
+          const studentSnapshot = await getDocs(studentQuery);
+
+          if (!studentSnapshot.empty) {
+            const studentData = studentSnapshot.docs[0].data();
+
+            // Append the session time, date, and venue from the booking to the student's data
+            const studentWithBooking = {
+              ...studentData,
+              sessionTime: booking.meetingTime,
+              sessionDate: booking.meetingDate,
+              venue: booking.venue,
+            };
+
+            updatedStudentsWithBookings.push(studentWithBooking);
           }
+        }
 
-          return studentData;
-        });
-        setStudents(studentList); // Set students state
+        // Set the updated students with bookings data
+        setStudentsWithBookings(updatedStudentsWithBookings);
+        setConfirmedAppointments(updatedStudentsWithBookings.length); // Set confirmed appointments count based on students with confirmed bookings
       } catch (error) {
         console.error('Error fetching data: ', error);
       }
@@ -56,7 +65,7 @@ const Dashboard = () => {
     fetchAppointmentsAndStudents();
   }, []); // Fetch only once on component mount
 
-  const filteredStudents = students.filter((student) =>
+  const filteredStudents = studentsWithBookings.filter((student) =>
     student.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -96,15 +105,15 @@ const Dashboard = () => {
           <Text style={styles.statLabel}>Pending Appointments</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.statBox}>
-          <Text style={styles.statNumber}>{students.length}</Text>
+          <Text style={styles.statNumber}>{studentsWithBookings.length}</Text>
           <Text style={styles.statLabel}>Mood Logs</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.tableHeader}>
         <Text style={styles.tableHeaderText}>Student</Text>
-        <Text style={styles.tableHeaderText}>Mood</Text>
         <Text style={styles.tableHeaderText}>Session Time</Text>
+        <Text style={styles.tableHeaderText}>Venue</Text>
       </View>
 
       <View style={styles.patientTable}>
@@ -114,23 +123,14 @@ const Dashboard = () => {
               <Image source={{ uri: student.profileImage }} style={styles.patientImage} />
               <Text style={styles.patientName}>{student.name}</Text>
             </View>
-            <View style={styles.moodCell}>
-              <Text style={styles.moodEmoji}>{getMoodEmoji(student.mood)}</Text>
-            </View>
-            <Text style={styles.sessionTimeCell}>{student.sessionTime}</Text>
+            <Text style={styles.sessionTimeCell}>{student.sessionDate}, {student.sessionTime}</Text>
+          
+            <Text style={styles.venueCell}>{student.venue}</Text>
           </TouchableOpacity>
         ))}
       </View>
     </ScrollView>
   );
-};
-
-const getMoodEmoji = (mood) => {
-  if (mood >= 8) return '😃';
-  if (mood >= 6) return '😊';
-  if (mood >= 4) return '😐';
-  if (mood >= 2) return '😟';
-  return '😢';
 };
 
 const styles = StyleSheet.create({
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   patientCell: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: '50%',
+    width: '40%',
   },
   patientImage: {
     width: 40,
@@ -234,18 +234,14 @@ const styles = StyleSheet.create({
     color: '#000',
     flex: 1,
   },
-  moodCell: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '30%',
-  },
-  moodEmoji: {
-    fontSize: 20,
-    marginRight: 8,
-  },
   sessionTimeCell: {
-    width: '20%',
+    width: '30%',
+    textAlign: 'center',
+    fontSize: 12,
+    color: '#000',
+  },
+  venueCell: {
+    width: '30%',
     textAlign: 'center',
     fontSize: 12,
     color: '#000',

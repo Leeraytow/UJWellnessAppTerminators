@@ -36,7 +36,8 @@ const AppointmentsScreen = () => {
             id: doc.id,
             date: data.meetingDate,
             time: data.meetingTime,
-            sessionType: data.meetingType, // Make sure to map this field correctly
+            sessionType: data.meetingType, 
+            meetingPlace: data.venue,// Make sure to map this field correctly
           });
         });
         console.log('Fetched Appointments:', fetchedAppointments); // Debugging output
@@ -55,6 +56,8 @@ const AppointmentsScreen = () => {
       <View style={styles.detailsContainer}>
         <Text style={styles.timeText}>{item.time}</Text>
         <Text style={styles.sessionText}>{item.sessionType}</Text>
+        <Text style={styles.sessionText}>{item.meetingPlace}</Text>
+
       </View>
     </View>
   );

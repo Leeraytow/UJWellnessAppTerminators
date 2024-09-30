@@ -9,7 +9,7 @@ import Footer from '../Menu/Footer';
 import Header from '../Menu/Header';
 import { Ionicons } from '@expo/vector-icons'; 
 import { doc, getDoc, updateDoc, deleteDoc, collection, query, where, getDocs } from 'firebase/firestore';
-import { db, auth } from '../Configuration/firebase'; // Ensure you have your Firebase config imported
+import { db, auth } from '../Configuration/firebase'; 
 
 const MainScreen = () => {
   const navigation = useNavigation();
@@ -18,7 +18,7 @@ const MainScreen = () => {
   const [name, setName] = useState('');
   const [fadeAnim] = useState(new Animated.Value(0));
   const [pickedImage, setPickedImage] = useState(null);
-  const [appointments, setAppointments] = useState([]); // State for storing appointments
+  const [appointments, setAppointments] = useState([]); 
   const [currentImage, setCurrentImage] = useState(null);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -58,8 +58,8 @@ const MainScreen = () => {
 
           if (docSnap.exists()) {
             const userData = docSnap.data();
-            setUsername(userData.name || ''); // Set the user's name
-            setEmail(userData.email || '');   // Set the user's email
+            setUsername(userData.name || ''); 
+            setEmail(userData.email || '');   
           } else {
             console.log('No such document!');
           }
@@ -89,7 +89,7 @@ const MainScreen = () => {
       const q = query(
         appointmentsRef,
         where('email', '==', email),
-        where('status', '==', 'Confirmed') // Add this line to filter for confirmed appointments
+        where('status', '==', 'Confirmed') 
       );
 
 

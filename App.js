@@ -72,6 +72,7 @@ import ScheduledAppointments from "./src/BookingSystem/ScheduledAppointments";
 import TherapistAppointments from './src/BookingSystem/TherapistAppointments';
 import ClientsPage from './src/ClientsPage/ClientsPage';
 import Mainpost from './src/CommunitySupport/postmain';
+import SootheBot from './src/ChatBot/SootheBot';
 
 const Stack = createStackNavigator();
 
@@ -112,7 +113,7 @@ export default function App() {
     <ThemeProvider>
       <FontSizeProvider>
         <NavigationContainer>
-        <Stack.Navigator initialRouteName="MainPage">
+        <Stack.Navigator initialRouteName={initialRoute}>
             <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} options={{ headerShown: false }} />
             <Stack.Screen name="StudentLogin" component={StudentLoginScreen} options={{ headerShown: false }} />
             <Stack.Screen name="StudentRegister" component={StudentRegister} options={{ headerShown: false }} />
@@ -178,6 +179,8 @@ export default function App() {
             <Stack.Screen name="TherapistAppointments" component={TherapistAppointments} options={{ headerShown: false }} />
             <Stack.Screen name="ClientsPage" component={ClientsPage} options={{ headerShown: false }} />
             <Stack.Screen name="MainPost" component={Mainpost} options={{ headerShown: false }} />
+            <Stack.Screen name="SootheBot" component={SootheBot} options={{ headerShown: false }} />
+
           </Stack.Navigator>
         </NavigationContainer>
       </FontSizeProvider>
