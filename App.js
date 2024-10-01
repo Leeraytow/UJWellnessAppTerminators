@@ -40,10 +40,11 @@ import ContactSupportScreen from './src/Therapy/ContactSupport';
 import ProfessionalSupport from './src/Therapy/ProffesionalSupport';
 import MessageScreen from './src/Therapy/Message';
 import MainPage from './src/Menu/MainPage';
+import Tools from './src/Menu/Tools';
 import AppointmentStudent from './src/Menu/AppointmentStudent';
 import Notifications from './src/Menu/Notifications'; 
 import Messages from './src/Menu/Messages'; 
-
+import StudentMoodHistory from './src/Menu/StudentMoodHistory';
 import MoodControl from './src/Menu/MoodControl';
 import TherapyButton from './src/Menu/TherapyButton';
 // import GroupChatApp from './src/ChatApp/GroupChat';
@@ -137,6 +138,7 @@ export default function App() {
             <Stack.Screen name="SplashScreen2" component={SplashScreen2} options={{ headerShown: false }} />
             <Stack.Screen name="SplashScreen3" component={SplashScreen3} options={{ headerShown: false }} />
             <Stack.Screen name="MainPage" component={MainPage}   options={{ headerShown: false }} />
+            <Stack.Screen name="Tools" component={Tools}   options={{ headerShown: false }} />
             <Stack.Screen name="AppointmentStudent" component={AppointmentStudent}   options={{ headerShown: false }} />
             <Stack.Screen name="Notifications" component={Notifications}   options={{ headerShown: false }} />
             <Stack.Screen name="Messages" component={Messages} options={{ headerShown: false }} />
@@ -145,6 +147,7 @@ export default function App() {
             <Stack.Screen name="PeerCounseling" component={PeerCounselingPage} options={{ headerShown: false }} />
             <Stack.Screen name="DigitalDiary" component={DigitalDiary} options={{ headerShown: false }} />
             <Stack.Screen name="Message" component={MessageScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="StudentMoodHistory" component={StudentMoodHistory} />
             <Stack.Screen name="ContactSupport" component={ContactSupportScreen} options={{ headerShown: false }} />
             <Stack.Screen name="MoodControl" component={MoodControl} options={{ headerShown: false }} />
             <Stack.Screen name="TherapyButton" component={TherapyButton} options={{ headerShown: false }} />

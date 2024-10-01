@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 const Footer = () => {
   const [activeIndex, setActiveIndex] = useState(null);
   const navigation = useNavigation();
-
+  
   // Create an animated value for the bounce effect
   const bounceValue = useRef(new Animated.Value(1)).current;
 
@@ -30,7 +30,7 @@ const Footer = () => {
       }),
     ]).start(() => {
       // Navigate to the Mood page after the bounce animation completes
-      navigation.navigate('Mood');
+      navigation.navigate('MoodControl');
     });
   };
 
@@ -48,14 +48,14 @@ const Footer = () => {
       {/* Tools Button */}
       <TouchableOpacity
         style={[styles.footerButton, activeIndex === 1 && styles.activeButton]}
-        onPress={() => handlePress(1, 'Tools')}
+        onPress={() => handlePress(1, 'Tools')} // Navigate to Tools.js
       >
         <Ionicons name="construct-outline" size={15} color={activeIndex === 1 ? '#FF5F1F' : '#9b9b9b'} />
         <Text style={styles.buttonLabel}>Tools</Text>
       </TouchableOpacity>
 
       {/* Add Mood Button with bounce animation */}
-      <TouchableOpacity onPress={() => navigation.navigate('MoodControl')} style={styles.addButton}>
+      <TouchableOpacity onPress={handleAddPress} style={styles.addButton}>
         <Animated.View style={{ transform: [{ scale: bounceValue }] }}>
           <Ionicons name="add-circle" size={40} color="#FF5F1F" />
         </Animated.View>

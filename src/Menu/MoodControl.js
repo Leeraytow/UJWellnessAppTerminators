@@ -7,7 +7,6 @@ import Footer from './Footer';
 import Emoji from './Emoji';
 import { ThemeContext } from '../StudentProfile/ThemeContext';
 import * as SecureStore from 'expo-secure-store';
-import StudentMoodHistory from './MoodHistory';
 
 const MoodControl = () => {
   const { isDarkMode } = useContext(ThemeContext);
@@ -118,12 +117,13 @@ const MoodControl = () => {
           onChangeText={setNote}
           multiline
         />
-        <TouchableOpacity style={styles.saveButton} onPress={handleSaveMood}>
-          <Text style={styles.saveButtonText}>Save Mood</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.historyButton} onPress={StudentMoodHistory}>
-          <Text style={styles.historyButtonText}>View All Mood Logs</Text>
-        </TouchableOpacity>
+       <TouchableOpacity style={styles.saveButton} onPress={handleSaveMood}>
+  <Text style={styles.saveButtonText}>Save Mood</Text>
+</TouchableOpacity>
+<TouchableOpacity style={styles.historyButton} onPress={navigateToHistory}>
+  <Text style={styles.historyButtonText}>View All Mood Logs</Text>
+</TouchableOpacity>
+
       </ScrollView>
       <Footer />
     </SafeAreaView>
