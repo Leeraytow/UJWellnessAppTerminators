@@ -140,7 +140,7 @@ const MainScreen = () => {
     <SafeAreaView style={styles.safeArea}>
       <Header />
       <ScrollView showsVerticalScrollIndicator={false}>
-        <LinearGradient colors={['#FFBE0B', '#F42B03']} style={styles.container}>
+        <LinearGradient colors={['#FC9842', '#FE5F75']} style={styles.container}>
           <Animated.View style={[styles.wrapper, { opacity: fadeAnim }]}>
             {/* Header */}
             <View style={styles.header}>
@@ -148,7 +148,7 @@ const MainScreen = () => {
                 <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
                   <Feather name="bell" size={24} color="#FF5F1F" style={styles.icon} />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.navigate('Messages')}>
+                <TouchableOpacity onPress={() => navigation.navigate('GeminiChat')}>
                   <Feather name="message-circle" size={24} color="#FF5F1F" />
                 </TouchableOpacity>
               </View>
@@ -163,7 +163,7 @@ const MainScreen = () => {
 
             {/* Appointments */}
             <TouchableOpacity onPress={() => navigation.navigate('AppointmentStudent')}>
-              <LinearGradient colors={['#F9886C', '#FBFBFB']} style={styles.appointmentsContainer}>
+              <LinearGradient colors={['#FF3C00', '#FBFBFB']} style={styles.appointmentsContainer}>
                 <Text style={styles.sectionTitle}>Next Appointments</Text>
                 {appointments.length > 0 ? (
                   <View style={styles.appointmentCards}>
@@ -201,7 +201,7 @@ const MainScreen = () => {
 
             {/* Diary */}
             <TouchableOpacity onPress={() => navigation.navigate('DigitalDiary')}>
-              <LinearGradient colors={['#FE5858', '#EE9617']} style={styles.diaryContainer}>
+              <LinearGradient colors={['#FC575E', '#F7B42C']} style={styles.diaryContainer}>
                 <Text style={styles.sectionTitle}>Diary</Text>
                 <Text style={styles.diaryText}>
                   Your emotions matter. Log your thoughts today for a personalized resource to support your mental well-being.
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#FF5F1F',
+    color: '#FF6347',
     textAlign: 'center',
     marginBottom: 9,
   },
@@ -304,17 +304,17 @@ const styles = StyleSheet.create({
   appointmentCards: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: -11,
+    marginTop: -1,
   },
   appointmentCard: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FF6347',
     padding: 7,
     borderRadius: 10,
     shadowColor: '#000',
     shadowOpacity: 10,
     shadowRadius: 15,
     elevation: 10,
-    width: 95,
+    width: 100,
     alignItems: 'center',
   },
   appointmentDate: {

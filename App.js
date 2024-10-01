@@ -74,6 +74,7 @@ import TherapistAppointments from './src/BookingSystem/TherapistAppointments';
 import ClientsPage from './src/ClientsPage/ClientsPage';
 import Mainpost from './src/CommunitySupport/postmain';
 import SootheBot from './src/ChatBot/SootheBot';
+import GeminiChat from './src/ChatBot/GeminiChat';
 
 const Stack = createStackNavigator();
 
@@ -183,7 +184,7 @@ export default function App() {
             <Stack.Screen name="ClientsPage" component={ClientsPage} options={{ headerShown: false }} />
             <Stack.Screen name="MainPost" component={Mainpost} options={{ headerShown: false }} />
             <Stack.Screen name="SootheBot" component={SootheBot} options={{ headerShown: false }} />
-
+            <Stack.Screen name="GeminiChat" component={GeminiChat} options={{ headerShown: false }} />
           </Stack.Navigator>
         </NavigationContainer>
       </FontSizeProvider>

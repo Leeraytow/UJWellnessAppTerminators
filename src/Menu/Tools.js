@@ -2,91 +2,110 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'; 
 import { LinearGradient } from 'expo-linear-gradient';
+import Footer from '../Menu/Footer';
+import Header from '../Menu/Header';
 
 export default function Tools({ navigation }) {
-    
   const affirmations = [
     { text: 'You are capable of achieving great things.', image: require('../images/affirmation1.jpg') },
     { text: 'Every day is a new opportunity to grow and improve.', image: require('../images/affirmation2.webp') },
     { text: 'You are worthy of love and respect.', image: require('../images/affirmation3.jpg') },
-    { text: 'Believe in yourself and all that you are.', image: require('../images/affirmation4.jpg') },
-    { text: 'You have the power to create the life you want.', image: require('../images/affirmation5.jpg') },
+    { text: 'Believe in yourself and all that you are.', image: require('../images/page4.jpeg') },
+    { text: 'You have the power to create the life you want.', image: require('../images/page5.jpeg') },
   ];
-  
+
   const [randomAffirmation, setRandomAffirmation] = useState(affirmations[0]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       const randomIndex = Math.floor(Math.random() * affirmations.length);
       setRandomAffirmation(affirmations[randomIndex]);
-    }, 5000); 
+    }, 5000);
 
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <LinearGradient colors={['#FFA500', '#800080']} style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-        {/* Randomly Generated Affirmation */}
-        <View style={styles.quoteContainer}>
-          <Image source={randomAffirmation.image} style={styles.image} />
-          <Text style={styles.quoteText}>“{randomAffirmation.text}”</Text>
-        </View>
+    <View style={styles.container}>
+      {/* Header on Top */}
+      <Header />
 
-        {/* Tabs Section */}
-        <View style={styles.tabContainer}>
-          <TouchableOpacity 
-            style={[styles.tab, styles.podcast]} 
-            onPress={() => navigation.navigate('UserVid')}>
-            <Icon name="podcast" size={24} color="black" />
-            <Text style={styles.tabText}>Podcast & Videos</Text>
-          </TouchableOpacity>
+      {/* Linear Gradient Background Below Header */}
+      <LinearGradient colors={['#FF3C00', '#FBFBFB']} style={styles.gradient}>
+        {/* ScrollView for Content */}
+        <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+          {/* Randomly Generated Affirmation */}
+          <View style={styles.quoteContainer}>
+            <Image source={randomAffirmation.image} style={styles.image} />
+            <Text style={styles.quoteText}>“{randomAffirmation.text}”</Text>
+          </View>
 
-          <TouchableOpacity 
-            style={[styles.tab, styles.therapy]} 
-            onPress={() => navigation.navigate('TherapyButton')}>
-            <Icon name="head-heart-outline" size={24} color="black" />
-            <Text style={styles.tabText}>Therapy</Text>
-          </TouchableOpacity>
+          {/* Tabs Section */}
+          <View style={styles.tabContainer}>
+            <View style={styles.row}>
+              <TouchableOpacity 
+                style={[styles.tab, styles.podcast]} 
+                onPress={() => navigation.navigate('UserVid')}>
+                <Icon name="podcast" size={24} color="black" />
+                <Text style={styles.tabText}>Podcast & Videos</Text>
+              </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={[styles.tab, styles.helpLine]} 
-            onPress={() => navigation.navigate('HelpLine')}>
-            <Icon name="phone" size={24} color="black" />
-            <Text style={styles.tabText}>Help Line</Text>
-          </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.tab, styles.therapy]} 
+                onPress={() => navigation.navigate('TherapyButton')}>
+                <Icon name="head-heart-outline" size={24} color="black" />
+                <Text style={styles.tabText}>Therapy</Text>
+              </TouchableOpacity>
+            </View>
 
-          <TouchableOpacity 
-            style={[styles.tab, styles.peerSupport]} 
-            onPress={() => navigation.navigate('userList')}>
-            <Icon name="account-group" size={24} color="black" />
-            <Text style={styles.tabText}>Peer Support</Text>
-          </TouchableOpacity>
+            <View style={styles.row}>
+              <TouchableOpacity 
+                style={[styles.tab, styles.helpLine]} 
+                onPress={() => navigation.navigate('HelpLine')}>
+                <Icon name="phone" size={24} color="black" />
+                <Text style={styles.tabText}>Help Line</Text>
+              </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={[styles.tab, styles.community]} 
-            onPress={() => navigation.navigate('MainPost')}>
-            <Icon name="home-group" size={24} color="black" />
-            <Text style={styles.tabText}>Community</Text>
-          </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.tab, styles.peerSupport]} 
+                onPress={() => navigation.navigate('userList')}>
+                <Icon name="account-group" size={24} color="black" />
+                <Text style={styles.tabText}>Peer Support</Text>
+              </TouchableOpacity>
+            </View>
 
-          {/* New Profile Tab */}
-          <TouchableOpacity 
-            style={[styles.tab, styles.profile]} 
-            onPress={() => navigation.navigate('Profile')}>
-            <Icon name="account-outline" size={24} color="black" />
-            <Text style={styles.tabText}>Profile</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </LinearGradient>
+            <View style={styles.row}>
+              <TouchableOpacity 
+                style={[styles.tab, styles.community]} 
+                onPress={() => navigation.navigate('MainPost')}>
+                <Icon name="home-group" size={24} color="black" />
+                <Text style={styles.tabText}>Community</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={[styles.tab, styles.profile]} 
+                onPress={() => navigation.navigate('Profile')}>
+                <Icon name="account-outline" size={24} color="black" />
+                <Text style={styles.tabText}>Profile</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </LinearGradient>
+
+      {/* Footer */}
+      <Footer />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 30,
+  },
+  gradient: {
+    flex: 1,
+    paddingTop: 20, // Adjust padding as needed
   },
   scrollViewContainer: {
     alignItems: 'center',
@@ -96,34 +115,62 @@ const styles = StyleSheet.create({
   quoteContainer: {
     alignItems: 'center',
     marginBottom: 20,
+    padding: 20,
+    borderRadius: 10,
+    backgroundColor: 'white',
   },
   image: {
-    width: 200,
+    width: 250,
     height: 200,
     borderRadius: 10,
   },
   quoteText: {
-    fontSize: 18,
+    fontSize: 16,
     fontStyle: 'italic',
     textAlign: 'center',
     marginVertical: 20,
-    color: '#ffffff',
+    color: 'black',
   },
   tabContainer: {
     width: '100%',
     paddingHorizontal: 10,
   },
-  tab: {
+  row: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  tab: {
+    flex: 1,
+    flexDirection: 'column',
     alignItems: 'center',
-    padding: 15,
-    marginVertical: 5,
-    backgroundColor: '#fff',
+    justifyContent: 'center',
+    padding: 20,
+    margin: 5,
+    backgroundColor: '#FF5F15',
     borderRadius: 10,
   },
   tabText: {
-    marginLeft: 10,
-    fontSize: 16,
-    color: '#333',
+    marginTop: 10,
+    fontSize: 14,
+    color: 'black',
+  },
+  podcast: {
+    backgroundColor: 'white',
+  },
+  therapy: {
+    backgroundColor: '#FF5F15',
+  },
+  helpLine: {
+    backgroundColor: '#FF5F15',
+  },
+  peerSupport: {
+    backgroundColor: 'white',
+  },
+  community: {
+    backgroundColor: 'white',
+  },
+  profile: {
+    backgroundColor: '#FF5F15',
   },
 });
