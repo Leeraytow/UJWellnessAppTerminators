@@ -3,7 +3,8 @@ import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Platform, St
 import { collection, getDocs } from 'firebase/firestore';
 import { db, auth } from '../Configuration/firebase';
 import { ThemeContext } from '../StudentProfile/ThemeContext';
-
+import Header from '../Menu/Header';
+import Footer from '../Menu/Footer';
 const UserList = ({ navigation }) => {
   const [users, setUsers] = useState([]);
   const { isDarkMode } = useContext(ThemeContext);
@@ -55,15 +56,15 @@ const UserList = ({ navigation }) => {
   
   return (
     <View style={[styles.container, { backgroundColor: isDarkMode ? '#222' : '#F5F5F5' }]}>
-      <View style={[styles.header, { backgroundColor: isDarkMode ? '#444' : '#FF5733' }]}>
-        <Text style={styles.headerTitle}>UJWellness Chat</Text>
-      </View>
+        <Header/>
+     
       <FlatList
         data={users}
         renderItem={renderItem}
         keyExtractor={item => item.id}
         contentContainerStyle={styles.list}
       />
+      <Footer/>
     </View>
   );
 };

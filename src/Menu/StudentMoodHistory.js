@@ -1,24 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
 import moment from 'moment';
-import * as SecureStore from 'expo-secure-store';
-import { useNavigation } from '@react-navigation/native'; // Import the hook
-import Icon from 'react-native-vector-icons/MaterialIcons'; // Import icons for chevrons
+import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db, auth } from '../Configuration/firebase'; // Import Firebase
 
 const StudentMoodHistory = () => {
-  const [moodHistory, setMoodHistory] = useState({});
+  const [moodHistory, setMoodHistory] = useState([]);
   const [filteredHistory, setFilteredHistory] = useState([]);
-  const [selectedMonth, setSelectedMonth] = useState(moment()); // Current month selected by default
-  const navigation = useNavigation(); // Use the navigation hook to navigate
+  const [selectedMonth, setSelectedMonth] = useState(moment());
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchMoodHistory = async () => {
       try {
-        const data = await SecureStore.getItemAsync('moodHistory');
-        if (data) {
-          const parsedData = JSON.parse(data);
-          setMoodHistory(parsedData);
-          filterByMonth(parsedData, selectedMonth); // Filter entries by the selected month
+        const user = auth.currentUser; // Get current authenticated user
+        if (user) {
+          const moodLogsRef = collection(db, 'moodlogs'); // Reference to moodlogs collection
+          const q = query(moodLogsRef, where('email', '==', user.email)); // Query mood logs where email matches the current user's email
+          const querySnapshot = await getDocs(q);
+
+          const logs = [];
+          querySnapshot.forEach((doc) => {
+            logs.push({ id: doc.id, ...doc.data() }); // Push each log into the array
+          });
+
+          setMoodHistory(logs);
+          filterByMonth(logs, selectedMonth);
         }
       } catch (error) {
         console.error('Error fetching mood history:', error);
@@ -29,15 +38,14 @@ const StudentMoodHistory = () => {
   }, []);
 
   const changeMonth = (direction) => {
-    const newMonth = selectedMonth.clone().add(direction, 'month'); // Add/subtract month based on direction
+    const newMonth = selectedMonth.clone().add(direction, 'month');
     setSelectedMonth(newMonth);
     filterByMonth(moodHistory, newMonth);
   };
 
-  // Filter mood entries by month
   const filterByMonth = (data, month) => {
-    const filtered = Object.entries(data).filter(([date]) =>
-      moment(date).format('MMMM YYYY') === month.format('MMMM YYYY')
+    const filtered = data.filter(entry =>
+      moment(entry.date).format('MMMM YYYY') === month.format('MMMM YYYY')
     );
     setFilteredHistory(filtered);
   };
@@ -68,9 +76,9 @@ const StudentMoodHistory = () => {
       {/* Mood Entries */}
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {filteredHistory.length > 0 ? (
-          filteredHistory.map(([date, entry], index) => (
+          filteredHistory.map((entry, index) => (
             <View key={index} style={styles.moodEntry}>
-              <Text style={styles.date}>{moment(date).format('MMMM DD, YYYY')}</Text>
+              <Text style={styles.date}>{moment(entry.date).format('MMMM DD, YYYY')}</Text>
               <Text style={styles.emoji}>{entry.emoji} {entry.emotion}</Text>
               <Text style={styles.note}>{entry.note}</Text>
             </View>
@@ -91,15 +99,15 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',  // Center content horizontally
+    justifyContent: 'center',
     padding: 15,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
-    position: 'relative',  // Allows the back button to be positioned independently
+    position: 'relative',
   },
   backButton: {
-    position: 'absolute', // Position it to the left, without affecting the center alignment of the title
+    position: 'absolute',
     left: 15,
     color: 'black',
   },
@@ -107,7 +115,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#FF6F00',
-    textAlign: 'center',  // Ensure the text itself is centered
+    textAlign: 'center',
   },
   monthSelector: {
     flexDirection: 'row',
@@ -159,4 +167,3 @@ const styles = StyleSheet.create({
 });
 
 export default StudentMoodHistory;
-//////////////////////////////////////////////////////////////////////////////////////////////////////////

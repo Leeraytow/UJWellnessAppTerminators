@@ -7,6 +7,9 @@ import Footer from './Footer';
 import Emoji from './Emoji';
 import { ThemeContext } from '../StudentProfile/ThemeContext';
 import * as SecureStore from 'expo-secure-store';
+import { Ionicons } from '@expo/vector-icons'; 
+import { doc, getDoc, updateDoc, deleteDoc, collection, addDoc } from 'firebase/firestore';
+import { db, auth } from '../Configuration/firebase';
 
 const MoodControl = () => {
   const { isDarkMode } = useContext(ThemeContext);
@@ -14,20 +17,30 @@ const MoodControl = () => {
   const [moodData, setMoodData] = useState({});
   const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
   const [note, setNote] = useState('');
+  const [email, setEmail] = useState('');  // State to store the user's email
   const navigation = useNavigation();
 
   useEffect(() => {
-    const fetchMoodData = async () => {
+    const fetchUserData = async () => {
       try {
-        const data = await SecureStore.getItemAsync('moodHistory');
-        if (data) {
-          setMoodData(JSON.parse(data));
+        const user = auth.currentUser;
+        if (user) {
+          const userRef = doc(db, 'Students', user.uid);
+          const docSnap = await getDoc(userRef);
+
+          if (docSnap.exists()) {
+            const userData = docSnap.data();
+            setEmail(userData.email || '');  // Get the user's email from Firestore
+          } else {
+            console.log('No such document!');
+          }
         }
       } catch (error) {
-        console.error('Error fetching mood data:', error);
+        console.error('Error fetching user data: ', error);
       }
     };
-    fetchMoodData();
+
+    fetchUserData();
   }, []);
 
   const emotions = [
@@ -75,14 +88,14 @@ const MoodControl = () => {
       emotion: selectedEmotionData.label,
       emoji: selectedEmotionData.emoji,
       note,
+      email,  // Include user's email
     };
 
-    const updatedMoodData = { ...moodData, [selectedDate]: newEntry };
-
     try {
-      await SecureStore.setItemAsync('moodHistory', JSON.stringify(updatedMoodData));
-      setMoodData(updatedMoodData);
+      // Save mood log to Firestore in the 'moodlogs' collection
+      await addDoc(collection(db, 'moodlogs'), newEntry);
       setNote('');
+      setSelectedEmotion(null);
       Alert.alert('Mood saved successfully!');
     } catch (error) {
       console.error('Error saving mood data:', error);
@@ -117,13 +130,12 @@ const MoodControl = () => {
           onChangeText={setNote}
           multiline
         />
-       <TouchableOpacity style={styles.saveButton} onPress={handleSaveMood}>
-  <Text style={styles.saveButtonText}>Save Mood</Text>
-</TouchableOpacity>
-<TouchableOpacity style={styles.historyButton} onPress={navigateToHistory}>
-  <Text style={styles.historyButtonText}>View All Mood Logs</Text>
-</TouchableOpacity>
-
+        <TouchableOpacity style={styles.saveButton} onPress={handleSaveMood}>
+          <Text style={styles.saveButtonText}>Save Mood</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.historyButton} onPress={navigateToHistory}>
+          <Text style={styles.historyButtonText}>View All Mood Logs</Text>
+        </TouchableOpacity>
       </ScrollView>
       <Footer />
     </SafeAreaView>

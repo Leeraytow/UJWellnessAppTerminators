@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import { GiftedChat } from "react-native-gifted-chat";
 import { collection, addDoc, query, orderBy, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { signOut } from "firebase/auth";
@@ -7,6 +7,7 @@ import { auth, db } from '../Configuration/firebase';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
 import { ThemeContext } from '../StudentProfile/ThemeContext';
+import sendNotificationToUser from './sendNotification'; // Import the function to send notification
 
 export default function Chat() {
     const [messages, setMessages] = useState([]);
@@ -26,7 +27,6 @@ export default function Chat() {
                     <Text style={styles.headerText}>{selectedUser ? selectedUser.name : 'Chat'}</Text>
                 </View>
             ),
-           
         });
     }, [navigation, selectedUser]);
 
@@ -65,6 +65,21 @@ export default function Chat() {
             text,
             user
         });
+
+        // Send notification to the selected user with the message as the title
+        const title = text; // Use the message text as the title
+        const message = "You have a new message"; // Set a static message
+        sendNotificationToUser(selectedUser.email, title, message)
+            .then(success => {
+                if (success) {
+                    console.log('Notification sent successfully');
+                } else {
+                    console.error('Failed to send notification');
+                }
+            })
+            .catch(error => {
+                console.error('Error sending notification:', error);
+            });
     }, [selectedUser]);
 
     const onLongPress = (context, message) => {
