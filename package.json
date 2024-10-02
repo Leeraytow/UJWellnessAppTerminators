@@ -66,6 +66,7 @@
     "react-native-uuid": "^2.0.1",
     "react-native-vector-icons": "^10.1.0",
     "react-native-video": "^6.4.5",
+    "react-native-voice": "^0.3.0",
     "react-native-webview": "^13.8.6",
     "react-native-youtube-iframe": "^2.3.0",
     "zod": "^3.23.8"

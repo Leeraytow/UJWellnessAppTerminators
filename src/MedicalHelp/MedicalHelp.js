@@ -1,7 +1,7 @@
-import React, { useContext } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking } from 'react-native';
-import Footer from '../Menu/Footer';
-import { ThemeContext } from '../StudentProfile/ThemeContext'; // Adjust the path as necessary
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking, Image } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import Header from '../Menu/Header';
 
 const hospitals = [
   {
@@ -84,43 +84,51 @@ const callNumber = (phone) => {
 };
 
 const HospitalCard = ({ hospital }) => {
-  const { isDarkMode } = useContext(ThemeContext);
   return (
-    <View style={[styles.card, { 
-      backgroundColor: isDarkMode ? '#333' : '#fff',  // Dark background for dark mode
-      borderLeftColor: isDarkMode ? '#FFA500' : '#FFA500' 
-    }]}>
-      <Text style={[styles.name, { color: isDarkMode ? '#FFA500' : '#333' }]}>{hospital.name}</Text>
-      <TouchableOpacity onPress={() => openMap(hospital.address)}>
-        <Text style={[styles.address, { color: isDarkMode ? '#FF5E0E' : '#FF5E0E' }]}>{hospital.address}</Text>
+    <View style={styles.card}>
+      <Text style={styles.name}>{hospital.name}</Text>
+      <TouchableOpacity style={styles.row} onPress={() => openMap(hospital.address)}>
+        <MaterialIcons name="location-pin" size={18} color="#F58220" />
+        <Text style={styles.address}>{hospital.address}</Text>
       </TouchableOpacity>
       {hospital.phone && (
-        <TouchableOpacity onPress={() => callNumber(hospital.phone)}>
-          <Text style={[styles.phone, { color: isDarkMode ? '#FFA500' : '#FFA500' }]}>Phone: {hospital.phone}</Text>
+        <TouchableOpacity style={styles.row} onPress={() => callNumber(hospital.phone)}>
+          <MaterialIcons name="phone" size={18} color="#F58220" />
+          <Text style={styles.phone}>Phone: {hospital.phone}</Text>
         </TouchableOpacity>
       )}
-      {hospital.hours && <Text style={[styles.hours, { color: isDarkMode ? '#FF5E0E' : '#FF5E0E' }]}>Hours: {hospital.hours}</Text>}
       {hospital.website && (
         <TouchableOpacity onPress={() => Linking.openURL(hospital.website)}>
-          <Text style={[styles.website, { color: isDarkMode ? '#FF5E0E' : '#FF5E0E' }]}>Website: {hospital.website}</Text>
+          <Text style={styles.website}>Website: {hospital.website}</Text>
         </TouchableOpacity>
       )}
-      {hospital.operatingHours && <Text style={[styles.operatingHours, { color: isDarkMode ? '#FF5E0E' : '#FF5E0E' }]}>Operating Hours: {hospital.operatingHours}</Text>}
+      {hospital.operatingHours && (
+        <Text style={styles.operatingHours}>Hours: {hospital.operatingHours}</Text>
+      )}
     </View>
   );
 };
 
 const MedicalHelp = () => {
-  const { isDarkMode } = useContext(ThemeContext);
   return (
-    <View style={[styles.container, { backgroundColor: isDarkMode ? '#000' : '#f5f5f5' }]}>
+    <View style={styles.container}>
+      <View >
+        <Header/>
+      </View>
+      <Image source={require('../images/doctor.webp')} style={styles.image} />
+      <Text style={styles.weCareText}>We Care!</Text>
+      <View style={styles.divider} />
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <Text style={[styles.header, { color: isDarkMode ? '#FF5E0E' : '#FF5E0E' }]}>Hospitals Offering Mental Health Support</Text>
-        {hospitals.map((hospital, index) => (
-          <HospitalCard key={index} hospital={hospital} />
-        ))}
+        <Text style={styles.subHeader}>Hospitals Offering Mental Health Support</Text>
+        <View style={styles.hospitalContainer}>
+          {hospitals.map((hospital, index) => (
+            <HospitalCard key={index} hospital={hospital} />
+          ))}
+        </View>
+        <TouchableOpacity style={styles.ctaButton} onPress={() => Linking.openURL('tel: 082 054 1137')}>
+          <Text style={styles.ctaButtonText}>Need Help? Call Now</Text>
+        </TouchableOpacity>
       </ScrollView>
-      <Footer />
     </View>
   );
 };
@@ -128,28 +136,73 @@ const MedicalHelp = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  scrollViewContent: {
-    padding: 16,
-    paddingBottom: 80, // Ensure space for the footer
+    backgroundColor: '#F9F9F9',
+    padding: 20,
   },
   header: {
+    backgroundColor: '#F58220',
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 20,
+    borderRadius: 10,
+  },
+  headerText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  image: {
+    width: '100%',
+    height: 200,
+    borderRadius: 10,
+    marginTop: 20,
+    resizeMode: 'cover',
+  },
+  weCareText: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    color: '#F58220',
+    textAlign: 'center',
+    marginTop: 10,
+    textShadowColor: '#000000',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 5,
+  },
+  divider: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+    marginVertical: 20,
+  },
+  scrollViewContent: {
+    paddingBottom: 80,
+  },
+  subHeader: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 30,
-    marginTop: 30,
     textAlign: 'center',
   },
+  hospitalContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
   card: {
-    padding: 16,
-    marginBottom: 16,
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 3,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    padding: 15,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
     borderLeftWidth: 5,
+    borderLeftColor: '#F58220',
+    width: '48%',
+    marginBottom: 16,
   },
   name: {
     fontSize: 18,
@@ -164,18 +217,34 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 4,
   },
-  hours: {
-    fontSize: 16,
-    marginBottom: 4,
-  },
   website: {
     fontSize: 16,
-    marginBottom: 4,
+    color: '#F58220',
     textDecorationLine: 'underline',
+    marginBottom: 4,
   },
   operatingHours: {
     fontSize: 16,
     marginBottom: 4,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  ctaButton: {
+    backgroundColor: '#F58220',
+    paddingVertical: 15,
+    paddingHorizontal: 25,
+    borderRadius: 30,
+    alignSelf: 'center',
+    marginTop: 30,
+  },
+  ctaButtonText: {
+    fontSize: 18,
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 

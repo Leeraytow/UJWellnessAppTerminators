@@ -1,84 +1,70 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import Footer from './Footer';
 import Header from './Header';
-import { ThemeContext } from '../StudentProfile/ThemeContext'; // Import ThemeContext
+import Footer from './Footer';
 
 const TherapyButton = ({ navigation }) => {
-  const { isDarkMode } = useContext(ThemeContext);
-
   return (
-    <View style={[styles.container, { backgroundColor: isDarkMode ? '#1E1E1E' : '#F8F9FA' }]}>
-      
-      {/* Header at the top */}
-      <Header navigation={navigation} />
-
-      {/* Title */}
-      <Text style={[styles.title, { color: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>
+    <View style={styles.container}>
+      <Header/>
+      <Text style={styles.title}>
         You Deserve to Be Happy
       </Text>
 
-      {/* Subtitle */}
-      <Text style={[styles.subtitle, { color: isDarkMode ? '#CCCCCC' : '#444444' }]}>
+      <Text style={styles.subtitle}>
         What Type of Therapy Are You Looking For?
       </Text>
 
-      {/* Scrollable content */}
-      <ScrollView style={styles.scrollContainer} contentContainerStyle={{ paddingBottom: 100 }}>
+      <ScrollView style={styles.scrollContainer} contentContainerStyle={{ paddingBottom: 20 }}>
         <View style={styles.buttonContainer}>
-          
-          {/* Digital Diary Button */}
           <TouchableOpacity 
-            style={[styles.button, { backgroundColor: isDarkMode ? '#2C2C2C' : '#FFFFFF', borderColor: isDarkMode ? '#555555' : '#FF6F00' }]} 
+            style={styles.button} 
             onPress={() => navigation.navigate('DigitalDiary')}
           >
             <View style={styles.buttonContent}>
-              <Text style={[styles.buttonTitle, { color: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>
+              <Text style={styles.buttonTitle}>
                 Digital Diary
               </Text>
-              <Text style={[styles.buttonSubtitle, { color: isDarkMode ? '#AAAAAA' : '#666666' }]}>
+              <Text style={styles.buttonSubtitle}>
                 Write in Journal
               </Text>
             </View>
-            <Image source={require('../images/MainPage.png')} style={styles.buttonIcon} />
+            <Image source={require('../images/DigitalDiary.png')} style={styles.buttonIcon} /> 
           </TouchableOpacity>
 
-          {/* Online Therapy Button */}
           <TouchableOpacity 
-            style={[styles.button, { backgroundColor: isDarkMode ? '#2C2C2C' : '#FFFFFF', borderColor: isDarkMode ? '#555555' : '#FF6F00' }]} 
-            onPress={() => navigation.navigate('BookingForm')}
+            style={styles.button} 
+            onPress={() => navigation.navigate('OnlineTherapy')}
           >
             <View style={styles.buttonContent}>
-              <Text style={[styles.buttonTitle, { color: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>
-                Therapy
+              <Text style={styles.buttonTitle}>
+                Online Therapy
               </Text>
-              <Text style={[styles.buttonSubtitle, { color: isDarkMode ? '#AAAAAA' : '#666666' }]}>
-                Book an Appointment with a Therapist
+              <Text style={styles.buttonSubtitle}>
+                Meet with a Professional on a Video Call
               </Text>
             </View>
-            <Image source={require('../images/EntryDiary.png')} style={styles.buttonIcon} />
+            <Image source={require('../images/OnlineTherapy.jpg')} style={styles.buttonIcon} /> 
           </TouchableOpacity>
 
-          {/* Peer2Peer Counseling Button */}
           <TouchableOpacity 
-            style={[styles.button, { backgroundColor: isDarkMode ? '#2C2C2C' : '#FFFFFF', borderColor: isDarkMode ? '#555555' : '#FF6F00' }]} 
+            style={styles.button} 
             onPress={() => navigation.navigate('PeerCounseling')}
           >
             <View style={styles.buttonContent}>
-              <Text style={[styles.buttonTitle, { color: isDarkMode ? '#FF6F00' : '#FF6F00' }]}>
+              <Text style={styles.buttonTitle}>
                 Peer2Peer Counseling
               </Text>
-              <Text style={[styles.buttonSubtitle, { color: isDarkMode ? '#AAAAAA' : '#666666' }]}>
+              <Text style={styles.buttonSubtitle}>
                 Casual Conversation with a Peer
               </Text>
             </View>
-            <Image source={require('../images/TherapyPage.png')} style={styles.buttonIcon} />
+            <Image source={require('../images/PeerToPeer2.png')} style={styles.buttonIcon} /> 
           </TouchableOpacity>
         </View>
       </ScrollView>
 
-      {/* Footer */}
-      <Footer />
+      <Footer style={styles.footer}/>
     </View>
   );
 };
@@ -86,38 +72,40 @@ const TherapyButton = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 0,
+    backgroundColor: '#F8F9FA',
+    paddingTop: 20,
+    paddingHorizontal: 15,
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
+    color: '#D86A3E', // UJ Orange
     textAlign: 'center',
     marginVertical: 10,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '500',
+    color: '#333333', // Dark Grey
     textAlign: 'center',
-    marginBottom: 15,
+    marginBottom: 20,
   },
   scrollContainer: {
     flex: 1,
-    paddingHorizontal: 20,
   },
   buttonContainer: {
-    marginBottom: 80,
+    marginBottom: 20,
   },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 10,
-    marginBottom: 40,
+    padding: 15,
+    marginBottom: 20,
     borderRadius: 15,
-    width: '100%',
-    height: 120,
-    justifyContent: 'space-between',
+    backgroundColor: '#FFFFFF', 
+    borderColor: '#D86A3E', 
     borderWidth: 2,
-    elevation: 8, // Subtle shadow for more polish
+    elevation: 5, 
   },
   buttonContent: {
     flex: 1,
@@ -125,17 +113,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   buttonTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '600',
+    color: '#D86A3E', 
   },
   buttonSubtitle: {
     fontSize: 14,
-    marginTop: 4,
+    color: '#666666',
   },
   buttonIcon: {
-    width: 70,
-    height: 70,
+    width: 60,
+    height: 60,
     resizeMode: 'contain',
+  },
+  footer: {
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#D86A3E', 
   },
 });
 

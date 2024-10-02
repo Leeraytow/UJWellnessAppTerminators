@@ -61,9 +61,9 @@ export default function Tools({ navigation }) {
             <View style={styles.row}>
               <TouchableOpacity 
                 style={[styles.tab, styles.helpLine]} 
-                onPress={() => navigation.navigate('HelpLine')}>
+                onPress={() => navigation.navigate('MedicalHelp')}>
                 <Icon name="phone" size={24} color="black" />
-                <Text style={styles.tabText}>Help Line</Text>
+                <Text style={styles.tabText}>Medical Help</Text>
               </TouchableOpacity>
 
               <TouchableOpacity 
@@ -84,9 +84,9 @@ export default function Tools({ navigation }) {
 
               <TouchableOpacity 
                 style={[styles.tab, styles.profile]} 
-                onPress={() => navigation.navigate('Profile')}>
-                <Icon name="account-outline" size={24} color="black" />
-                <Text style={styles.tabText}>Profile</Text>
+                onPress={() => navigation.navigate('HelpLine')}>
+                <Icon name="phone" size={24} color="black" />
+                <Text style={styles.tabText}>HelpLine</Text>
               </TouchableOpacity>
             </View>
           </View>

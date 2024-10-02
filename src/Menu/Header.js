@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, SafeAreaView, Modal } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-const Header = ({ navigation }) => {
 
+const Header = ({ navigation }) => {
   return (
     <View style={styles.header}>
       <View style={styles.headerLeft}>
@@ -24,6 +24,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginTop: 50, // Adds space at the top to move the header down
+    borderWidth: 2, // Add border width
+    borderColor: '#FF5F1F', // Set border color to orange
+    borderRadius: 8, // Optional: round the corners
   },
   headerLeft: {
     flexDirection: 'row',
@@ -42,7 +45,6 @@ const styles = StyleSheet.create({
   },
   menuBtn: {
     padding: 10,
-    
   },
   separator: {
     height: 1,
