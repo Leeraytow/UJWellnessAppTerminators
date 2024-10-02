@@ -8,7 +8,7 @@ import CustomCheckbox from './CustomCheckbox';
 
 export default function StudentAuthScreen({ navigation }) {
   const [isLogin, setIsLogin] = useState(true);
-  const [fullName, setFullName] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -37,18 +37,70 @@ export default function StudentAuthScreen({ navigation }) {
     setShowPassword((prevShowPassword) => !prevShowPassword);
   };
 
+  const handleRegister = async () =>{
+    if (email === '' || password === '' || username === '') {
+      setError('Required fields are missing');
+      setLoading(false);
+      return;
+      
+    }
+  
+    if (!validateEmail(email)) {
+      setError('Please Enter Your Student Email');
+      setLoading(false); // Stop loading
+      return;
+    }
+  
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      setLoading(false); // Stop loading
+      return;
+    }
+  
+    if (!validatePassword(password)) {
+      setError('Password must be at least 8 characters long, contain at least one uppercase letter, special character and a number.');
+      setLoading(false); // Stop loading
+      return;
+    }
+  
+    try {
+      // Step 1: Create user account
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+  
+      // Step 2: Send email verification
+      await sendEmailVerification(user);
+      await signOut(auth); // Log out user after verification
+  
+      // Step 3: Save user data to Firestore with the "active" field
+      const userRef = doc(collection(db, 'Students'), user.uid);
+      await setDoc(userRef, {
+        name: username,
+        email: email,
+        profilePicture:  require('../images/profile.png'),
+        active: false,  // Set active to false during registration
+      });
+  
+      navigation.navigate('RegEmailVerification', { userEmail: email, userName: username, uid: user.uid });
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false); // Stop loading
+    }
+  }
+
   const handleLogin = async () => {
     const Email = email.trim();
   
     if (!Email || !password) {
       setError('All fields are required');
-      setLoading(false);
+      setLoading(false); // Stop loading
       return;
     }
   
     if (!validateEmail(Email)) {
       setError('Invalid email address');
-      setLoading(false);
+      setLoading(false); // Stop loading
       return;
     }
   
@@ -58,11 +110,10 @@ export default function StudentAuthScreen({ navigation }) {
   
       if (!user.emailVerified) {
         setError('Please verify your email before logging in.');
-        setLoading(false);
+        setLoading(false); // Stop loading
         return navigation.navigate('EmailVerification', { userEmail: Email });
       }
   
-      // Set "active" to true upon login
       const userRef = doc(db, 'Students', user.uid);
       await setDoc(userRef, { active: true }, { merge: true });
   
@@ -77,7 +128,7 @@ export default function StudentAuthScreen({ navigation }) {
         if (querySnapshot.size === 1) {
           querySnapshot.forEach((doc) => {
             const userName = doc.data().name;
-            navigation.navigate('MainPage', { userName: userName, userEmail: Email });
+            navigation.navigate('MainPage', { userName, userEmail: Email });
           });
         } else {
           setError('User not found');
@@ -88,9 +139,10 @@ export default function StudentAuthScreen({ navigation }) {
     } catch (error) {
       setError(error.message);
     } finally {
-      setLoading(false);
+      setLoading(false); // Stop loading
     }
   };
+  
   
 
   const handleSubmit = () => {
@@ -105,7 +157,7 @@ export default function StudentAuthScreen({ navigation }) {
 
   const handleForgotPassword = async () => {
     if (!email) {
-      setError('Please enter your email address');
+      setError('Please enter your email address and then press Forgot Password');
       return;
     }
 
@@ -115,6 +167,7 @@ export default function StudentAuthScreen({ navigation }) {
     } catch (error) {
       setError('Error sending password reset email: ' + error.message);
     }
+    
   };
 
   return (
@@ -144,8 +197,8 @@ export default function StudentAuthScreen({ navigation }) {
               <TextInput
                 style={styles.input}
                 placeholder="Full Name"
-                onChangeText={setFullName}
-                value={fullName}
+                onChangeText={setUsername}
+                value={username}
               />
             </View>
           )}
