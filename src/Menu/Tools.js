@@ -31,7 +31,7 @@ export default function Tools({ navigation }) {
       <Header />
 
       {/* Linear Gradient Background Below Header */}
-      <LinearGradient colors={['#FF3C00', '#FBFBFB']} style={styles.gradient}>
+      <LinearGradient colors={['#FC9842', '#FE5F75']} style={styles.gradient}>
         {/* ScrollView for Content */}
         <ScrollView contentContainerStyle={styles.scrollViewContainer}>
           {/* Randomly Generated Affirmation */}
@@ -40,8 +40,9 @@ export default function Tools({ navigation }) {
             <Text style={styles.quoteText}>“{randomAffirmation.text}”</Text>
           </View>
 
-          {/* Tabs Section */}
-          <View style={styles.tabContainer}>
+         
+{/* Tabs Section */}
+<View style={styles.tabContainer}>
             <View style={styles.row}>
               <TouchableOpacity 
                 style={[styles.tab, styles.podcast]} 
@@ -98,7 +99,6 @@ export default function Tools({ navigation }) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     textAlign: 'center',
     marginVertical: 20,
-    color: 'black',
+    color: '#FF8C00',
   },
   tabContainer: {
     width: '100%',
@@ -149,6 +149,15 @@ const styles = StyleSheet.create({
     margin: 5,
     backgroundColor: '#FF5F15',
     borderRadius: 10,
+    
+    // Shadow for iOS
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+
+    // Shadow for Android
+    elevation: 5,
   },
   tabText: {
     marginTop: 10,
@@ -159,10 +168,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   therapy: {
-    backgroundColor: '#FF5F15',
+    backgroundColor: '#FC9842',
   },
   helpLine: {
-    backgroundColor: '#FF5F15',
+    backgroundColor: '#FC9842',
   },
   peerSupport: {
     backgroundColor: 'white',
@@ -171,6 +180,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   profile: {
-    backgroundColor: '#FF5F15',
+    backgroundColor: '#FC9842',
   },
 });

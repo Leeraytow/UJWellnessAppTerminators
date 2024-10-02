@@ -133,7 +133,7 @@ const MainScreen = () => {
     { id: 2, emoji: '😢', label: 'Sad' },
     { id: 3, emoji: '😡', label: 'Angry' },
     { id: 4, emoji: '😴', label: 'Tired' },
-    { id: 5, emoji: '😎', label: 'Cool' },
+   
   ];
 
   return (
@@ -146,10 +146,10 @@ const MainScreen = () => {
             <View style={styles.header}>
               <View style={styles.iconsContainer}>
                 <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
-                  <Feather name="bell" size={24} color="#FF5F1F" style={styles.icon} />
+                  <Feather name="bell" size={24} color="#FF5800" style={styles.icon} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => navigation.navigate('GeminiChat')}>
-                  <Feather name="message-circle" size={24} color="#FF5F1F" />
+                  <Feather name="message-circle" size={24} color="#FF5800" />
                 </TouchableOpacity>
               </View>
               <Image  source={{ uri: currentImage }}  style={[styles.profilePicture]} /> 
@@ -163,7 +163,7 @@ const MainScreen = () => {
 
             {/* Appointments */}
             <TouchableOpacity onPress={() => navigation.navigate('AppointmentStudent')}>
-              <LinearGradient colors={['#FF3C00', '#FBFBFB']} style={styles.appointmentsContainer}>
+              <LinearGradient colors={['#FF5800', '#FBFBFB']} style={styles.appointmentsContainer}>
                 <Text style={styles.sectionTitle}>Next Appointments</Text>
                 {appointments.length > 0 ? (
                   <View style={styles.appointmentCards}>
@@ -191,7 +191,7 @@ const MainScreen = () => {
                   </TouchableOpacity>
                 ))}
                 <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('MoodControl')}>
-                  <Ionicons name="add-circle" size={40} color="#FF5F1F" />
+                  <Ionicons name="add-circle" size={40} color="#FF5800" />
                 </TouchableOpacity>
               </View>
               <TouchableOpacity style={styles.tapToRecord}>
@@ -201,7 +201,7 @@ const MainScreen = () => {
 
             {/* Diary */}
             <TouchableOpacity onPress={() => navigation.navigate('DigitalDiary')}>
-              <LinearGradient colors={['#FC575E', '#F7B42C']} style={styles.diaryContainer}>
+              <LinearGradient colors={['#FE5F75', '#FC9842']} style={styles.diaryContainer}>
                 <Text style={styles.sectionTitle}>Diary</Text>
                 <Text style={styles.diaryText}>
                   Your emotions matter. Log your thoughts today for a personalized resource to support your mental well-being.
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#FF6347',
+    color: '#FF5800',
     textAlign: 'center',
     marginBottom: 9,
   },
@@ -304,11 +304,11 @@ const styles = StyleSheet.create({
   appointmentCards: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: -1,
+
   },
   appointmentCard: {
-    backgroundColor: '#FF6347',
-    padding: 7,
+    backgroundColor: '#FF7043',
+    padding: 10,
     borderRadius: 10,
     shadowColor: '#000',
     shadowOpacity: 10,
@@ -324,7 +324,7 @@ const styles = StyleSheet.create({
   },
   appointmentDetails: {
     fontSize: 14,
-    color: '#EC5800',
+    color: '#FF5800',
     marginTop: 5,
     textAlign: 'center',
   },
@@ -365,7 +365,7 @@ emotionsRow: {
   },
   plusText: {
     fontSize: 15,
-    color: '#fff',
+    color: '#FF5800',
   },
   tapToRecord: {
     marginTop: -30,
@@ -400,7 +400,7 @@ emotionsRow: {
   },
   noAppointmentsText: {
     fontSize: 16,
-    color: '#FF5F1F', // or any color you prefer
+    color: '#FF7518', // or any color you prefer
     textAlign: 'center', // Center align the message
     marginTop: 10, // Add some space above
   },
@@ -410,6 +410,7 @@ emotionsRow: {
     borderRadius: 60,
     borderWidth: 3,
     marginBottom: 0,
+    borderColor: '#FC9842',
   },
   
 });

@@ -10,7 +10,7 @@ const Header = ({ navigation }) => {
         <Text style={styles.headerText}>UJWellness</Text>
       </View>
       <TouchableOpacity onPress={() => navigation.openDrawer()} style={styles.menuBtn}>
-        <Ionicons name="menu" size={28} color="#FF5F1F" />
+        <Ionicons name="menu" size={28} color="#FF5733" />
       </TouchableOpacity>
     </View>
   );
@@ -24,9 +24,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginTop: 50, // Adds space at the top to move the header down
-    borderWidth: 2, // Add border width
-    borderColor: '#FF5F1F', // Set border color to orange
-    borderRadius: 8, // Optional: round the corners
+    borderWidth: 1, // Add border width
+    borderColor: '#FFF5E1', // Set border color to orange
+    borderRadius: -20, // Optional: round the corners
   },
   headerLeft: {
     flexDirection: 'row',
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   headerText: {
-    color: '#FF5F1F',
+    color: '#FF5733',
     fontSize: 18,
     fontWeight: 'bold',
   },

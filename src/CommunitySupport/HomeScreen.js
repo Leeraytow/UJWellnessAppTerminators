@@ -171,7 +171,7 @@ export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
       {profileImage && <Image source={{ uri: profileImage }} style={styles.profileImage} />}
-      <Text>{name}</Text>
+      <Text style={styles.nameText}>{name}</Text>
       <TextInput
         style={styles.input}
         placeholder="What's on your mind?"
@@ -179,12 +179,14 @@ export default function HomeScreen({ navigation }) {
         onChangeText={setText}
         multiline
       />
-      {pickedImage && <Image source={{ uri: pickedImage }} style={{ width: 200, height: 200 }} />}
+      {pickedImage && <Image source={{ uri: pickedImage }} style={styles.pickedImage} />}
       <TouchableOpacity style={styles.attachmentButton} onPress={pickImage}>
         <Icon name="image-outline" size={24} color="#333" />
         <Text style={styles.attachmentText}> Attach Image</Text>
       </TouchableOpacity>
-      <Button title="Post" onPress={handlePost} />
+      <TouchableOpacity style={styles.postButton} onPress={handlePost}>
+        <Text style={styles.postButtonText}>Post</Text>
+      </TouchableOpacity>
       <FlatList
         data={posts}
         renderItem={renderItem}
@@ -199,18 +201,26 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    //backgroundColor: '#FFF5E1', // Light orange background
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
+    borderColor: '#FF8C00', // Dark orange border
+    padding: 15,
+    borderRadius: 10,
+    backgroundColor: '#FFE4B5', // Light orange input background
     marginBottom: 10,
-    minHeight: 40,
   },
   postContainer: {
     padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    backgroundColor: '#FFF5E1', // Light orange background for posts
+    borderRadius: 10,
+    marginBottom: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 5,
   },
   headerContainer: {
     flexDirection: 'row',
@@ -226,23 +236,22 @@ const styles = StyleSheet.create({
   authorName: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: '#FF8C00', // Dark orange text for author name
   },
   postText: {
-    fontSize: 18,
+    fontSize: 16,
+    color: '#333',
   },
   postImage: {
     width: '100%',
     height: 200,
+    borderRadius: 10,
     marginTop: 10,
-    borderRadius: 5,
-  },
-  postList: {
-    marginTop: 20,
   },
   actionContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginTop: 10,
+    marginTop: 15,
   },
   iconButton: {
     flexDirection: 'row',
@@ -251,18 +260,43 @@ const styles = StyleSheet.create({
   iconLabel: {
     marginLeft: 5,
     fontSize: 14,
-    color: '#333',
+    color: '#FF8C00', // Dark orange label for buttons
   },
   attachmentButton: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-    backgroundColor: '#ddd',
-    borderRadius: 5,
+    backgroundColor: '#FF8C00', // Dark orange background
+    borderRadius: 10,
     marginBottom: 10,
   },
   attachmentText: {
     marginLeft: 5,
+    color: '#FFF',
+  },
+  postButton: {
+    backgroundColor: '#FF4500', // Strong orange color for post button
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  postButtonText: {
+    color: '#FFF',
     fontSize: 16,
+  },
+  postList: {
+    marginTop: 20,
+  },
+  pickedImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  nameText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
   },
 });
