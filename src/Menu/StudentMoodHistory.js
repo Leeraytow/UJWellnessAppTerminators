@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db, auth } from '../Configuration/firebase'; // Import Firebase
+import Footer from '../Menu/Footer';
 
 const StudentMoodHistory = () => {
   const [moodHistory, setMoodHistory] = useState([]);
@@ -62,14 +63,14 @@ const StudentMoodHistory = () => {
 
       {/* Month Selector */}
       <View style={styles.monthSelector}>
-        <TouchableOpacity onPress={() => changeMonth(-1)}>
-          <Icon name="chevron-left" size={24} color="#fff" />
+        <TouchableOpacity onPress={() => changeMonth(-1)} style={styles.monthButton}>
+          <Icon name="chevron-left" size={24} color="#FF6F00" />
         </TouchableOpacity>
         <Text style={styles.monthText}>
           {selectedMonth.format('MMMM YYYY')}
         </Text>
-        <TouchableOpacity onPress={() => changeMonth(1)}>
-          <Icon name="chevron-right" size={24} color="#fff" />
+        <TouchableOpacity onPress={() => changeMonth(1)} style={styles.monthButton}>
+          <Icon name="chevron-right" size={24} color="#FF6F00" />
         </TouchableOpacity>
       </View>
 
@@ -86,73 +87,84 @@ const StudentMoodHistory = () => {
         ) : (
           <Text style={styles.noData}>No mood logs available for {selectedMonth.format('MMMM')}.</Text>
         )}
+        
       </ScrollView>
+      <Footer />
     </SafeAreaView>
+    
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f0f4f8',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 15,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    position: 'relative',
+    paddingVertical: 10,
+    backgroundColor: '#FF6F00',
+    marginTop: 40,  // Adds space from the top of the screen
   },
   backButton: {
     position: 'absolute',
     left: 15,
-    color: 'black',
   },
   heading: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
-    color: '#FF6F00',
-    textAlign: 'center',
+    color: '#fff',
   },
   monthSelector: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    backgroundColor: '#ffa500',
+    paddingHorizontal: 30,
+    paddingVertical: 20,
+    backgroundColor: '#ffb74d',
+    borderRadius: 10,
+    margin: 15,
+    shadowColor: '#FF6F00',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 5,
+  },
+  monthButton: {
+    padding: 10,
   },
   monthText: {
     fontSize: 18,
-    color: '#fff',
+    color: '#FF6F00',
     fontWeight: 'bold',
   },
   contentContainer: {
     paddingHorizontal: 20,
-    paddingVertical: 30,
+    paddingBottom: 50,
   },
   moodEntry: {
     backgroundColor: '#fff',
-    padding: 15,
-    borderRadius: 8,
+    padding: 20,
+    borderRadius: 12,
     marginBottom: 15,
-    shadowColor: '#FF6F00',
-    shadowOffset: { width: 0, height: 2 },
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.2,
     shadowRadius: 6,
     elevation: 5,
   },
   date: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 5,
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#444',
+    marginBottom: 8,
   },
   emoji: {
     fontSize: 16,
     marginBottom: 5,
+    color: '#FF6F00',
   },
   note: {
     fontSize: 14,
@@ -160,7 +172,7 @@ const styles = StyleSheet.create({
   },
   noData: {
     fontSize: 16,
-    color: '#666',
+    color: '#888',
     textAlign: 'center',
     marginTop: 50,
   },

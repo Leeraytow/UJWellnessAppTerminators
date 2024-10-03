@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, TextInput, StyleSheet, ScrollView, Alert, Platform } from 'react-native';
+import { View, Text, Image, TouchableOpacity, TextInput, StyleSheet, ScrollView, Alert, Platform,SafeAreaView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Speech from 'expo-speech';
 import Voice from 'react-native-voice';
@@ -7,6 +7,7 @@ import { PermissionsAndroid } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { LinearGradient } from 'expo-linear-gradient';
 import Header from '../Menu/Header';
+import Footer from '../Menu/Footer';
 
 const DigitalDiary = () => {
   const [showAdditionalOptions, setShowAdditionalOptions] = useState(false);
@@ -165,11 +166,10 @@ const DigitalDiary = () => {
   };
 
   return (
-    <LinearGradient
-      colors={['#FC9842', '#FE5F75']}
-      style={styles.container}
-    >
-      <Header/>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <Header />
+        <LinearGradient colors={['#FC9842', '#FE5F75']} style={styles.gradientContainer}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.header}>
           <Text style={styles.welcomeText}>Welcome, Lerato!</Text>
@@ -253,12 +253,21 @@ const DigitalDiary = () => {
           <Icon name="plus" size={20} color="#fff" />
         </TouchableOpacity>
       </ScrollView>
-    </LinearGradient>
+      </LinearGradient>
+      <Footer />
+      </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  safeArea: {
+    flex: 1,
+  },
+  gradientContainer: {
     flex: 1,
   },
   scrollContainer: {

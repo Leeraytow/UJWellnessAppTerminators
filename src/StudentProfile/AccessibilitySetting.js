@@ -12,8 +12,6 @@ const AccessibilitySettings = () => {
   const { fontSize, increaseFontSize, decreaseFontSize } = useContext(FontSizeContext);  // Access font size context
 
   const [isLowVision, setIsLowVision] = React.useState(false);
-  const [useScreenReader, setUseScreenReader] = React.useState(false);
-  const [useVoiceCommands, setUseVoiceCommands] = React.useState(false);
 
   const adjustFontSize = value => {
     if (value > fontSize) {
@@ -54,26 +52,6 @@ const AccessibilitySettings = () => {
           thumbColor={isLowVision ? '#FFA500' : '#f4f3f4'}
           value={isLowVision}
           onValueChange={setIsLowVision}
-        />
-      </View>
-
-      <View style={[styles.setting, { backgroundColor: isDarkMode ? '#555' : '#fff' }]}>
-        <Text style={[styles.label, { fontSize, color: isDarkMode ? '#FFA500' : '#FF6F00' }]}>Screen Reader</Text>
-        <Switch
-          trackColor={{ false: '#767577', true: '#FFA500' }}
-          thumbColor={useScreenReader ? '#FFA500' : '#f4f3f4'}
-          value={useScreenReader}
-          onValueChange={setUseScreenReader}
-        />
-      </View>
-
-      <View style={[styles.setting, { backgroundColor: isDarkMode ? '#555' : '#fff' }]}>
-        <Text style={[styles.label, { fontSize, color: isDarkMode ? '#FFA500' : '#FF6F00' }]}>Voice Commands</Text>
-        <Switch
-          trackColor={{ false: '#767577', true: '#FFA500' }}
-          thumbColor={useVoiceCommands ? '#FFA500' : '#f4f3f4'}
-          value={useVoiceCommands}
-          onValueChange={setUseVoiceCommands}
         />
       </View>
 

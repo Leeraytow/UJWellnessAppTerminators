@@ -140,7 +140,7 @@ const MainScreen = () => {
     <SafeAreaView style={styles.safeArea}>
       <Header />
       <ScrollView showsVerticalScrollIndicator={false}>
-        <LinearGradient colors={['#FC9842', '#FE5F75']} style={styles.container}>
+        <LinearGradient colors={['#FC9842', '#FFF5E6']} style={styles.container}>
           <Animated.View style={[styles.wrapper, { opacity: fadeAnim }]}>
             {/* Header */}
             <View style={styles.header}>
@@ -163,7 +163,7 @@ const MainScreen = () => {
 
             {/* Appointments */}
             <TouchableOpacity onPress={() => navigation.navigate('AppointmentStudent')}>
-              <LinearGradient colors={['#FF5800', '#FBFBFB']} style={styles.appointmentsContainer}>
+              <LinearGradient colors={['#FC9842', '#FBFBFB']} style={styles.appointmentsContainer}>
                 <Text style={styles.sectionTitle}>Next Appointments</Text>
                 {appointments.length > 0 ? (
                   <View style={styles.appointmentCards}>
@@ -201,7 +201,7 @@ const MainScreen = () => {
 
             {/* Diary */}
             <TouchableOpacity onPress={() => navigation.navigate('DigitalDiary')}>
-              <LinearGradient colors={['#FE5F75', '#FC9842']} style={styles.diaryContainer}>
+              <LinearGradient colors={['#FC9842', '#FE5F75']} style={styles.diaryContainer}>
                 <Text style={styles.sectionTitle}>Diary</Text>
                 <Text style={styles.diaryText}>
                   Your emotions matter. Log your thoughts today for a personalized resource to support your mental well-being.
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#FF5800',
+    color: '#FF6F00',
     textAlign: 'center',
     marginBottom: 9,
   },

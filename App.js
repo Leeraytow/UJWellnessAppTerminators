@@ -148,7 +148,7 @@ export default function App() {
             <Stack.Screen name="PeerCounseling" component={PeerCounselingPage} options={{ headerShown: false }} />
             <Stack.Screen name="DigitalDiary" component={DigitalDiary} options={{ headerShown: false }} />
             <Stack.Screen name="Message" component={MessageScreen} options={{ headerShown: false }} />
-            <Stack.Screen name="StudentMoodHistory" component={StudentMoodHistory} />
+            <Stack.Screen name="StudentMoodHistory" component={StudentMoodHistory}  options={{ headerShown: false }} />
             <Stack.Screen name="ContactSupport" component={ContactSupportScreen} options={{ headerShown: false }} />
             <Stack.Screen name="MoodControl" component={MoodControl} options={{ headerShown: false }} />
             <Stack.Screen name="TherapyButton" component={TherapyButton} options={{ headerShown: false }} />

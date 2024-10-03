@@ -1,48 +1,61 @@
-import React, { useState, useEffect, useContext,useRef } from 'react';
-
+import React, { useState, useEffect, useContext } from 'react';
+import { View, Text, Image, StyleSheet, Pressable, ScrollView, Alert, SafeAreaView, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
+import { ThemeContext } from './ThemeContext';
+import { signOut, deleteUser } from 'firebase/auth';
+import { auth, db } from '../../src/Configuration/firebase';
+import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import * as ImagePicker from 'expo-image-picker';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { doc, getDoc, updateDoc,deleteDoc } from 'firebase/firestore';
-import { auth, db } from '../../src/Configuration/firebase';
-import { ThemeContext } from './ThemeContext';
 
-import { View, Text, Image, StyleSheet, Pressable, ScrollView, Alert, SafeAreaView, Animated,TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-
-import { Ionicons } from '@expo/vector-icons';
-import { signOut, deleteUser } from 'firebase/auth';
-
-
-
-import Icon from 'react-native-vector-icons/Ionicons';
-
-const ProfileImageUpdate = ({ navigation }) => {
-  
+const ProfileComponent = () => {
+  const navigation = useNavigation();
+  const { isDarkMode } = useContext(ThemeContext);
   const [pickedImage, setPickedImage] = useState(null);
   const [currentImage, setCurrentImage] = useState(null);
-  const [loading, setLoading] = useState(false);
-
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
 
   useEffect(() => {
-    const fetchCurrentImage = async () => {
-      const user = auth.currentUser;
-      if (user) {
-        try {
-          const userRef = doc(db, 'Students', user.uid);
-          const docSnap = await getDoc(userRef);
-
-          if (docSnap.exists()) {
-            const userData = docSnap.data();
-            setCurrentImage(userData.profileImage || null);
-          }
-        } catch (error) {
-          console.error('Error fetching user profile image: ', error);
-        }
-      }
-    };
-
+    fetchUserData();
     fetchCurrentImage();
   }, []);
+
+  const fetchUserData = async () => {
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        const userRef = doc(db, 'Students', user.uid);
+        const docSnap = await getDoc(userRef);
+
+        if (docSnap.exists()) {
+          const userData = docSnap.data();
+          setUsername(userData.name || '');
+          setEmail(userData.email || '');
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching user data: ', error);
+    }
+  };
+
+  const fetchCurrentImage = async () => {
+    const user = auth.currentUser;
+    if (user) {
+      try {
+        const userRef = doc(db, 'Students', user.uid);
+        const docSnap = await getDoc(userRef);
+
+        if (docSnap.exists()) {
+          const userData = docSnap.data();
+          setCurrentImage(userData.profileImage || null);
+        }
+      } catch (error) {
+        console.error('Error fetching user profile image: ', error);
+      }
+    }
+  };
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -56,157 +69,70 @@ const ProfileImageUpdate = ({ navigation }) => {
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
-      
-    
-        
-      
     });
 
     if (!result.canceled) {
       setPickedImage(result.assets[0].uri);
-      
-     
+      handleUpdateImage(result.assets[0].uri);
     }
-   
-   
   };
 
-  useEffect(() => {
-    if (pickedImage) {
-      handleUpdateImage(); // Call handleUpdateImage when pickedImage changes
-    }
-  }, [pickedImage]);
-
-  const handleUpdateImage = async () => {
+  const handleUpdateImage = async (imageUri) => {
     const user = auth.currentUser;
     if (!user) {
       Alert.alert('Error', 'No user is logged in.');
       return;
     }
 
-    if (pickedImage) {
+    if (imageUri) {
       try {
         const storage = getStorage();
         const imageRef = ref(storage, `profileImages/${user.uid}_${Date.now()}.jpg`);
 
-        // Convert the image to Blob format
-        const response = await fetch(pickedImage);
+        const response = await fetch(imageUri);
         const blob = await response.blob();
 
-        // Upload the image to Firebase Storage
         await uploadBytes(imageRef, blob);
-
-        // Get the download URL of the uploaded image
         const imageUrl = await getDownloadURL(imageRef);
 
-        // Update the Firestore database with the new image URL
         const userRef = doc(db, 'Students', user.uid);
         await updateDoc(userRef, { profileImage: imageUrl });
 
+        setCurrentImage(imageUrl);
         Alert.alert('Success', 'Profile image updated successfully!');
-  
       } catch (error) {
         Alert.alert('Update Error', 'Failed to update profile image. Please try again.');
         console.error('Error updating profile image: ', error);
       }
-    } else {
-      Alert.alert('No Image Selected', 'Please select an image before updating.');
     }
   };
 
-  const { isDarkMode } = useContext(ThemeContext);
-  const [profilePicture, setProfilePicture] = useState(require('../images/alice.jpeg'));
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const user = auth.currentUser;
-        if (user) {
-          const userRef = doc(db, 'Students', user.uid);
-          const docSnap = await getDoc(userRef);
-
-          if (docSnap.exists()) {
-            const userData = docSnap.data();
-            setUsername(userData.name || ''); // Set the user's name
-            setEmail(userData.email || '');   // Set the user's email
-          } else {
-            console.log('No such document!');
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching user data: ', error);
-      }
-    };
-
-    fetchUserData();
-  }, []);
   const handleSignOut = () => {
     Alert.alert(
       'Confirm Sign Out',
       'Are you sure you want to sign out?',
       [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Sign Out',
-          onPress: () => {
-            setLoading(true);  // Show loading while signing out
-  
-            const user = auth.currentUser;
-  
-            // Ensure user is logged in before proceeding
-            if (user) {
-              // Update the "active" status to false in Firestore
-              const userRef = doc(db, 'Students', user.uid); // Updated to use Firestore doc ref
-              updateDoc(userRef, { active: false })
-                .then(() => {
-                  console.log('User status set to inactive');
-  
-                  // Proceed with sign-out after updating status
-                  signOut(auth)
-                    .then(() => {
-                      console.log('User signed out');
-                      navigation.replace('StudentLogin');  // Redirect to login screen
-                    })
-                    .catch(error => {
-                      console.error('Error signing out: ', error);
-                    })
-                    .finally(() => {
-                      setLoading(false);  // Stop loading after sign-out attempt
-                    });
-                })
-                .catch(error => {
-                  console.error('Error updating user status: ', error);
-                  setLoading(false);  // Stop loading if update fails
-                });
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Sign Out', 
+          onPress: async () => {
+            try {
+              const user = auth.currentUser;
+              if (user) {
+                const userRef = doc(db, 'Students', user.uid);
+                await updateDoc(userRef, { active: false });
+                await signOut(auth);
+                navigation.replace('StudentLogin');
+              }
+            } catch (error) {
+              console.error('Error signing out: ', error);
+              Alert.alert('Error', 'Failed to sign out. Please try again.');
             }
-          },
+          }
         },
       ],
       { cancelable: true }
     );
-  };
-
-const fallbackImage= "https://imgs.search.brave.com/iy-sEupdI8V7_1q3MjjWqpGGNTZ53DPoppz8Eascl-M/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/cG5naXRlbS5jb20v/cGltZ3MvbS8xNDYt/MTQ2ODg0M19wcm9m/aWxlLWljb24tb3Jh/bmdlLXBuZy10cmFu/c3BhcmVudC1wbmcu/cG5n"
-  const handlePressIn = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 0.9,
-      friction: 3,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const handlePressOut = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      friction: 3,
-      useNativeDriver: true,
-    }).start();
   };
 
   const handleDeleteAccount = () => {
@@ -214,29 +140,21 @@ const fallbackImage= "https://imgs.search.brave.com/iy-sEupdI8V7_1q3MjjWqpGGNTZ5
       'Delete Account',
       'Are you sure you want to delete your account? This action cannot be undone.',
       [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Delete',
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Delete', 
           onPress: async () => {
-            const user = auth.currentUser;
-            if (user) {
-              try {
-                // Delete user data from Firestore
+            try {
+              const user = auth.currentUser;
+              if (user) {
                 const userDocRef = doc(db, 'Students', user.uid);
                 await deleteDoc(userDocRef);
-
-                // Delete the user account from Firebase Authentication
                 await deleteUser(user);
-
-                console.log('User account and associated data deleted');
-                navigation.replace('StudentLogin'); // Redirect to the Login screen after account deletion
-              } catch (error) {
-                console.error('Error deleting user account or data: ', error);
-                Alert.alert('Error', 'There was an error deleting your account. Please try again.');
+                navigation.replace('StudentLogin');
               }
+            } catch (error) {
+              console.error('Error deleting user account or data: ', error);
+              Alert.alert('Error', 'There was an error deleting your account. Please try again.');
             }
           },
           style: 'destructive',
@@ -245,78 +163,54 @@ const fallbackImage= "https://imgs.search.brave.com/iy-sEupdI8V7_1q3MjjWqpGGNTZ5
       { cancelable: true }
     );
   };
-  const [text, setText] = useState('');
-  const [name, setName] = useState('User1'); // Replace with dynamic user name
-  const [posts, setPosts] = useState([]);
 
-
+  const MenuItem = ({ icon, text, onPress }) => (
+    <TouchableOpacity style={styles.menuItem} onPress={onPress}>
+      <Ionicons name={icon} size={24} color="#FF6F00" />
+      <Text style={styles.menuItemText}>{text}</Text>
+      <Ionicons name="chevron-forward" size={24} color="#FF6F00" />
+    </TouchableOpacity>
+  );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: isDarkMode ? '#333' : '#F5F5F5' }]}>
-      
-      <View style={[styles.header, { backgroundColor: isDarkMode ? '#444' : '#FFF' }]}>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color="#FFF" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Profile</Text>
+      </View>
 
       <ScrollView contentContainerStyle={styles.scrollView}>
-      
-      <TouchableOpacity  onPress={pickImage} >
+        <TouchableOpacity onPress={pickImage}>
+          <Image 
+            source={{ uri: pickedImage || currentImage || 'https://via.placeholder.com/150' }}
+            style={styles.profilePicture}
+          />
+        </TouchableOpacity>
 
-      <Image 
-source={{ uri: pickedImage ? pickedImage : currentImage }}  style={[styles.profilePicture]} />
-
-      </TouchableOpacity>
-     
-    
-      <View style={styles.infoContainer}>
-          <Text style={[styles.name, { color: isDarkMode ? '#FFF' : '#333' }]}>{username}</Text>
-          <Text style={[styles.email, { color: isDarkMode ? '#888' : '#777' }]}>{email}</Text>
+        <View style={styles.infoCard}>
+          <Text style={styles.name}>{username}</Text>
+          <Text style={styles.email}>{email}</Text>
         </View>
 
-        <Pressable style={[styles.item, { backgroundColor: isDarkMode ? '#444' : '#FFF' }]} onPress={() => navigation.navigate('MyProfile')}>
-          <Ionicons name="person-outline" size={24} color={isDarkMode ? '#FFA500' : '#FF6F00'} />
-          <Text style={[styles.itemText, { color: isDarkMode ? '#FFF' : '#333' }]}>My Profile</Text>
-          <Ionicons name="chevron-forward-outline" size={24} color={isDarkMode ? '#FFA500' : '#FF6F00'} />
-        </Pressable>
+        <View style={styles.menuContainer}>
+          <MenuItem icon="person-outline" text="My Profile" onPress={() => navigation.navigate('MyProfile')} />
+          <MenuItem icon="settings-outline" text="Accessibility Settings" onPress={() => navigation.navigate('AccessibilitySettings')} />
+          <MenuItem icon="options-outline" text="Customizable Settings" onPress={() => navigation.navigate('CustomizableSettings')} />
+          <MenuItem icon="call-outline" text="Emergency Contacts" onPress={() => navigation.navigate('HelpLine')} />
+          <MenuItem icon="chatbubble-outline" text="Feedback and Support" onPress={() => navigation.navigate('Feedback')} />
+          <MenuItem icon="lock-closed-outline" text="Security Info" onPress={() => navigation.navigate('SecurityInfo')} />
+        </View>
 
-        <Pressable style={[styles.item, { backgroundColor: isDarkMode ? '#444' : '#FFF' }]} onPress={() => navigation.navigate('AccessibilitySettings')}>
-          <Ionicons name="settings-outline" size={24} color={isDarkMode ? '#FFA500' : '#FF6F00'} />
-          <Text style={[styles.itemText, { color: isDarkMode ? '#FFF' : '#333' }]}>Accessibility Settings</Text>
-          <Ionicons name="chevron-forward-outline" size={24} color={isDarkMode ? '#FFA500' : '#FF6F00'} />
-        </Pressable>
-
-        <Pressable style={[styles.item, { backgroundColor: isDarkMode ? '#444' : '#FFF' }]} onPress={() => navigation.navigate('CustomizableSettings')}>
-          <Ionicons name="options-outline" size={24} color={isDarkMode ? '#FFA500' : '#FF6F00'} />
-          <Text style={[styles.itemText, { color: isDarkMode ? '#FFF' : '#333' }]}>Customizable Settings</Text>
-          <Ionicons name="chevron-forward-outline" size={24} color={isDarkMode ? '#FFA500' : '#FF6F00'} />
-        </Pressable>
-
-        <Pressable style={[styles.item, { backgroundColor: isDarkMode ? '#444' : '#FFF' }]} onPress={() => navigation.navigate('EmergencyContacts')}>
-          <Ionicons name="call-outline" size={24} color={isDarkMode ? '#FFA500' : '#FF6F00'} />
-          <Text style={[styles.itemText, { color: isDarkMode ? '#FFF' : '#333' }]}>Emergency Contacts</Text>
-          <Ionicons name="chevron-forward-outline" size={24} color={isDarkMode ? '#FFA500' : '#FF6F00'} />
-        </Pressable>
-
-        <Pressable style={[styles.item, { backgroundColor: isDarkMode ? '#444' : '#FFF' }]} onPress={() => navigation.navigate('Feedback')}>
-          <Ionicons name="chatbubble-outline" size={24} color={isDarkMode ? '#FFA500' : '#FF6F00'} />
-          <Text style={[styles.itemText, { color: isDarkMode ? '#FFF' : '#333' }]}>Feedback and Support</Text>
-          <Ionicons name="chevron-forward-outline" size={24} color={isDarkMode ? '#FFA500' : '#FF6F00'} />
-        </Pressable>
-
-        <Pressable style={[styles.item, { backgroundColor: isDarkMode ? '#444' : '#FFF' }]} onPress={() => navigation.navigate('SecurityInfo')}>
-          <Ionicons name="lock-closed-outline" size={24} color={isDarkMode ? '#FFA500' : '#FF6F00'} />
-          <Text style={[styles.itemText, { color: isDarkMode ? '#FFF' : '#333' }]}>Security Info</Text>
-          <Ionicons name="chevron-forward-outline" size={24} color={isDarkMode ? '#FFA500' : '#FF6F00'} />
-        </Pressable>
-
-        <Pressable style={[styles.signOut, { backgroundColor: isDarkMode ? '#FFA500' : '#FF6F00' }]} onPress={handleSignOut}>
+        <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
           <Text style={styles.signOutText}>Sign Out</Text>
-        </Pressable>
+        </TouchableOpacity>
 
-        <Pressable style={[styles.signOut, { backgroundColor: isDarkMode ? '#FFA500' : '#FF6F00' }]} onPress={handleDeleteAccount}>
-          <Text style={styles.signOutText}>Delete Account</Text>
-        </Pressable>
+        <TouchableOpacity style={styles.deleteAccountButton} onPress={handleDeleteAccount}>
+          <Text style={styles.deleteAccountText}>Delete Account</Text>
+        </TouchableOpacity>
       </ScrollView>
-
-    </View>
     </SafeAreaView>
   );
 };
@@ -324,98 +218,109 @@ source={{ uri: pickedImage ? pickedImage : currentImage }}  style={[styles.profi
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: '#FFF5E6',
   },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  imagePreview: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    marginBottom: 20,
-  }, header: {
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#FF6F00',
+    paddingVertical: 16,
+    marginTop: 40, 
+    paddingHorizontal: 20,
+    
+  },
+  backButton: {
+    marginRight: 16,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FFF',
+  },
+  scrollView: {
+    flexGrow: 1,
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  profilePicture: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    borderWidth: 3,
+    borderColor: '#FF9800',
+    marginBottom: 16,
+  },
+  infoCard: {
+    width: '90%',
+    backgroundColor: '#FFF',
+    borderRadius: 12,
     padding: 16,
+    marginBottom: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 2,
-    marginTop: 30,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginLeft: 16,
-  },
-  scrollView: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
-  },
-  profilePicture: {
-    width: 160,
-    height: 160,
-    borderRadius: 100,
-    borderWidth: 3,
-    marginBottom: 16,
-  },
-  infoContainer: {
-    alignItems: 'center',
-    marginBottom: 24,
+    elevation: 3,
   },
   name: {
     fontSize: 22,
     fontWeight: 'bold',
+    color: '#FF6F00',
+    textAlign: 'center',
   },
   email: {
     fontSize: 16,
+    color: '#FF9800',
+    textAlign: 'center',
+    marginTop: 4,
   },
-  item: {
-    width: '100%',
+  menuContainer: {
+    width: '90%',
+    backgroundColor: '#FFF',
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginBottom: 20,
+  },
+  menuItem: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 16,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    marginBottom: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#FFE0B2',
   },
-  itemText: {
-    fontSize: 18,
+  menuItemText: {
     flex: 1,
+    fontSize: 16,
+    color: '#333',
     marginLeft: 16,
   },
-  signOut: {
-    marginTop: 32,
-    paddingVertical: 16,
+  signOutButton: {
+    backgroundColor: '#FF9800',
+    paddingVertical: 10,
+    paddingHorizontal: 60,
     borderRadius: 8,
-    alignItems: 'center',
-    width: '100%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    marginTop: 20,
   },
   signOutText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#FFF',
+    textAlign: 'center',
+  },
+  deleteAccountButton: {
+    backgroundColor: '#ff6347',
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+    marginTop: 12,
+  },
+  deleteAccountText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#FFF',
+    textAlign: 'center',
   },
 });
 
-
-export default ProfileImageUpdate;
+export default ProfileComponent;

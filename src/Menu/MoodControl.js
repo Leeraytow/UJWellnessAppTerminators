@@ -17,7 +17,7 @@ const MoodControl = () => {
   const [moodData, setMoodData] = useState({});
   const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
   const [note, setNote] = useState('');
-  const [email, setEmail] = useState('');  // State to store the user's email
+  const [email, setEmail] = useState('');
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -30,7 +30,7 @@ const MoodControl = () => {
 
           if (docSnap.exists()) {
             const userData = docSnap.data();
-            setEmail(userData.email || '');  // Get the user's email from Firestore
+            setEmail(userData.email || '');
           } else {
             console.log('No such document!');
           }
@@ -88,11 +88,10 @@ const MoodControl = () => {
       emotion: selectedEmotionData.label,
       emoji: selectedEmotionData.emoji,
       note,
-      email,  // Include user's email
+      email,
     };
 
     try {
-      // Save mood log to Firestore in the 'moodlogs' collection
       await addDoc(collection(db, 'moodlogs'), newEntry);
       setNote('');
       setSelectedEmotion(null);
@@ -108,10 +107,10 @@ const MoodControl = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, isDarkMode ? styles.darkContainer : styles.lightContainer]}>
       <Header />
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        <Text style={styles.heading}>How are you feeling?</Text>
+        <Text style={[styles.heading, isDarkMode ? styles.darkText : styles.lightText]}>How are you feeling?</Text>
         <View style={styles.emojiGrid}>
           {emotions.map((emotion) => (
             <Emoji
@@ -124,16 +123,17 @@ const MoodControl = () => {
           ))}
         </View>
         <TextInput
-          style={styles.textInput}
+          style={[styles.textInput, isDarkMode ? styles.darkTextInput : styles.lightTextInput]}
           placeholder="Why do you feel this way?"
+          placeholderTextColor={isDarkMode ? '#888' : '#aaa'}
           value={note}
           onChangeText={setNote}
           multiline
         />
-        <TouchableOpacity style={styles.saveButton} onPress={handleSaveMood}>
+        <TouchableOpacity style={[styles.saveButton, styles.shadow]} onPress={handleSaveMood}>
           <Text style={styles.saveButtonText}>Save Mood</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.historyButton} onPress={navigateToHistory}>
+        <TouchableOpacity style={[styles.historyButton, styles.shadow]} onPress={navigateToHistory}>
           <Text style={styles.historyButtonText}>View All Mood Logs</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -145,7 +145,12 @@ const MoodControl = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  lightContainer: {
     backgroundColor: '#f5f5f5',
+  },
+  darkContainer: {
+    backgroundColor: '#1e1e1e',
   },
   contentContainer: {
     paddingHorizontal: 20,
@@ -156,22 +161,37 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
   },
+  lightText: {
+    color: '#333',
+  },
+  darkText: {
+    color: '#fff',
+  },
   emojiGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
   },
   textInput: {
-    backgroundColor: '#fff',
-    padding: 10,
-    borderRadius: 8,
-    height: 100,
+    padding: 15,
+    borderRadius: 12,
     marginVertical: 20,
+    height: 120,
     textAlignVertical: 'top',
   },
+  lightTextInput: {
+    backgroundColor: '#fff',
+    borderColor: '#ccc',
+    borderWidth: 1,
+  },
+  darkTextInput: {
+    backgroundColor: '#2e2e2e',
+    borderColor: '#444',
+    borderWidth: 1,
+  },
   saveButton: {
-    backgroundColor: '#ffa500',
-    borderRadius: 8,
+    backgroundColor: '#ff6347',
+    borderRadius: 10,
     padding: 15,
     alignItems: 'center',
     marginVertical: 10,
@@ -182,8 +202,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   historyButton: {
-    backgroundColor: '#333',
-    borderRadius: 8,
+    backgroundColor: '#FC9842',
+    borderRadius: 10,
     padding: 15,
     alignItems: 'center',
   },
@@ -191,6 +211,13 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  shadow: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 4,
+    elevation: 5,
   },
 });
 

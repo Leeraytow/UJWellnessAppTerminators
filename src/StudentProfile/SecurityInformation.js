@@ -1,12 +1,14 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, StyleSheet, Pressable, TouchableOpacity, Alert } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
-import { ThemeContext } from './ThemeContext'; 
-import { auth } from '../Configuration/firebase'; // Make sure to import your Firebase configuration
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, SafeAreaView, ScrollView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { ThemeContext } from './ThemeContext';
+import { useNavigation } from '@react-navigation/native';
+import { auth } from '../Configuration/firebase';
 import { reauthenticateWithCredential, EmailAuthProvider, updatePassword } from 'firebase/auth';
 
 const SecurityInfo = () => {
   const { isDarkMode } = useContext(ThemeContext);
+  const navigation = useNavigation();
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -25,15 +27,10 @@ const SecurityInfo = () => {
     const user = auth.currentUser;
     if (user) {
       try {
-        // Step 1: Re-authenticate the user
         const credential = EmailAuthProvider.credential(user.email, currentPassword);
         await reauthenticateWithCredential(user, credential);
-
-        // Step 2: Update the password
         await updatePassword(user, newPassword);
         Alert.alert('Success', 'Password updated successfully.');
-
-        // Clear the inputs
         setCurrentPassword('');
         setNewPassword('');
         setConfirmPassword('');
@@ -44,107 +41,137 @@ const SecurityInfo = () => {
     }
   };
 
-  return (
-    <View style={[styles.container, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
-      <View style={[styles.section, { backgroundColor: isDarkMode ? '#444' : '#fff' }]}>
-        <Text style={[styles.sectionHeader, { color: isDarkMode ? '#FFF' : '#000' }]}>Login and Authentication</Text>
-        <View style={styles.passwordUpdateContainer}>
-          <Text style={[styles.label, { color: isDarkMode ? '#FFF' : '#000' }]}>Current Password</Text>
-          <View style={[styles.inputContainer, { backgroundColor: isDarkMode ? '#555' : '#f9f9f9', borderColor: isDarkMode ? '#666' : '#ccc' }]}>
-            <TextInput
-              style={[styles.input, { color: isDarkMode ? '#FFF' : '#000' }]}
-              value={currentPassword}
-              onChangeText={text => setCurrentPassword(text)}
-              secureTextEntry={!currentPasswordVisible}
-            />
-            <TouchableOpacity onPress={() => setCurrentPasswordVisible(!currentPasswordVisible)}>
-              <FontAwesome name={currentPasswordVisible ? 'eye' : 'eye-slash'} size={20} color={isDarkMode ? '#FFA500' : 'grey'} />
-            </TouchableOpacity>
-          </View>
-
-          <Text style={[styles.label, { color: isDarkMode ? '#FFF' : '#000' }]}>New Password</Text>
-          <View style={[styles.inputContainer, { backgroundColor: isDarkMode ? '#555' : '#f9f9f9', borderColor: isDarkMode ? '#666' : '#ccc' }]}>
-            <TextInput
-              style={[styles.input, { color: isDarkMode ? '#FFF' : '#000' }]}
-              value={newPassword}
-              onChangeText={text => setNewPassword(text)}
-              secureTextEntry={!newPasswordVisible}
-            />
-            <TouchableOpacity onPress={() => setNewPasswordVisible(!newPasswordVisible)}>
-              <FontAwesome name={newPasswordVisible ? 'eye' : 'eye-slash'} size={20} color={isDarkMode ? '#FFA500' : 'grey'} />
-            </TouchableOpacity>
-          </View>
-
-          <Text style={[styles.label, { color: isDarkMode ? '#FFF' : '#000' }]}>Confirm New Password</Text>
-          <View style={[styles.inputContainer, { backgroundColor: isDarkMode ? '#555' : '#f9f9f9', borderColor: isDarkMode ? '#666' : '#ccc' }]}>
-            <TextInput
-              style={[styles.input, { color: isDarkMode ? '#FFF' : '#000' }]}
-              value={confirmPassword}
-              onChangeText={text => setConfirmPassword(text)}
-              secureTextEntry={!confirmPasswordVisible}
-            />
-            <TouchableOpacity onPress={() => setConfirmPasswordVisible(!confirmPasswordVisible)}>
-              <FontAwesome name={confirmPasswordVisible ? 'eye' : 'eye-slash'} size={20} color={isDarkMode ? '#FFA500' : 'grey'} />
-            </TouchableOpacity>
-          </View>
-
-          <Pressable style={[styles.updateButton, { backgroundColor: isDarkMode ? '#FFA500' : '#FF6F00' }]} onPress={handleUpdatePassword}>
-            <Text style={styles.updateButtonText}>Update Password</Text>
-          </Pressable>
-        </View>
-      </View>
+  const PasswordInput = ({ value, onChangeText, placeholder, isVisible, setIsVisible }) => (
+    <View style={styles.inputContainer}>
+      <TextInput
+        style={styles.input}
+        value={value}
+        onChangeText={onChangeText}
+        secureTextEntry={!isVisible}
+        placeholder={placeholder}
+        placeholderTextColor="#999"
+      />
+      <TouchableOpacity onPress={() => setIsVisible(!isVisible)} style={styles.eyeIcon}>
+        <Ionicons name={isVisible ? 'eye-off' : 'eye'} size={24} color="#FF9800" />
+      </TouchableOpacity>
     </View>
+  );
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color="#FFF" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Security Info</Text>
+      </View>
+
+      <ScrollView contentContainerStyle={styles.scrollView}>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Update Password</Text>
+          
+          <PasswordInput
+            value={currentPassword}
+            onChangeText={setCurrentPassword}
+            placeholder="Current Password"
+            isVisible={currentPasswordVisible}
+            setIsVisible={setCurrentPasswordVisible}
+          />
+
+          <PasswordInput
+            value={newPassword}
+            onChangeText={setNewPassword}
+            placeholder="New Password"
+            isVisible={newPasswordVisible}
+            setIsVisible={setNewPasswordVisible}
+          />
+
+          <PasswordInput
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            placeholder="Confirm New Password"
+            isVisible={confirmPasswordVisible}
+            setIsVisible={setConfirmPasswordVisible}
+          />
+
+          <TouchableOpacity style={styles.updateButton} onPress={handleUpdatePassword}>
+            <Text style={styles.updateButtonText}>Update Password</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    backgroundColor: '#FFF5E6',
   },
-  section: {
-    marginBottom: 16,
-    borderRadius: 8,
-    padding: 16,
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FF6F00',
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    marginTop: 40,
+  },
+  backButton: {
+    marginRight: 16,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FFF',
+  },
+  scrollView: {
+    flexGrow: 1,
+    padding: 20,
+  },
+  card: {
+    backgroundColor: '#FFF',
+    borderRadius: 12,
+    padding: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 2,
+    elevation: 3,
   },
-  sectionHeader: {
-    fontSize: 18,
+  cardTitle: {
+    fontSize: 22,
     fontWeight: 'bold',
-  },
-  passwordUpdateContainer: {
-    marginTop: 16,
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 8,
+    color: '#FF6F00',
+    marginBottom: 20,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 12,
+    backgroundColor: '#F5F5F5',
+    borderRadius: 8,
+    marginBottom: 16,
+    paddingHorizontal: 12,
   },
   input: {
     flex: 1,
     fontSize: 16,
+    color: '#333',
+    paddingVertical: 12,
+  },
+  eyeIcon: {
+    padding: 8,
   },
   updateButton: {
-    padding: 12,
+    backgroundColor: '#FF9800',
+    paddingVertical: 14,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 16,
+    marginTop: 20,
   },
   updateButtonText: {
     fontSize: 18,
-    color: '#fff',
     fontWeight: 'bold',
+    color: '#FFF',
   },
 });
 

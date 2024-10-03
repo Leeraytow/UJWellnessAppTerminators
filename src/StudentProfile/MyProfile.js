@@ -63,7 +63,7 @@ const MyProfile = () => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
+    <View style={[styles.container, { backgroundColor: isDarkMode ? '#333' : '#FFF' }]}>
       <View style={[styles.header, { backgroundColor: isDarkMode ? '#444' : '#FFF' }]}>
         <Pressable onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color={isDarkMode ? '#FFA500' : '#FF6F00'} />
@@ -72,6 +72,7 @@ const MyProfile = () => {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollView}>
+        {/* Username */}
         <View style={styles.fieldContainer}>
           <Text style={[styles.label, { color: isDarkMode ? '#FFF' : '#333' }]}>Username</Text>
           <View style={[styles.inputContainer, { backgroundColor: isDarkMode ? '#555' : '#f9f9f9', borderColor: isDarkMode ? '#666' : '#ccc' }]}>
@@ -84,6 +85,7 @@ const MyProfile = () => {
           </View>
         </View>
 
+        {/* Email */}
         <View style={styles.fieldContainer}>
           <Text style={[styles.label, { color: isDarkMode ? '#FFF' : '#333' }]}>Email</Text>
           <View style={[styles.inputContainer, { backgroundColor: isDarkMode ? '#555' : '#f9f9f9', borderColor: isDarkMode ? '#666' : '#ccc' }]}>
@@ -91,11 +93,12 @@ const MyProfile = () => {
             <TextInput
               style={[styles.input, { color: isDarkMode ? '#FFF' : '#000' }]}
               value={email}
-              editable={false} // Make email textbox non-editable
+              editable={false} // Non-editable email
             />
           </View>
         </View>
 
+        {/* Age */}
         <View style={styles.fieldContainer}>
           <Text style={[styles.label, { color: isDarkMode ? '#FFF' : '#333' }]}>Age</Text>
           <View style={[styles.inputContainer, { backgroundColor: isDarkMode ? '#555' : '#f9f9f9', borderColor: isDarkMode ? '#666' : '#ccc' }]}>
@@ -109,6 +112,7 @@ const MyProfile = () => {
           </View>
         </View>
 
+        {/* Gender */}
         <View style={styles.fieldContainer}>
           <Text style={[styles.label, { color: isDarkMode ? '#FFF' : '#333' }]}>Gender</Text>
           <View style={[styles.inputContainer, { backgroundColor: isDarkMode ? '#555' : '#f9f9f9', borderColor: isDarkMode ? '#666' : '#ccc' }]}>
@@ -121,6 +125,7 @@ const MyProfile = () => {
           </View>
         </View>
 
+        {/* Update Button */}
         <Pressable style={[styles.updateButton, { backgroundColor: isDarkMode ? '#FFA500' : '#FF6F00' }]} onPress={handleUpdate}>
           <Text style={styles.updateButtonText}>Update Profile</Text>
         </Pressable>
@@ -137,13 +142,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
     marginBottom: 30,
     marginTop: 30,
+    elevation: 2,
   },
   headerTitle: {
     fontSize: 18,
