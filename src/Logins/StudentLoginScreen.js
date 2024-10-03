@@ -172,7 +172,7 @@ export default function StudentAuthScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <ImageBackground source={require('../images/background12.jpeg')} style={styles.background}>
+      <ImageBackground source={require('../images/back12345.png')} style={styles.background}>
         <View style={styles.authContainer}>
           <View style={styles.tabContainer}>
             <TouchableOpacity
@@ -308,14 +308,14 @@ const styles = StyleSheet.create({
   },
   activeTab: {
     borderBottomWidth: 2,
-    borderBottomColor: '#8A2BE2',
+    borderBottomColor: '#FF6F00',
   },
   tabText: {
     fontSize: 16,
     color: '#333',
   },
   activeTabText: {
-    color: '#8A2BE2',
+    color: '#FF6F00',
     fontWeight: 'bold',
   },
   title: {
@@ -384,7 +384,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   submitButton: {
-    backgroundColor: '#8A2BE2',
+    backgroundColor: '#FF6F00',
     paddingVertical: 12,
     borderRadius: 8,
     width: '100%',
