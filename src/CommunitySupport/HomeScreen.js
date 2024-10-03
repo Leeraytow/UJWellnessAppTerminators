@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, FlatList, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as ImagePicker from 'expo-image-picker';
-import { collection, query, onSnapshot, addDoc, deleteDoc, doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
+import { collection, query, onSnapshot, addDoc, deleteDoc, doc, getDoc, updateDoc, arrayUnion, increment } from 'firebase/firestore';
+
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, auth } from '../Configuration/firebase';
 import { sendNotificationToUser } from './NotificationService'; // Import the updated notification function
@@ -67,10 +68,14 @@ export default function HomeScreen({ navigation }) {
           email: user.email,
           timestamp: new Date(),
           comments: [],
-          profileImage: user.photoURL || 'https://i.pravatar.cc/300',
+          profileImage: profileImage || 'https://i.pravatar.cc/300',
           image: imageUrl,
+          likesCount: 0,
+          commentsCount: 0,
+          likedBy: [], // Add this line to store the list of users who liked the post
         };
-
+        
+        
         await addDoc(collection(db, 'Posts'), newPost);
 
         // Send notification to all users
@@ -106,9 +111,32 @@ export default function HomeScreen({ navigation }) {
     }
   };
 
+  const handleLike = async (postId, likesCount, likedBy) => {
+    const user = auth.currentUser;
+    if (!user) {
+      Alert.alert('Like Error', 'You must be logged in to like a post.');
+      return;
+    }
+  
+    const postRef = doc(db, 'Posts', postId);
+  
+    // Check if the current user has already liked the post
+    if (likedBy.includes(user.email)) {
+      Alert.alert('Like Error', 'You have already liked this post.');
+      return;
+    }
+  
+    // Update the post's likes count and add the current user to the likedBy array
+    await updateDoc(postRef, {
+      likesCount: likesCount + 1,
+      likedBy: arrayUnion(user.email), // Add the current user's email to the likedBy array
+    });
+  };
+  
+  
   const renderItem = ({ item }) => {
     const isCurrentUserPost = item.email === currentUserEmail;
-
+  
     return (
       <View style={styles.postContainer}>
         <View style={styles.headerContainer}>
@@ -127,13 +155,17 @@ export default function HomeScreen({ navigation }) {
           />
         )}
         <View style={styles.actionContainer}>
-          <TouchableOpacity style={styles.iconButton}>
-            <Icon name="heart-outline" size={24} color="#333" />
-            <Text style={styles.iconLabel}>Like</Text>
-          </TouchableOpacity>
+        <TouchableOpacity 
+  style={styles.iconButton} 
+  onPress={() => handleLike(item.id, item.likesCount, item.likedBy)} // Pass likedBy here
+>
+  <Icon name="heart-outline" size={24} color="#333" />
+  <Text style={styles.iconLabel}>{item.likesCount} Like{item.likesCount !== 1 ? 's' : ''}</Text>
+</TouchableOpacity>
+
           <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate('Comments', { post: item })}>
             <Icon name="chatbubble-outline" size={24} color="#333" />
-            <Text style={styles.iconLabel}>Comment</Text>
+            <Text style={styles.iconLabel}>{item.commentsCount} Comment{item.commentsCount !== 1 ? 's' : ''}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconButton}>
             <Icon name="share-outline" size={24} color="#333" />
@@ -148,7 +180,7 @@ export default function HomeScreen({ navigation }) {
       </View>
     );
   };
-
+  
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
@@ -167,7 +199,20 @@ export default function HomeScreen({ navigation }) {
       setPickedImage(result.assets[0].uri);
     }
   };
-
+  const handleAddComment = async (postId, comment) => {
+    const postRef = doc(db, 'Posts', postId);
+    
+    // Update the comments count
+    await updateDoc(postRef, {
+      commentsCount: increment(1), // This assumes you are importing increment from 'firebase/firestore'
+    });
+  
+    // Add the comment to the post's comments array
+    await updateDoc(postRef, {
+      comments: arrayUnion(comment),
+    });
+  };
+  
   return (
     <View style={styles.container}>
       {profileImage && <Image source={{ uri: profileImage }} style={styles.profileImage} />}

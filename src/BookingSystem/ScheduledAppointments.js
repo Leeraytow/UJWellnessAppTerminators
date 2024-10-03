@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, Button, ActivityIndicator, Linking, FlatList, StyleSheet } from 'react-native';
+import { View, Text, Button, ActivityIndicator, Linking, FlatList, StyleSheet, ScrollView, Image } from 'react-native';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db, auth } from '../Configuration/firebase';
 import { ThemeContext } from '../StudentProfile/ThemeContext';
+import Footer from '../Menu/Footer'; // Ensure the correct path for your Footer component
 
 const ScheduledAppointments = () => {
   const [bookingDetails, setBookingDetails] = useState([]);
@@ -48,18 +49,6 @@ const ScheduledAppointments = () => {
       .catch(err => console.error('An error occurred', err));
   };
 
-  if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
-
-  if (bookingDetails.length === 0) {
-    return (
-      <View style={styles.centeredContainer}>
-        <Text>No booking details found.</Text>
-      </View>
-    );
-  }
-
   const renderItem = ({ item }) => {
     const { meetingTime, venue, googleMeetLink, meetingType, status } = item;
 
@@ -84,21 +73,67 @@ const ScheduledAppointments = () => {
     );
   };
 
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+
   return (
-    <View style={[styles.container, { backgroundColor: isDarkMode ? '#222' : '#fff' }]}>
-      <FlatList
-        data={bookingDetails}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-      />
+    <View style={styles.outerContainer}>
+      {/* Fixed Header */}
+      <View style={styles.fixedHeader}>
+        <Image source={require('../images/UJLogo.png')} style={styles.logo} />
+        <Text style={styles.title}>Upcoming Appointments</Text>
+      </View>
+
+      {/* Scrollable Content */}
+      <ScrollView style={styles.scrollContainer}>
+        {bookingDetails.length === 0 ? (
+          <View style={styles.centeredContainer}>
+            <Text>No booking details found.</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={bookingDetails}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+          />
+        )}
+      </ScrollView>
+
+      {/* Fixed Footer */}
+      <View style={styles.footer}>
+        <Footer />
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
+  outerContainer: {
     flex: 1,
+    backgroundColor: '#fff',
+  },
+  fixedHeader: {
+    backgroundColor: '#fff', // Customize as needed
+    padding: 10,
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  logo: {
+    width: 80,
+    height: 50,
+    marginBottom: 10,
+    top:20
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    top:10
+  },
+  scrollContainer: {
+    flex: 1,
+    padding: 20,
   },
   centeredContainer: {
     flex: 1,
@@ -114,6 +149,11 @@ const styles = StyleSheet.create({
   itemText: {
     fontSize: 16,
     marginBottom: 5,
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
   },
 });
 

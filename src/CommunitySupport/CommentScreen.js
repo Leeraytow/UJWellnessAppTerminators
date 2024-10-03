@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, FlatList, Alert, StyleSheet } from 'react-native';
-import { collection, doc, updateDoc, onSnapshot, arrayUnion } from 'firebase/firestore';
+import { View, Text, TextInput, Button, FlatList, Alert, StyleSheet, ScrollView,Image } from 'react-native';
+import { collection, doc, updateDoc, onSnapshot, arrayUnion, getDoc } from 'firebase/firestore';
 import { auth, db } from '../Configuration/firebase';
 
 export default function CommentsScreen({ route }) {
@@ -79,41 +79,111 @@ export default function CommentsScreen({ route }) {
   );
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
+      {/* Post Section */}
+      <View style={styles.postContainer}>
+        <Text style={styles.postTitle}>{post.text}</Text>
+        <Text style={styles.postAuthor}>By {post.author}</Text>
+    
+        {post.image && (
+            <Image 
+            source={{ uri: post.image }} 
+            style={styles.postImage} 
+          />
+          )}
+      </View>
+
+      {/* Comments Section */}
+      <Text>Comments</Text>
       <FlatList
         data={comments}
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
-        ListEmptyComponent={<Text>No comments yet.</Text>}
+        ListEmptyComponent={<Text style={styles.noCommentsText}>No comments yet.</Text>}
+        contentContainerStyle={styles.commentsList}
       />
+
+      {/* Add Comment Section */}
       <TextInput
         style={styles.input}
         placeholder="Add a comment..."
         value={newComment}
         onChangeText={setNewComment}
       />
-      <Button title="Comment" onPress={handleAddComment} />
-    </View>
+      <Button title="Comment" color='orange' onPress={handleAddComment} />
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  postImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 10,
+    marginTop: 10,
+  },
   container: {
-    flex: 1,
+    flexGrow: 1,
     padding: 20,
+    backgroundColor: '#f5f5f5',
+  },
+  postContainer: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  postTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 10,
+  },
+  postAuthor: {
+    fontSize: 14,
+    fontStyle: 'italic',
+    color: '#777',
+    marginBottom: 10,
+  },
+  postBody: {
+    fontSize: 16,
+    color: '#555',
+  },
+  commentsList: {
+    marginBottom: 20,
+  },
+  noCommentsText: {
+    textAlign: 'center',
+    color: '#999',
+    fontStyle: 'italic',
+    marginVertical: 10,
   },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
     padding: 10,
+    borderRadius: 5,
+    backgroundColor: '#fff',
     marginBottom: 10,
   },
   commentContainer: {
     padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 5,
   },
   commentAuthor: {
     fontWeight: 'bold',
+    color: '#333',
   },
 });

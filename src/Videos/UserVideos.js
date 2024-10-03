@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet, Dimensions, TextInput, SafeAreaView, Image, StatusBar, Platform ,ScrollView} from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, Dimensions, Image, SafeAreaView, ScrollView } from 'react-native';
 import { collection, query, onSnapshot } from 'firebase/firestore';
 import { db } from '../Configuration/firebase';
 import YoutubePlayer from 'react-native-youtube-iframe';
 import Footer from '../Menu/Footer'; // Adjust the path as necessary
 import { ThemeContext } from '../StudentProfile/ThemeContext'; // Import the ThemeContext
 import Header from '../Menu/Header';
+import axios from 'axios';
 
 const UserVid = () => {
   const { width } = Dimensions.get('window');
@@ -13,29 +14,67 @@ const UserVid = () => {
 
   const [videos, setVideos] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [featuredVideoId, setFeaturedVideoId] = useState(null); // State for featured video
+  const [videoDetails, setVideoDetails] = useState({}); // State for video details
+
+  const API_KEY = 'AIzaSyAO3pJkw8C3g-kv4nmKFEnb8atxWvqaJAo'; // Replace with your YouTube API key
 
   useEffect(() => {
     const q = query(collection(db, 'Videos'));
-    const unsub = onSnapshot(q, (querySnapshot) => {
+    const unsub = onSnapshot(q, async (querySnapshot) => {
       let videoList = [];
       querySnapshot.forEach((doc) => {
         videoList.push({ ...doc.data(), id: doc.id });
       });
       setVideos(videoList);
+
+      // Fetch video details for the first video
+      if (videoList.length > 0 && !featuredVideoId) {
+        const firstVideoId = videoList[0].videoId;
+        setFeaturedVideoId(firstVideoId);
+        await fetchVideoDetails(firstVideoId);
+      }
     });
     return () => unsub();
-  }, []);
+  }, [featuredVideoId]);
+
+  const fetchVideoDetails = async (videoId) => {
+    try {
+      const response = await axios.get(
+        `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${API_KEY}`
+      );
+      const videoData = response.data.items[0]?.snippet;
+      if (videoData) {
+        setVideoDetails({
+          title: videoData.title,
+          description: videoData.description,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching video details:", error);
+    }
+  };
 
   const filteredVideos = selectedCategory === 'All'
     ? videos
     : videos.filter((video) => video.category === selectedCategory);
 
+  const handleVideoPress = async (videoId) => {
+    setFeaturedVideoId(videoId); // Update featured video when a video is tapped
+    await fetchVideoDetails(videoId); // Fetch details for the selected video
+  };
+
   const renderVideoItem = ({ item }) => (
-    <TouchableOpacity style={styles.videoCard}>
-      <Image source={{ uri: `https://img.youtube.com/vi/${item.videoId}/hqdefault.jpg` }} style={styles.thumbnail} />
+    <TouchableOpacity style={styles.videoCard} onPress={() => handleVideoPress(item.videoId)}>
+      <Image source={{ uri: `https://img.youtube.com/vi/${item.videoId}/hqdefault.jpg` }} style={styles.thumbnail}/>
       <View style={styles.videoInfo}>
         <Text style={[styles.videoTitle, { color: isDarkMode ? '#fff' : '#000' }]}>{item.title}</Text>
-        <Text style={[styles.videoDesc, { color: isDarkMode ? '#aaa' : '#333' }]}>{item.description}</Text>
+        <Text
+          style={[styles.videoDesc, { color: isDarkMode ? '#aaa' : '#333' }]}
+          numberOfLines={3} // Limit description to 3 lines
+        >
+          {item.description}
+        </Text>
       </View>
     </TouchableOpacity>
   );
@@ -49,9 +88,17 @@ const UserVid = () => {
       <Header />
       <View style={styles.featuredVideo}>
         <Text style={[styles.featuredTitle, { color: isDarkMode ? '#fff' : '#000' }]}>Featured Video</Text>
-        {videos.length > 0 && (
-          <YoutubePlayer height={250} width={width - 40} play={false} videoId={videos[0].videoId} />
+        {featuredVideoId && (
+          <YoutubePlayer height={200} width={width - 40} play={false} videoId={featuredVideoId} />
         )}
+        {/* Display fetched video details */}
+        <Text style={[styles.videoTitle, { color: isDarkMode ? '#fff' : '#000' }]}>{videoDetails.title}</Text>
+        <Text
+          style={[styles.videoDesc, { color: isDarkMode ? '#aaa' : '#333' }]}
+          numberOfLines={4} // Limit description to 3 lines
+        >
+          {videoDetails.description}
+        </Text>
       </View>
 
       {/* Horizontal Category List */}
@@ -102,7 +149,7 @@ const styles = StyleSheet.create({
   featuredTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 3,
   },
   categoryScroll: {
     flexDirection: 'row',
@@ -151,17 +198,16 @@ const styles = StyleSheet.create({
     height: 90,
   },
   videoInfo: {
-    flex: 1,
     padding: 10,
+    flex: 1,
   },
   videoTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 5,
   },
   videoDesc: {
     fontSize: 14,
-    color: '#666',
+    marginTop: 5,
   },
 });
 
