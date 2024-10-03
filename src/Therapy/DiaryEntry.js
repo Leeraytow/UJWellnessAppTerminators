@@ -166,7 +166,7 @@ const DigitalDiary = () => {
 
   return (
     <LinearGradient
-      colors={['#F58426', '#a45dff']}
+      colors={['#FC9842', '#FE5F75']}
       style={styles.container}
     >
       <Header/>

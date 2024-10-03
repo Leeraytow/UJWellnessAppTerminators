@@ -66,7 +66,7 @@ const AppointmentsScreen = () => {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <Header />
-        <LinearGradient colors={['#E0B0FF', '#8ec5fc']} style={styles.contentContainer}>
+        <LinearGradient colors={['#FC9842', '#FE5F75']} style={styles.contentContainer}>
           <Text style={styles.headerText}>Appointments</Text>
           <FlatList
             data={appointments}
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 20,
-    color: 'purple',
+    color: 'black',
     textAlign: 'center',
   },
   appointmentItem: {

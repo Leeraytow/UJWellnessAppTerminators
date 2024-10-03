@@ -6,7 +6,7 @@ import Footer from './Footer';
 const TherapyButton = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <Header/>
+      <Header style={styles.header} />
       <Text style={styles.title}>
         You Deserve to Be Happy
       </Text>
@@ -64,7 +64,7 @@ const TherapyButton = ({ navigation }) => {
         </View>
       </ScrollView>
 
-      <Footer style={styles.footer}/>
+      <Footer style={styles.footer} />
     </View>
   );
 };
@@ -74,7 +74,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F8F9FA',
     paddingTop: 20,
-    paddingHorizontal: 15,
+    // Removed horizontal padding to allow full-width header and footer
+  },
+  header: {
+    width: '100%',
+    backgroundColor: '#D86A3E', // Ensure header has a background color
   },
   title: {
     fontSize: 26,
@@ -99,9 +103,9 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 15,
-    marginBottom: 20,
-    borderRadius: 15,
+    padding: 30,
+    marginBottom: 30,
+    borderRadius: 30,
     backgroundColor: '#FFFFFF', 
     borderColor: '#D86A3E', 
     borderWidth: 2,
@@ -127,6 +131,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   footer: {
+    width: '100%',
     height: 60,
     justifyContent: 'center',
     alignItems: 'center',
