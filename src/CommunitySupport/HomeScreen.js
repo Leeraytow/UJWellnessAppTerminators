@@ -3,10 +3,9 @@ import { View, Text, TextInput, Button, FlatList, TouchableOpacity, StyleSheet, 
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as ImagePicker from 'expo-image-picker';
 import { collection, query, onSnapshot, addDoc, deleteDoc, doc, getDoc, updateDoc, arrayUnion, increment } from 'firebase/firestore';
-
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, auth } from '../Configuration/firebase';
-import { sendNotificationToUser } from './NotificationService'; // Import the updated notification function
+import { sendNotificationToUser } from './NotificationService';
 
 export default function HomeScreen({ navigation }) {
   const [text, setText] = useState('');
@@ -72,13 +71,11 @@ export default function HomeScreen({ navigation }) {
           image: imageUrl,
           likesCount: 0,
           commentsCount: 0,
-          likedBy: [], // Add this line to store the list of users who liked the post
+          likedBy: [],
         };
-        
-        
+
         await addDoc(collection(db, 'Posts'), newPost);
 
-        // Send notification to all users
         await sendNotificationToUser(user.uid, `New post from ${name}: ${text}`);
 
         setText('');
@@ -117,31 +114,28 @@ export default function HomeScreen({ navigation }) {
       Alert.alert('Like Error', 'You must be logged in to like a post.');
       return;
     }
-  
+
     const postRef = doc(db, 'Posts', postId);
-  
-    // Check if the current user has already liked the post
+
     if (likedBy.includes(user.email)) {
       Alert.alert('Like Error', 'You have already liked this post.');
       return;
     }
-  
-    // Update the post's likes count and add the current user to the likedBy array
+
     await updateDoc(postRef, {
       likesCount: likesCount + 1,
-      likedBy: arrayUnion(user.email), // Add the current user's email to the likedBy array
+      likedBy: arrayUnion(user.email),
     });
   };
-  
-  
+
   const renderItem = ({ item }) => {
     const isCurrentUserPost = item.email === currentUserEmail;
-  
+
     return (
       <View style={styles.postContainer}>
         <View style={styles.headerContainer}>
           <Image source={{ uri: item.profileImage }} style={styles.profileImage} />
-          <View>
+          <View style={styles.authorContainer}>
             <Text style={styles.authorName}>{item.author}</Text>
           </View>
         </View>
@@ -155,13 +149,13 @@ export default function HomeScreen({ navigation }) {
           />
         )}
         <View style={styles.actionContainer}>
-        <TouchableOpacity 
-  style={styles.iconButton} 
-  onPress={() => handleLike(item.id, item.likesCount, item.likedBy)} // Pass likedBy here
->
-  <Icon name="heart-outline" size={24} color="#333" />
-  <Text style={styles.iconLabel}>{item.likesCount} Like{item.likesCount !== 1 ? 's' : ''}</Text>
-</TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.iconButton} 
+            onPress={() => handleLike(item.id, item.likesCount, item.likedBy)}
+          >
+            <Icon name="heart-outline" size={24} color="#333" />
+            <Text style={styles.iconLabel}>{item.likesCount} Like{item.likesCount !== 1 ? 's' : ''}</Text>
+          </TouchableOpacity>
 
           <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate('Comments', { post: item })}>
             <Icon name="chatbubble-outline" size={24} color="#333" />
@@ -180,7 +174,7 @@ export default function HomeScreen({ navigation }) {
       </View>
     );
   };
-  
+
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
@@ -199,36 +193,38 @@ export default function HomeScreen({ navigation }) {
       setPickedImage(result.assets[0].uri);
     }
   };
+
   const handleAddComment = async (postId, comment) => {
     const postRef = doc(db, 'Posts', postId);
     
-    // Update the comments count
     await updateDoc(postRef, {
-      commentsCount: increment(1), // This assumes you are importing increment from 'firebase/firestore'
+      commentsCount: increment(1),
     });
   
-    // Add the comment to the post's comments array
     await updateDoc(postRef, {
       comments: arrayUnion(comment),
     });
   };
-  
+
   return (
     <View style={styles.container}>
-      {profileImage && <Image source={{ uri: profileImage }} style={styles.profileImage} />}
-      <Text style={styles.nameText}>{name}</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="What's on your mind?"
-        value={text}
-        onChangeText={setText}
-        multiline
-      />
+      <View style={styles.inputContainer}>
+        <Image source={{ uri: profileImage }} style={styles.profileImage} />
+        <TextInput
+          style={styles.input}
+          placeholder="What's on your mind?"
+          value={text}
+          onChangeText={setText}
+          multiline
+        />
+        <TouchableOpacity style={styles.attachmentButton} onPress={pickImage}>
+          <View style={styles.attachmentInnerContainer}>
+            <Icon name="image-outline" size={24} color="#333" />
+            <Text style={styles.attachmentText}>Photo</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
       {pickedImage && <Image source={{ uri: pickedImage }} style={styles.pickedImage} />}
-      <TouchableOpacity style={styles.attachmentButton} onPress={pickImage}>
-        <Icon name="image-outline" size={24} color="#333" />
-        <Text style={styles.attachmentText}> Attach Image</Text>
-      </TouchableOpacity>
       <TouchableOpacity style={styles.postButton} onPress={handlePost}>
         <Text style={styles.postButtonText}>Post</Text>
       </TouchableOpacity>
@@ -245,103 +241,98 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    //backgroundColor: '#FFF5E1', // Light orange background
+    padding: 16,
+    backgroundColor: '#fff',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+    borderRadius:10
   },
   input: {
+    flex: 1,
     borderWidth: 1,
-    borderColor: '#FF8C00', // Dark orange border
-    padding: 15,
-    borderRadius: 10,
-    backgroundColor: '#FFE4B5', // Light orange input background
-    marginBottom: 10,
+    borderColor: '#ccc',
+    borderRadius: 4,
+    padding: 8,
+    marginLeft: 8,
+  },
+  postButton: {
+    backgroundColor: '#FF4500',
+    padding: 12,
+    borderRadius: 4,
+    alignItems: 'center',
+  },
+  postButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  postList: {
+    marginTop: 16,
   },
   postContainer: {
-    padding: 15,
-    backgroundColor: '#FFF5E1', // Light orange background for posts
-    borderRadius: 10,
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 5,
+    backgroundColor: '#f9f9f9',
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 12,
+    backgroundColor: '#FFF5E1',
+    borderColor:'orange',
+    borderWidth:2
+  },
+  profileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
   },
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
   },
-  profileImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 10,
+  authorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 8,
   },
   authorName: {
-    fontSize: 16,
     fontWeight: 'bold',
-    color: '#FF8C00', // Dark orange text for author name
   },
   postText: {
+    marginTop: 8,
     fontSize: 16,
-    color: '#333',
   },
   postImage: {
     width: '100%',
     height: 200,
-    borderRadius: 10,
-    marginTop: 10,
+    borderRadius: 8,
+    marginTop: 8,
   },
   actionContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginTop: 15,
+    justifyContent: 'space-between',
+    marginTop: 8,
   },
   iconButton: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   iconLabel: {
-    marginLeft: 5,
-    fontSize: 14,
-    color: '#FF8C00', // Dark orange label for buttons
+    marginLeft: 4,
   },
   attachmentButton: {
+    marginLeft: 8,
+  },
+  attachmentInnerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 10,
-    backgroundColor: '#FF8C00', // Dark orange background
-    borderRadius: 10,
-    marginBottom: 10,
   },
   attachmentText: {
-    marginLeft: 5,
-    color: '#FFF',
-  },
-  postButton: {
-    backgroundColor: '#FF4500', // Strong orange color for post button
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  postButtonText: {
-    color: '#FFF',
-    fontSize: 16,
-  },
-  postList: {
-    marginTop: 20,
+    marginLeft: 4,
   },
   pickedImage: {
     width: '100%',
     height: 200,
-    borderRadius: 10,
-    marginBottom: 10,
-  },
-  nameText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
+    borderRadius: 8,
+    marginTop: 8,
   },
 });
