@@ -161,24 +161,25 @@ const BookingForm = ({ navigation }) => {
 
         <Text style={styles.label}>Select Date</Text>
         <DatePicker
-          mode="calendar"
-          selected={selectedDate}
-          onDateChange={setSelectedDate}
-          minimumDate={new Date().toISOString().split('T')[0]} // Disable past dates
-          options={{
-            // Disable weekends
-            disabledDates: [
-              new Date().toISOString().split('T')[0], // Disable today if it's a weekend
-              ...Array.from({ length: 6 }, (_, i) => {
-                const date = new Date();
-                date.setDate(date.getDate() + i);
-                return date.getDay() === 0 || date.getDay() === 6 ? date.toISOString().split('T')[0] : null;
-              }).filter(Boolean),
-            ],
-          }}
-          selectedDayColor="#F59B0A" // Orange for selected date
-          style={styles.datePicker}
-        />
+  mode="calendar"
+  selected={selectedDate}
+  onDateChange={setSelectedDate}
+  minimumDate={new Date().toISOString().split('T')[0]} // Disable past dates
+  options={{
+    disabledDates: (date) => {
+      const day = new Date(date).getDay();
+      return day === 0 || day === 6; // Disable weekends
+    },
+    textHeaderColor: "#000", // Keep header color consistent with design
+    textDefaultColor: "#000", // Keep default text color
+    selectedDayColor: "#F59B0A", // Orange for selected date
+    disabledDatesTextStyle: {
+      color: '#A9A9A9', // Gray out disabled weekends and past dates
+    },
+  }}
+  style={styles.datePicker}
+/>
+
 
         <Text style={styles.label}>Campus</Text>
         <View style={styles.pickerContainer}>
@@ -275,7 +276,7 @@ const styles = StyleSheet.create({
   fixedHeader: {
     alignItems: 'center',
     marginBottom: 20, // Adjust margin for spacing
-    backgroundColor:'#F59B04'
+    backgroundColor:'#ff7f00'
   },
   logo: {
     width: 70,
