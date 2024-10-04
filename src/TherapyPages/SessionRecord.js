@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { CheckBox } from 'react-native-elements';
+import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function SessionInfo() {
   const [activeTab, setActiveTab] = useState('Information');
-  
+  const navigation = useNavigation();
+
   const [medications, setMedications] = useState({ med1: '', med2: '' });
   const [diagnoses, setDiagnoses] = useState({ diag1: '', diag2: '' });
   const [additionalNotes, setAdditionalNotes] = useState("");
-  
+
   const [selectedReferral, setSelectedReferral] = useState({});
   const [recommendations, setRecommendations] = useState(Array(19).fill(-1));
 
@@ -203,12 +206,17 @@ export default function SessionInfo() {
 
   return (
     <View style={styles.container}>
+       <View style={styles.headerContainer}>
+        {/* Go Back Button */}
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color="#FFF" />
+        </TouchableOpacity>
+        <Text style={styles.headerOn}>Register</Text>
+      </View>
       <ScrollView contentContainerStyle={styles.contentContainer}>
-      
-
         <View style={styles.profileContainer}>
           <Image
-            source={{ uri: 'https://via.placeholder.com/150' }} 
+            source={{ uri: 'https://via.placeholder.com/150' }}
             style={styles.profileImage}
           />
           <View style={styles.profileInfo}>
@@ -233,31 +241,18 @@ export default function SessionInfo() {
           {['Information', 'Medicine', 'Diagnose'].map((tab, index) => (
             <TouchableOpacity
               key={index}
-              style={[styles.tab, activeTab === tab ? styles.activeTab : null]}
+              style={[styles.tab, activeTab === tab && styles.activeTab]}
               onPress={() => setActiveTab(tab)}
             >
-              <Text style={[styles.tabText, activeTab === tab ? styles.activeTabText : null]}>
-                {tab}
-              </Text>
+              <Text style={styles.tabText}>{tab}</Text>
             </TouchableOpacity>
           ))}
         </View>
 
         {renderContent()}
 
-        <View style={styles.additionalInfoContainer}>
-          <Text style={styles.subSectionTitle}>Additional</Text>
-          <TextInput
-            style={styles.additionalInput}
-            value={additionalNotes}
-            onChangeText={setAdditionalNotes}
-            placeholder="Therapist Notes"
-            multiline
-          />
-        </View>
-
         <TouchableOpacity style={styles.saveButton} onPress={handleSaveSession}>
-          <Text style={styles.saveButtonText}>Save Student Session</Text>
+          <Text style={styles.saveButtonText}>Save Session</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
@@ -267,29 +262,22 @@ export default function SessionInfo() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f4ff',
+    backgroundColor: '#FFF3E0', // Light background
+    padding: 20,
   },
   contentContainer: {
-    paddingHorizontal: 16,
-    paddingBottom: 100,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginVertical: 16,
-    color: '#4a148c',
+    paddingVertical: 20,
   },
   profileContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   profileImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 16,
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    marginRight: 10,
   },
   profileInfo: {
     flex: 1,
@@ -297,166 +285,166 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#4a148c',
   },
+  backButton: {
+    marginRight: 14,
+  },
+  headerOn: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: 'white',
+    marginBottom: 6,
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FF8C00',
+    paddingVertical: 12,
+    marginTop: 35,
+    paddingHorizontal: 10,
+    width: '140%',  // Stretch header to 140% of the screen width
+    position: 'relative', // Optional
+    left: '-3%',  // Move it left to center it
+},
   details: {
     fontSize: 14,
-    color: '#7c4dff',
+    color: '#666',
   },
   date: {
-    fontSize: 14,
-    color: '#6a1b9a',
-    marginTop: 4,
+    fontSize: 12,
+    color: '#999',
   },
   complaintsContainer: {
-    marginBottom: 16,
+    marginBottom: 20,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 8,
-    color: '#4a148c',
+    marginBottom: 10,
   },
   tagsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
   tag: {
-    backgroundColor: '#e1bee7',
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 16,
-    marginRight: 8,
-    marginBottom: 8,
+    backgroundColor: '#f0a500', // Light orange
+    borderRadius: 15,
+    padding: 5,
+    margin: 5,
   },
   tagText: {
-    fontSize: 14,
-    color: '#6a1b9a',
+    color: '#fff',
+    fontSize: 12,
   },
   tabsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
+    justifyContent: 'space-around',
+    marginBottom: 20,
   },
   tab: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
+    padding: 10,
+    borderBottomWidth: 2,
+    borderBottomColor: 'transparent',
   },
   activeTab: {
-    backgroundColor: '#d1c4e9',
+    borderBottomColor: '#f0a500', // Light orange
   },
   tabText: {
     fontSize: 16,
-    color: '#7c4dff',
+    color: '#666',
   },
-  activeTabText: {
-    color: '#4a148c',
-  },
-  generalInfoContainer: {
-    borderWidth: 1,
-    borderColor: '#9575cd',
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 16,
-    backgroundColor: '#ede7f6',
+  contentContainer: {
+    marginBottom: 20,
   },
   subSectionTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 8,
-    color: '#4a148c',
+    marginBottom: 10,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+  },
+  generalInfoContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 15,
+    elevation: 2,
   },
   infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: 10,
   },
   infoLabel: {
-    fontSize: 14,
-    color: '#7c4dff',
+    fontWeight: 'bold',
   },
   infoText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#4a148c',
-  },
-  input: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#9575cd',
-    paddingVertical: 4,
-    marginBottom: 8,
-    color: '#4a148c',
-  },
-  additionalInfoContainer: {
-    borderWidth: 1,
-    borderColor: '#9575cd',
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 16,
-    backgroundColor: '#ede7f6',
-  },
-  additionalInput: {
-    borderWidth: 1,
-    borderColor: '#9575cd',
-    borderRadius: 8,
-    padding: 8,
-    minHeight: 60,
-    textAlignVertical: 'top',
-    color: '#4a148c',
-  },
-  saveButton: {
-    backgroundColor: '#4a148c',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  saveButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: '#555',
   },
   referralSection: {
-    marginTop: 16,
+    marginTop: 20,
+  },
+  header: {
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  subHeader: {
+    fontWeight: 'bold',
+    marginVertical: 5,
   },
   checkboxGroup: {
-    marginVertical: 8,
+    marginVertical: 10,
   },
   referralRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 5,
   },
   reasonRow: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  recommendationTable: {
-    marginTop: 16,
+    marginBottom: 5,
   },
   headerRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  columnHeader: {
-    fontWeight: 'bold',
-    flex: 1,
-    textAlign: 'center',
+    marginBottom: 10,
   },
   labelColumn: {
     flex: 2,
   },
-  row: {
-    flexDirection: 'row',
-    marginBottom: 8,
-    alignItems: 'center',
-  },
-  label: {
-    flex: 1,
-  },
   checkboxColumn: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
   },
+  columnHeader: {
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  recommendationTable: {
+    marginVertical: 10,
+  },
+  row: {
+    flexDirection: 'row',
+    marginBottom: 5,
+  },
+  label: {
+    fontSize: 14,
+    flex: 2,
+  },
+  saveButton: {
+    backgroundColor: '#f0a500', // Light orange
+    borderRadius: 5,
+    padding: 15,
+    alignItems: 'center',
+  },
+  saveButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
 });
+

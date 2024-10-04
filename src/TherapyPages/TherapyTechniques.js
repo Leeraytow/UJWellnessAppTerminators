@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-const TherapyTechniquesScreen = ({ navigation }) => {
+const TherapyTechniques = ({ navigation }) => {
   const techniques = [
     { title: 'Cognitive Behavioral Therapy (CBT)', description: 'Changing negative thought patterns.', icon: 'analytics', route: 'CBTDetails' },
     { title: 'Dialectical Behavior Therapy (DBT)', description: 'Combines CBT with mindfulness.', icon: 'heart', route: 'DBTDetails' },
@@ -96,4 +96,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TherapyTechniquesScreen;
+export default TherapyTechniques;

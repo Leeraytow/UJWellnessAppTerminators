@@ -12,7 +12,7 @@ import StudentRegister from './src/Logins/StudentRegisterScreen';
 import TherapistScreen from './src/Logins/TherapistLoginScreen'; 
 import TherapistRegisterScreen from './src/Logins/TherapistRegisterScreen';
 import TherapistLandingScreen from './src/TherapyPages/TherapistLandingScreen';
-import  TherapyTechniques from './src/TherapyPages/TherapyTechniques';
+
 import CBTDetails from './src/TherapyPages/CBTDetails';
 import DBTDetails from './src/TherapyPages/DBTDetails';
 import MBSRDetails from './src/TherapyPages/MBSRDetails';
@@ -21,8 +21,8 @@ import ExposureDetails from './src/TherapyPages/ExposureDetails';
 import NarrativeDetails from './src/TherapyPages/NarrativeDetails';
 import SomaticDetails from './src/TherapyPages/SomaticDetails';
 import GestaltDetails from './src/TherapyPages/GestaltDetails';
-import ResourcesScreen from './src/TherapyPages/Resource';
-import  RegisterScreen from './src/TherapyPages/SessionRecord';
+import Resource from './src/TherapyPages/Resource'
+import  SessionRecord from './src/TherapyPages/SessionRecord';
 import TherapyProfileScreen from './src/TherapyPages/TherapyProfileScreen';
 import AppointmentsScreen from './src/TherapyPages/AppointmentsScreen';
 import ChatTherapist from './src/TherapyPages/ChatTherapist';
@@ -75,6 +75,9 @@ import ClientsPage from './src/ClientsPage/ClientsPage';
 import Mainpost from './src/CommunitySupport/postmain';
 import SootheBot from './src/ChatBot/SootheBot';
 import GeminiChat from './src/ChatBot/GeminiChat';
+import PendingAppointments from './src/TherapyPages/PendingAppointment';
+import History from './src/TherapyPages/History';
+import TherapyTechniques from './src/TherapyPages/TherapyTechniques';
 
 const Stack = createStackNavigator();
 
@@ -122,7 +125,7 @@ export default function App() {
             <Stack.Screen name="TherapistScreen" component={TherapistScreen} options={{ headerShown: false }} />
             <Stack.Screen name="TherapistRegisterScreen" component={TherapistRegisterScreen} options={{ headerShown: false }} />
             <Stack.Screen name="TherapistLandingScreen" component={TherapistLandingScreen} options={{ headerShown: false }} />
-            <Stack.Screen name="TherapyTechniques" component={TherapyTechniques} />
+           
             <Stack.Screen name="CBTDetails" component={CBTDetails} options={{ headerShown: false }} />
         <Stack.Screen name="DBTDetails" component={DBTDetails} options={{ headerShown: false }} />
         <Stack.Screen name="MBSRDetails" component={MBSRDetails} options={{ headerShown: false }} />
@@ -131,8 +134,8 @@ export default function App() {
         <Stack.Screen name="NarrativeDetails" component={NarrativeDetails} options={{ headerShown: false }} />
         <Stack.Screen name="SomaticDetails" component={SomaticDetails} options={{ headerShown: false }} />
         <Stack.Screen name="GestaltDetails" component={GestaltDetails} options={{ headerShown: false }} />
-            <Stack.Screen name="Resources" component={ResourcesScreen} />
-            <Stack.Screen name="Session Information" component={RegisterScreen} />
+            <Stack.Screen name="Resource" component={Resource}options={{ headerShown: false }} />
+            <Stack.Screen name="SessionRecord" component={SessionRecord}  options={{ headerShown: false }} />
             <Stack.Screen name="PasswordResetScreen" component={PasswordResetScreen} options={{ headerShown: false }} />
             <Stack.Screen name="EmailVerification" component={EmailVerification} options={{ headerShown: false }} />
             <Stack.Screen name="SplashScreen1" component={SplashScreen1} options={{ headerShown: false }} />
@@ -172,9 +175,9 @@ export default function App() {
             <Stack.Screen name="UserHistory" component={UserHistory} options={{ headerShown: false }} />
             <Stack.Screen name="UserProfile" component={UserProfile} options={{ headerShown: false }} />
             <Stack.Screen name="AdminSettings" component={AdminSettings} options={{ headerShown: false }} />
-            <Stack.Screen name="TherapyProfile" component={TherapyProfileScreen} />
-            <Stack.Screen name="Appointments" component={AppointmentsScreen} />
-            <Stack.Screen name="ChatTherapist" component={ChatTherapist} />
+            <Stack.Screen name="TherapyProfile" component={TherapyProfileScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="Appointments" component={AppointmentsScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="ChatTherapist" component={ChatTherapist} options={{ headerShown: false }} />
             <Stack.Screen name="UpcomingAppointment" component={UpcomingAppointmentScreen} />
             <Stack.Screen name="BookingForm" component={BookingForm} options={{ headerShown: false }} />
             <Stack.Screen name="VerifyBookings" component={VerifyBookings} options={{ headerShown: false }} />
@@ -185,6 +188,9 @@ export default function App() {
             <Stack.Screen name="MainPost" component={Mainpost} options={{ headerShown: false }} />
             <Stack.Screen name="SootheBot" component={SootheBot} options={{ headerShown: false }} />
             <Stack.Screen name="GeminiChat" component={GeminiChat} options={{ headerShown: false }} />
+            <Stack.Screen name="PendingAppointments" component={PendingAppointments} options={{ headerShown: false }} />
+            <Stack.Screen name="History" component={History} options={{ headerShown: false }} />
+            <Stack.Screen name="TherapyTechniques" component={TherapyTechniques} />
           </Stack.Navigator>
         </NavigationContainer>
       </FontSizeProvider>

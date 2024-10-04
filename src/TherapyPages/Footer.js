@@ -1,29 +1,26 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import { Ionicons } from '@expo/vector-icons'; 
 import { useNavigation } from '@react-navigation/native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const Footer = () => {
+  const [activeIndex, setActiveIndex] = useState(null);
   const navigation = useNavigation();
-  const [selectedTab, setSelectedTab] = useState('Home');
+  
+  // Create an animated value for the bounce effect
   const bounceValue = useRef(new Animated.Value(1)).current;
 
-  const tabs = [
-    { name: 'Home', icon: 'home', route: 'Home' },
-    { name: 'Resources', icon: 'book-open-variant', route: 'Resources' },
-    { name: 'Appointments', icon: 'calendar-clock', route: 'Appointments' },
-    { name: 'Chat', icon: 'chat-processing', route: 'Chat' },
-    { name: 'Profile', icon: 'account', route: 'Profile' },
-  ];
+  const handlePress = (index, route) => {
+    setActiveIndex(index);
+    navigation.navigate(route);
+  };
 
-  const handleTabPress = (tabName, route) => {
-    setSelectedTab(tabName);
-    
-    // Start bounce animation for the selected tab
+  const handleAddPress = () => {
+    // Start the bounce animation when the "+" icon is pressed
     Animated.sequence([
       Animated.spring(bounceValue, {
-        toValue: 1.4, // Scale up
-        friction: 3,
+        toValue: 1.4, // Larger scale up
+        friction: 3, // Bounce effect
         useNativeDriver: true,
       }),
       Animated.spring(bounceValue, {
@@ -31,74 +28,89 @@ const Footer = () => {
         friction: 3,
         useNativeDriver: true,
       }),
-    ]).start();
-
-    navigation.navigate(route);
+    ]).start(() => {
+      // Navigate to the Mood page after the bounce animation completes
+      navigation.navigate('MoodControl');
+    });
   };
 
   return (
-    <View style={styles.tabContainer}>
-      {tabs.map((tab) => (
-        <TouchableOpacity
-          key={tab.name}
-          style={styles.tabButton}
-          onPress={() => handleTabPress(tab.name, tab.route)}
-        >
-          <View style={styles.iconContainer}>
-            {selectedTab === tab.name && <View style={styles.activeIndicator} />}
-            <Animated.View style={{ transform: [{ scale: selectedTab === tab.name ? bounceValue : 1 }] }}>
-              <MaterialCommunityIcons
-                name={tab.icon}
-                size={24}
-                color={selectedTab === tab.name ? '#4B0082' : '#E0B0FF'}
-              />
-            </Animated.View>
-          </View>
-          <Text style={[styles.tabButtonText, selectedTab === tab.name && styles.selectedTabText]}>
-            {tab.name}
-          </Text>
-        </TouchableOpacity>
-      ))}
+    <View style={styles.footer}>
+      {/* Home Button */}
+      <TouchableOpacity
+        style={[styles.footerButton, activeIndex === 0 && styles.activeButton]}
+        onPress={() => handlePress(0, 'TherapistLandingScreen')}
+      >
+        <Ionicons name="home-outline" size={15} color={activeIndex === 0 ? '#FF5F1F' : '#9b9b9b'} />
+        <Text style={styles.buttonLabel}>Home</Text>
+      </TouchableOpacity>
+
+      {/* Tools Button */}
+      <TouchableOpacity
+        style={[styles.footerButton, activeIndex === 1 && styles.activeButton]}
+        onPress={() => handlePress(1, 'Resource')} // Navigate to Tools.js
+      >
+        <Ionicons name="construct-outline" size={15} color={activeIndex === 1 ? '#FF5F1F' : '#9b9b9b'} />
+        <Text style={styles.buttonLabel}>Tools</Text>
+      </TouchableOpacity>
+
+     
+
+      {/* Chat Button */}
+      <TouchableOpacity
+        style={[styles.footerButton, activeIndex === 2 && styles.activeButton]}
+        onPress={() => handlePress(2, 'ChatTherapist')}
+      >
+        <Ionicons name="chatbubble-outline" size={15} color={activeIndex === 2 ? '#FF5F1F' : '#9b9b9b'} />
+        <Text style={styles.buttonLabel}>Chat</Text>
+      </TouchableOpacity>
+
+      {/* Profile Button */}
+      <TouchableOpacity
+        style={[styles.footerButton, activeIndex === 3 && styles.activeButton]}
+        onPress={() => handlePress(3, 'Profile')}
+      >
+        <Ionicons name="person-outline" size={15} color={activeIndex === 3 ? '#FF5F1F' : '#9b9b9b'} />
+        <Text style={styles.buttonLabel}>Profile</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  tabContainer: {
+  footer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    backgroundColor: '#FFF',
+    backgroundColor: '#fff',
+    paddingVertical: 1,
     borderTopWidth: 1,
-    borderTopColor: '#DDD',
-    paddingVertical: 10,
-    width: '100%',
+    borderTopColor: '#FF5F1F',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 5,
   },
-  tabButton: {
+  footerButton: {
+    alignItems: 'center',
+    padding: 15,
+  },
+  activeButton: {
+    borderRadius: 50,
+    borderWidth: 2,
+    borderColor: '#FF5F1F',
+    backgroundColor: '#fff',
+  },
+  addButton: {
+    padding: 8,
+    position: 'relative',
     alignItems: 'center',
   },
-  iconContainer: {
-    width: 48,
-    height: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 5,
-  },
-  activeIndicator: {
-    position: 'absolute',
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(75, 0, 130, 0.1)', // Transparent purple
-    zIndex: -1,
-  },
-  tabButtonText: {
+  buttonLabel: {
     fontSize: 12,
-    color: '#000000',
-  },
-  selectedTabText: {
-    fontWeight: 'bold',
-    color: '#4B0082', // Purple color for selected tab text
+    color: '#9b9b9b',
+    marginTop: 4,
   },
 });
 
