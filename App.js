@@ -78,6 +78,7 @@ import GeminiChat from './src/ChatBot/GeminiChat';
 import PendingAppointments from './src/TherapyPages/PendingAppointment';
 import History from './src/TherapyPages/History';
 import TherapyTechniques from './src/TherapyPages/TherapyTechniques';
+import TermsScreen from './src/Logins/Terms&Conditions';
 
 const Stack = createStackNavigator();
 
@@ -190,7 +191,8 @@ export default function App() {
             <Stack.Screen name="GeminiChat" component={GeminiChat} options={{ headerShown: false }} />
             <Stack.Screen name="PendingAppointments" component={PendingAppointments} options={{ headerShown: false }} />
             <Stack.Screen name="History" component={History} options={{ headerShown: false }} />
-            <Stack.Screen name="TherapyTechniques" component={TherapyTechniques} />
+            <Stack.Screen name="TherapyTechniques" component={TherapyTechniques}  options={{ headerShown: false }}/>
+            <Stack.Screen name="TermsScreen" component={TermsScreen} options={{headerShown: false}}/>
           </Stack.Navigator>
         </NavigationContainer>
       </FontSizeProvider>

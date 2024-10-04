@@ -6,6 +6,7 @@ import { collection, query, onSnapshot, addDoc, deleteDoc, doc, getDoc, updateDo
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, auth } from '../Configuration/firebase';
 import { sendNotificationToUser } from './NotificationService';
+import Header from '../Menu/Header'; // Your custom header
 
 export default function HomeScreen({ navigation }) {
   const [text, setText] = useState('');
@@ -208,6 +209,7 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <Header  style={styles.Heading}/> 
       <View style={styles.inputContainer}>
         <Image source={{ uri: profileImage }} style={styles.profileImage} />
         <TextInput
@@ -243,12 +245,13 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: '#fff',
+    bottom:40
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 16,
-    borderRadius:10
+    borderRadius: 10,
   },
   input: {
     flex: 1,
@@ -268,71 +271,82 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
-  postList: {
-    marginTop: 16,
-  },
   postContainer: {
-    backgroundColor: '#f9f9f9',
-    padding: 16,
+    marginBottom: 16,
+    padding: 10,
     borderRadius: 8,
-    marginBottom: 12,
+    backgroundColor: '#f9f9f9',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 2,
     backgroundColor: '#FFF5E1',
-    borderColor:'orange',
-    borderWidth:2
+    borderWidth:2,
+    borderColor:'orange'
   },
   profileImage: {
     width: 40,
     height: 40,
     borderRadius: 20,
+    marginRight: 10,
   },
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 8,
   },
   authorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: 8,
+    flexDirection: 'column',
   },
   authorName: {
     fontWeight: 'bold',
   },
   postText: {
-    marginTop: 8,
     fontSize: 16,
   },
   postImage: {
     width: '100%',
     height: 200,
+    marginVertical: 10,
     borderRadius: 8,
-    marginTop: 8,
   },
   actionContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 8,
+    marginTop: 10,
   },
   iconButton: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   iconLabel: {
-    marginLeft: 4,
+    marginLeft: 5,
+    fontSize: 14,
   },
   attachmentButton: {
-    marginLeft: 8,
+    backgroundColor: '#e7e7e7',
+    borderRadius: 5,
+    padding: 10,
   },
   attachmentInnerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   attachmentText: {
-    marginLeft: 4,
+    marginLeft: 5,
+    fontSize: 16,
   },
   pickedImage: {
     width: '100%',
     height: 200,
+    marginVertical: 10,
     borderRadius: 8,
-    marginTop: 8,
   },
+  postList: {
+    marginTop: 10,
+  },
+  Heading:{
+    bottom:100
+  }
 });

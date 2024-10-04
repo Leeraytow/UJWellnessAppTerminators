@@ -6,7 +6,7 @@ const SplashScreen3 = () => {
     const navigation = useNavigation();
 
     const handleNextPress = () => {
-        navigation.navigate('WelcomeScreen');
+        navigation.navigate('TermsScreen');
     };
     return (
         <ImageBackground source={require('../images/background.png')} style={styles.background}>

@@ -23,10 +23,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 50, // Adds space at the top to move the header down
-    borderWidth: 1, // Add border width
-    borderColor: '#FFF5E1', // Set border color to orange
-    borderRadius: -20, // Optional: round the corners
+    marginTop: 50, 
+    borderWidth: 1, 
+    borderColor: 'orange', 
+    borderRadius: 10, 
+    
   },
   headerLeft: {
     flexDirection: 'row',
@@ -53,4 +54,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Header;
+export default Header; 
