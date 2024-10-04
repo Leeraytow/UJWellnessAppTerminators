@@ -1,10 +1,12 @@
 import React, { useContext } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import Footer from '../Menu/Footer';
+import { useNavigation } from '@react-navigation/native';  // Import navigation hook
 import { ThemeContext } from '../StudentProfile/ThemeContext'; 
 
 const BookingCompleted = () => {
     const { isDarkMode } = useContext(ThemeContext); 
+    const navigation = useNavigation();  // Initialize navigation
 
     return (
         <View style={[styles.container, { backgroundColor: isDarkMode ? '#222' : '#f5f5f5' }]}>
@@ -24,11 +26,19 @@ const BookingCompleted = () => {
                         style={styles.image}
                     />
                     <Text style={[styles.bookingText, { color: isDarkMode ? '#fff' : '#fff' }]}>Booking Completed</Text>
-                    <Text style> The Therapist Will get back to You</Text>
+                    <Text>The Therapist Will get back to You</Text>
                 </View>
-               
-               
+
+                {/* Button to navigate to ScheduledAppointment */}
+                <TouchableOpacity
+                    style={[styles.button, { backgroundColor: '#FF6F00' }]} // Button with orange background
+                    onPress={() => navigation.navigate('ScheduledAppointment')}  // Navigate to ScheduledAppointment
+                >
+                    <Text style={styles.buttonText}>Go to Scheduled Appointments</Text>
+                </TouchableOpacity>
             </View>
+            
+            {/* Footer at the bottom */}
             <Footer />
         </View>
     );

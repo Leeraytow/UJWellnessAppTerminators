@@ -110,11 +110,11 @@ const ScheduledAppointments = () => {
 
 const styles = StyleSheet.create({
   outerContainer: {
-    flex: 1,
-    backgroundColor: '#fff',
+    flex: 1,  
+    backgroundColor: '#FFFFFF',
   },
   fixedHeader: {
-    backgroundColor: '#fff', // Customize as needed
+    backgroundColor: '#fff', 
     padding: 10,
     alignItems: 'center',
     borderBottomWidth: 1,

@@ -93,13 +93,14 @@ const BookingForm = ({ navigation }) => {
       );
       return;
     }
-
+  
     if (!name || !studentNumber || !contactNumber || !campus || !email || !meetingType || !therapist || !selectedDate) {
       Alert.alert('Error', 'All fields are required!');
       return;
     }
-
+  
     try {
+      // Adding booking to Firestore
       await addDoc(collection(db, 'Bookings'), {
         name,
         studentNumber,
@@ -113,12 +114,24 @@ const BookingForm = ({ navigation }) => {
         status: 'Pending',
         createdAt: Timestamp.now(),
       });
-      navigation.navigate("BookingCompleted");
+      
+      // Success Alert notification
+      Alert.alert(
+        'Booking Successful!',
+        'Your booking has been submitted and is pending approval.',
+        [
+          {
+            text: 'OK',
+            onPress: () => navigation.navigate("BookingCompleted"),
+          }
+        ]
+      );
     } catch (error) {
       console.error('Error adding booking: ', error);
       Alert.alert('Error', 'Failed to submit booking.');
     }
   };
+  
 
   return (
     <View style={styles.container}>
