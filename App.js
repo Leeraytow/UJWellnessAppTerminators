@@ -79,6 +79,8 @@ import History from './src/TherapyPages/History';
 import TherapyTechniques from './src/TherapyPages/TherapyTechniques';
 import TherapistRegistration from './src/Admin/TherapistRegistration'
 import AdminVid from './src/Videos/AdminVideos'
+import TermsScreen from './src/Logins/Terms&Conditions';
+
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -120,7 +122,7 @@ export default function App() {
     <ThemeProvider>
       <FontSizeProvider>
         <NavigationContainer>
-        <Stack.Navigator initialRouteName={initialRoute}>
+        <Stack.Navigator initialRouteName="SplashScreen1">
             <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} options={{ headerShown: false }} />
             <Stack.Screen name="StudentLogin" component={StudentLoginScreen} options={{ headerShown: false }} />
             <Stack.Screen name="StudentRegister" component={StudentRegister} options={{ headerShown: false }} />
@@ -192,8 +194,9 @@ export default function App() {
             <Stack.Screen name="GeminiChat" component={GeminiChat} options={{ headerShown: false }} />
             <Stack.Screen name="PendingAppointments" component={PendingAppointments} options={{ headerShown: false }} />
             <Stack.Screen name="History" component={History} options={{ headerShown: false }} />
-            <Stack.Screen name="TherapyTechniques" component={TherapyTechniques} />
             <Stack.Screen name="AdminVideos" component={AdminVid} />
+            <Stack.Screen name="TherapyTechniques" component={TherapyTechniques}  options={{ headerShown: false }}/>
+            <Stack.Screen name="TermsScreen" component={TermsScreen} options={{headerShown: false}}/>
           </Stack.Navigator>
         </NavigationContainer>
       </FontSizeProvider>

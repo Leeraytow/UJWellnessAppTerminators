@@ -1,32 +1,109 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, SafeAreaView, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
-const Header = ({ navigation }) => {
+const Header = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigation = useNavigation();
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+  };
+
+  const navigateTo = (screen) => {
+    closeMenu();
+    navigation.navigate(screen);
+  };
+
   return (
-    <View style={styles.header}>
-      <View style={styles.headerLeft}>
-        <Image source={require('../images/logo.png')} style={styles.logo} />
-        <Text style={styles.headerText}>UJWellness</Text>
-      </View>
-      <TouchableOpacity onPress={() => navigation.openDrawer()} style={styles.menuBtn}>
-        <Ionicons name="menu" size={28} color="#FF5733" />
-      </TouchableOpacity>
-    </View>
+    <SafeAreaView>
+      <TouchableWithoutFeedback onPress={closeMenu}>
+        <View style={styles.headerContainer}>
+          <View style={styles.header}>
+            <View style={styles.headerLeft}>
+              <Image source={require('../images/logo.png')} style={styles.logo} />
+              <Text style={styles.headerText}>UJWellness</Text>
+            </View>
+            <TouchableOpacity onPress={toggleMenu}>
+              <Ionicons name="menu" size={28} color="#FF5733" />
+
+            </TouchableOpacity>
+          </View>
+          <Modal
+            visible={isMenuOpen}
+            transparent
+            animationType="fade"
+            onRequestClose={closeMenu}
+          >
+            <TouchableWithoutFeedback onPress={closeMenu}>
+              <View style={styles.modalOverlay}>
+                <View style={styles.dropdownMenu}>
+                  <TouchableOpacity
+                    style={styles.menuItem}
+                    onPress={() => navigateTo('PsyCadVideos')}
+                  >
+                    <Text style={styles.menuItemText}>Podcast and Videos</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.menuItem}
+                    onPress={() => navigateTo('Therapy')}
+                  >
+                    <Text style={styles.menuItemText}>Therapy</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.menuItem}
+                    onPress={() => navigateTo('HelpLine')}
+                  >
+                    <Text style={styles.menuItemText}>Help Line</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.menuItem}
+                    onPress={() => navigateTo('ProfessionalMedicalHelp')}
+                  >
+                    <Text style={styles.menuItemText}>Professional Medical Help</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.menuItem}
+                    onPress={() => navigateTo('CommunitySupport')}
+                  >
+                    <Text style={styles.menuItemText}>Community Support</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.menuItem}
+                    onPress={() => navigateTo('PeerToPeerSupport')}
+                  >
+                    <Text style={styles.menuItemText}>Peer-to-Peer Support</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </Modal>
+        </View>
+      </TouchableWithoutFeedback>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  headerContainer: {
+    zIndex: 1,
+  },
   header: {
     backgroundColor: 'white',
     padding: 10,
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 50, // Adds space at the top to move the header down
-    borderWidth: 1, // Add border width
-    borderColor: '#FFF5E1', // Set border color to orange
-    borderRadius: -20, // Optional: round the corners
+    alignItems: 'center',
+    marginTop:50,
+    borderWidth:1,
+    borderColor:'orange',
+    borderRadius:10,
+
   },
   headerLeft: {
     flexDirection: 'row',
@@ -43,13 +120,25 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  menuBtn: {
-    padding: 10,
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  separator: {
-    height: 1,
-    backgroundColor: 'white',
-    marginVertical: 5,
+  dropdownMenu: {
+    backgroundColor: '#FFA500',
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#fff',
+    borderRadius: 5,
+  },
+  menuItem: {
+    paddingVertical: 10,
+  },
+  menuItemText: {
+    fontSize: 16,
+    color: 'white',
   },
 });
 

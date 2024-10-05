@@ -1,103 +1,159 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ImageBackground, StyleSheet, Image, Animated } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 
-export default function WelcomeScreen() {
-  const navigation = useNavigation();
-  const fadeAnim = React.useRef(new Animated.Value(0)).current;
+const { width, height } = Dimensions.get('window');
 
-  React.useEffect(() => {
-    Animated.timing(
-      fadeAnim,
-      {
-        toValue: 1,
-        duration: 2000,
-        useNativeDriver: true,
-      }
-    ).start();
-  }, [fadeAnim]);
-
-  const handleStudentPress = () => {
-    navigation.navigate('StudentLogin');
-  };
-
-  const handleTherapistPress = () => {
-    navigation.navigate('TherapistScreen'); // Change 'TherapistScreen' to the appropriate screen name
-  };
-
+export default function SplashPage1({ navigation }) {
   return (
-    <ImageBackground source={require('../images/background.png')} style={styles.background}>
-      <View style={styles.container}>
-        <Animated.Image source={require('../images/logo.png')} style={[styles.logo, { opacity: fadeAnim }]} />
+    <View style={styles.container}>
+      {/* Image Section */}
+      <View style={styles.imageContainer}>
+        <Image 
+           source={require('../images/splash3.jpeg')}
+          style={styles.image}
+        />
+       
+        <TouchableOpacity style={styles.stepButton}>
+          <Text style={styles.stepText}>Step Three</Text>
+        </TouchableOpacity>
+      </View>
 
-        <View style={styles.textContainer}>
-          <Animated.Text style={[styles.welcomeText, { opacity: fadeAnim }]}>Welcome to UJ Wellness!</Animated.Text>
-          <Animated.Text style={[styles.subText, { opacity: fadeAnim }]}>To tailor your experience, please let us know who you are.</Animated.Text>
-        </View>
+      {/* Curve Section */}
+      <Svg 
+        height="60" 
+        width={width} 
+        viewBox="0 0 1440 320" 
+        style={styles.svgCurve}
+      >
+        <Path 
+          fill="#FFFFFF"
+          d="M0,224L1440,32L1440,320L0,320Z"
+        />
+      </Svg>
 
-        {/* Buttons */}
+      {/* Text Section with a white background */}
+      <View style={styles.textContainer}>
+        <Text style={styles.title}>
+          Community Support{' '}
+          <Text style={styles.highlight}>UJ Wellness</Text>
+        </Text>
+        
+        {/* Description section */}
+        <Text style={styles.description}>
+          Join our student-focused mental health community where you can find
+          encouragement, guidance, and practical solutions for managing stress.
+        </Text>
+
+        {/* Buttons for Get Started and Skip */}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleStudentPress}>
-            <Text style={styles.buttonText}>Student</Text>
+          {/* Get Started Button */}
+          <TouchableOpacity
+            style={styles.getStartedButton}
+            onPress={() => navigation.navigate('TermsScreen')}
+          >
+            <Text style={styles.getStartedText}>Get Started</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={handleTherapistPress}>
-            <Text style={styles.buttonText}>Therapist</Text>
+
+          {/* Skip Button */}
+          <TouchableOpacity
+            style={styles.skipButton}
+            onPress={() => navigation.navigate('TermsScreen')}  
+          >
+            <Text style={styles.skipText}>Skip</Text>
           </TouchableOpacity>
         </View>
       </View>
-    </ImageBackground>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-    resizeMode: "cover",
-    justifyContent: "center",
-  },
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.4)', 
-    paddingHorizontal: 20,
+    backgroundColor: '#FFCC80',  // Soft orange background
   },
-  logo: {
-    width: 150,
-    height: 150,
-    marginBottom: 20,
+  imageContainer: {
+    position: 'relative',
+    height: height * 0.7,  // Image height increased
+    backgroundColor: '#FFCC80',  // Orange background for consistency
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  stepButton: {
+    position: 'absolute',
+    top: 40,  // Position near the top
+    left: '50%',  // Center it horizontally
+    transform: [{ translateX: -50 }],  // Move back by half its width to center
+    paddingVertical: 10,
+    paddingHorizontal: 25,
+    borderWidth: 1,
+    borderColor: '#FF7043',  // Orange border
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',  // Transparent white background
+  },
+  stepText: {
+    fontSize: 18,
+    color: '#FF7043',  // Orange text color
+  },
+  svgCurve: {
+    position: 'absolute',
+    top: height * 0.65,  // Adjust the curve position relative to the image height
   },
   textContainer: {
-    alignItems: 'center',
-    marginBottom: 30,
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    marginTop: -50,
+    justifyContent: 'flex-end',  // Push content to the bottom
   },
-  welcomeText: {
-    fontSize: 24,
-    color: 'white',
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
     textAlign: 'center',
+    color: '#FF7043',  // Orange title color
     marginBottom: 10,
   },
-  subText: {
+  highlight: {
+    color: '#FFB74D',  // Lighter orange highlight
+  },
+  description: {
     fontSize: 16,
-    color: 'white',
+    color: '#4A4A4A',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 20,  // Space between description and buttons
   },
   buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  button: {
-    backgroundColor: '#FF6F00',
-    width: 200,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 20,
     marginBottom: 20,
-    elevation: 8,
   },
-  buttonText: {
-    color: 'white',
+  getStartedButton: {
+    backgroundColor: '#FF7043',  // Orange button
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 30,
+  },
+  getStartedText: {
     fontSize: 16,
-    textAlign: 'center',
+    color: '#FFFFFF',
+  },
+  skipButton: {
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#FFB74D',  // Light orange border
+    borderRadius: 30,
+  },
+  skipText: {
+    fontSize: 16,
+    color: '#FF7043',  // Orange text for Skip button
   },
 });
