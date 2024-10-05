@@ -172,7 +172,7 @@ export default function StudentAuthScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <ImageBackground source={require('../images/back12345.png')} style={styles.background}>
+      <ImageBackground source={require('../images/backback2.jpeg')} style={styles.background}>
         <View style={styles.authContainer}>
           <View style={styles.tabContainer}>
             <TouchableOpacity

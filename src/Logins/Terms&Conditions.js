@@ -6,7 +6,7 @@ const TermsScreen = () => {
   const navigation = useNavigation();
 
   const handleAgree = () => {
-    navigation.navigate('WelcomeScreen');  // Replace 'Home' with the actual screen you want to navigate to after agreement
+    navigation.navigate('StudentLogin');  // Replace 'Home' with the actual screen you want to navigate to after agreement
   };
 
   const handleDisagree = () => {
@@ -95,6 +95,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    paddingTop: 65,  // Add padding to lower the content
     backgroundColor: '#F5F5F5',
   },
   termsContainer: {
@@ -104,7 +105,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 15,
+    marginBottom: 20,
     textAlign: 'center',
   },
   text: {
@@ -124,14 +125,14 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   agreeButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#FFA726',  // Light orange shade
     padding: 15,
     borderRadius: 5,
     width: '48%',
     alignItems: 'center',
   },
   disagreeButton: {
-    backgroundColor: '#FF6347',
+    backgroundColor: '#FF7043',  // Darker orange shade
     padding: 15,
     borderRadius: 5,
     width: '48%',
