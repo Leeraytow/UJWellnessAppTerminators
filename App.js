@@ -12,7 +12,6 @@ import StudentRegister from './src/Logins/StudentRegisterScreen';
 import TherapistScreen from './src/Logins/TherapistLoginScreen'; 
 import TherapistRegisterScreen from './src/Logins/TherapistRegisterScreen';
 import TherapistLandingScreen from './src/TherapyPages/TherapistLandingScreen';
-
 import CBTDetails from './src/TherapyPages/CBTDetails';
 import DBTDetails from './src/TherapyPages/DBTDetails';
 import MBSRDetails from './src/TherapyPages/MBSRDetails';
@@ -78,7 +77,8 @@ import GeminiChat from './src/ChatBot/GeminiChat';
 import PendingAppointments from './src/TherapyPages/PendingAppointment';
 import History from './src/TherapyPages/History';
 import TherapyTechniques from './src/TherapyPages/TherapyTechniques';
-
+import TherapistRegistration from './src/Admin/TherapistRegistration'
+import AdminVid from './src/Videos/AdminVideos'
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -93,9 +93,11 @@ export default function App() {
         // Check email domain to set initial route
         if (user.email.endsWith('@gmail.com')) {
           setInitialRoute('TherapistLandingScreen');
-        } else {
-          setInitialRoute('MainPage');
-        }
+          }
+        // } else if(user.email.endsWith('@uj.ac.za')) {
+        //   setInitialRoute('TherapistLandingScreen');{
+        //   setInitialRoute('MainPage');
+        //   }
       } else {
         setInitialRoute('StudentLogin');
       }
@@ -125,7 +127,6 @@ export default function App() {
             <Stack.Screen name="TherapistScreen" component={TherapistScreen} options={{ headerShown: false }} />
             <Stack.Screen name="TherapistRegisterScreen" component={TherapistRegisterScreen} options={{ headerShown: false }} />
             <Stack.Screen name="TherapistLandingScreen" component={TherapistLandingScreen} options={{ headerShown: false }} />
-           
             <Stack.Screen name="CBTDetails" component={CBTDetails} options={{ headerShown: false }} />
         <Stack.Screen name="DBTDetails" component={DBTDetails} options={{ headerShown: false }} />
         <Stack.Screen name="MBSRDetails" component={MBSRDetails} options={{ headerShown: false }} />
@@ -175,6 +176,7 @@ export default function App() {
             <Stack.Screen name="UserHistory" component={UserHistory} options={{ headerShown: false }} />
             <Stack.Screen name="UserProfile" component={UserProfile} options={{ headerShown: false }} />
             <Stack.Screen name="AdminSettings" component={AdminSettings} options={{ headerShown: false }} />
+            <Stack.Screen name="TherapistRegistration" component={TherapistRegistration} options={{ headerShown: false }} />
             <Stack.Screen name="TherapyProfile" component={TherapyProfileScreen} options={{ headerShown: false }} />
             <Stack.Screen name="Appointments" component={AppointmentsScreen} options={{ headerShown: false }} />
             <Stack.Screen name="ChatTherapist" component={ChatTherapist} options={{ headerShown: false }} />
@@ -191,6 +193,7 @@ export default function App() {
             <Stack.Screen name="PendingAppointments" component={PendingAppointments} options={{ headerShown: false }} />
             <Stack.Screen name="History" component={History} options={{ headerShown: false }} />
             <Stack.Screen name="TherapyTechniques" component={TherapyTechniques} />
+            <Stack.Screen name="AdminVideos" component={AdminVid} />
           </Stack.Navigator>
         </NavigationContainer>
       </FontSizeProvider>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, Button, ActivityIndicator, Linking, FlatList, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, Text, Button, ActivityIndicator, Linking, FlatList, StyleSheet, Image } from 'react-native';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db, auth } from '../Configuration/firebase';
 import { ThemeContext } from '../StudentProfile/ThemeContext';
@@ -85,20 +85,20 @@ const ScheduledAppointments = () => {
         <Text style={styles.title}>Upcoming Appointments</Text>
       </View>
 
-      {/* Scrollable Content */}
-      <ScrollView style={styles.scrollContainer}>
-        {bookingDetails.length === 0 ? (
-          <View style={styles.centeredContainer}>
-            <Text>No booking details found.</Text>
-          </View>
-        ) : (
-          <FlatList
-            data={bookingDetails}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-          />
-        )}
-      </ScrollView>
+      {/* FlatList for Booking Details */}
+      {bookingDetails.length === 0 ? (
+        <View style={styles.centeredContainer}>
+          <Text>No booking details found.</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={bookingDetails}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          style={styles.scrollContainer} // Optional styling
+          contentContainerStyle={{ paddingBottom: 80 }} // Ensure there's space for footer
+        />
+      )}
 
       {/* Fixed Footer */}
       <View style={styles.footer}>
@@ -130,10 +130,6 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
     top:10
-  },
-  scrollContainer: {
-    flex: 1,
-    padding: 20,
   },
   centeredContainer: {
     flex: 1,

@@ -117,8 +117,10 @@ export default function StudentAuthScreen({ navigation }) {
       const userRef = doc(db, 'Students', user.uid);
       await setDoc(userRef, { active: true }, { merge: true });
   
-      const isAdmin = Email.endsWith('@gmail.com');
-      if (isAdmin) {
+      // Navigate based on email domain
+      if (Email.endsWith('@gmail.com')) {
+        navigation.navigate('AdminHomeScreen');
+      } else if (Email.endsWith('@uj.ac.za')) {
         navigation.navigate('TherapistLandingScreen');
       } else if (Email.endsWith('@student.uj.ac.za')) {
         const usersCollection = collection(db, 'Students');

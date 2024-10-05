@@ -1,46 +1,94 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, TextInput, Image, KeyboardAvoidingView, Platform } from 'react-native';
 import { format } from 'date-fns';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native'; // Ensure you have this import
+import { useNavigation } from '@react-navigation/native';
+import { auth, db } from '../Configuration/firebase';
+import { collection, query, where, getDocs, updateDoc, doc } from 'firebase/firestore';
 
 const PendingAppointments = () => {
+  const [pendingAppointments, setPendingAppointments] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [time, setTime] = useState('');
+  const [duration, setDuration] = useState('');
+  const [venue, setVenue] = useState('');
+  const [meetingLink, setMeetingLink] = useState('');
+  const [profileImages, setProfileImages] = useState({});  // Store profile images here
   const navigation = useNavigation();
+  const currentUserEmail = auth.currentUser.email;
 
-  // Sample pending appointments data
-  const pendingAppointments = [
-    {
-      id: 1,
-      studentName: 'Alice Johnson',
-      subject: 'Mental Health Consultation',
-      date: '2024-10-05',
-      time: '11:00 AM',
-      duration: '45 minutes',
-      notes: 'First-time consultation - Experiencing academic anxiety',
-      preferredMode: 'Video Call',
-      urgency: 'Medium',
-      previousSessions: 0,
-      contactNumber: '+1 234-567-8900',
-      email: 'alice.j@email.com',
-    },
-    {
-      id: 2,
-      studentName: 'Bob Wilson',
-      subject: 'Follow-up Session',
-      date: '2024-10-06',
-      time: '3:00 PM',
-      duration: '30 minutes',
-      notes: 'Follow-up on stress management techniques',
-      preferredMode: 'In-person',
-      urgency: 'High',
-      previousSessions: 3,
-      contactNumber: '+1 234-567-8901',
-      email: 'bob.w@email.com',
-    },
-  ];
+  useEffect(() => {
+    const fetchPendingAppointments = async () => {
+      try {
+        const q = query(
+          collection(db, 'Bookings'),
+          where('therapistEmail', '==', currentUserEmail),
+          where('status', '==', 'Pending')
+        );
 
+        const querySnapshot = await getDocs(q);
+        const appointments = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        setPendingAppointments(appointments);
+
+        // Fetch profile images for each student
+        const profileImagesPromises = appointments.map(async (appointment) => {
+          const studentQuery = query(
+            collection(db, 'Students'),
+            where('email', '==', appointment.email)
+          );
+          const studentSnapshot = await getDocs(studentQuery);
+          const studentData = studentSnapshot.docs[0]?.data();
+          return { [appointment.email]: studentData?.profileImage || '' };
+        });
+
+        const images = await Promise.all(profileImagesPromises);
+        setProfileImages(Object.assign({}, ...images));  // Store images by email
+      } catch (error) {
+        console.error('Error fetching appointments or images:', error);
+      }
+    };
+
+    fetchPendingAppointments();
+  }, [currentUserEmail]);
+
+  const formatDate = (date) => {
+    const validDate = new Date(date);
+    return isNaN(validDate) ? date : format(validDate, 'PPP');
+  };
+
+  const handleAccept = async () => {
+    if (selectedAppointment) {
+      
+      if (!time || !duration || 
+          (selectedAppointment.meetingType === 'FaceToFace' && !venue) || 
+          (selectedAppointment.meetingType === 'online' && !meetingLink)) {
+        alert('Please fill in all required fields: Time, Duration, and Venue/Meeting Link.');
+        return; 
+      }
+  
+      try {
+        const appointmentRef = doc(db, 'Bookings', selectedAppointment.id);
+        await updateDoc(appointmentRef, {
+          time: time,
+          duration: duration,
+          status: 'Confirmed',
+          venue: selectedAppointment.meetingType === 'FaceToFace' ? venue : '',
+          meetingLink: selectedAppointment.meetingType === 'online' ? meetingLink : ''
+        });
+        setModalVisible(false);
+        setSelectedAppointment(null);
+        alert('Appointment Confirmed!');
+      } catch (error) {
+        console.error('Error updating appointment:', error);
+      }
+    }
+  };
+  
   const getUrgencyColor = (urgency) => {
     const colors = {
       High: '#FF6B6B',
@@ -53,6 +101,9 @@ const PendingAppointments = () => {
   const AppointmentDetailsModal = ({ appointment, visible, onClose }) => {
     if (!appointment) return null;
 
+    const profileImage = profileImages[appointment.email];  // Get profile image by email
+
+
     return (
       <Modal animationType="slide" transparent={true} visible={visible} onRequestClose={onClose}>
         <View style={styles.modalOverlay}>
@@ -60,7 +111,7 @@ const PendingAppointments = () => {
             <View style={styles.modalHeader}>
               <View>
                 <Text style={styles.modalTitle}>Appointment Request</Text>
-                <Text style={styles.modalSubtitle}>{format(new Date(appointment.date), 'PPP')}</Text>
+                <Text style={styles.modalSubtitle}>{formatDate(appointment.selectedDate)}</Text>
               </View>
               <TouchableOpacity onPress={onClose} style={styles.closeButton}>
                 <Text style={styles.closeButtonText}>×</Text>
@@ -70,19 +121,19 @@ const PendingAppointments = () => {
             <ScrollView style={styles.modalBody}>
               <View style={styles.studentInfoSection}>
                 <View style={styles.avatarContainer}>
-                  <View style={styles.avatar}>
-                    <Text style={styles.avatarText}>
-                      {appointment.studentName.split(' ').map((n) => n[0]).join('')}
-                    </Text>
-                  </View>
+                {profileImage ? (
+                    <Image source={{ uri: profileImage }} style={styles.avatar} />  
+                  ) : (
+                    <View style={styles.avatar}>
+                      <Text style={styles.avatarText}>
+                        {appointment.name.split(' ').map((n) => n[0]).join('')}
+                      </Text>
                 </View>
+                  )}
+                  </View>
                 <View style={styles.studentDetails}>
-                  <Text style={styles.studentNameLarge}>{appointment.studentName}</Text>
-                  <Text style={styles.sessionCount}>
-                    {appointment.previousSessions === 0
-                      ? 'First Session'
-                      : `${appointment.previousSessions} Previous Sessions`}
-                  </Text>
+                  <Text style={styles.studentNameLarge}>{appointment.name}</Text>
+  
                 </View>
               </View>
 
@@ -90,27 +141,17 @@ const PendingAppointments = () => {
                 <View style={styles.infoItem}>
                   <Text style={styles.infoLabel}>Date</Text>
                   <Text style={styles.infoValue}>
-                    {format(new Date(appointment.date), 'MMM d, yyyy')}
-                  </Text>
+  {formatDate(appointment.selectedDate)}
+</Text>
                 </View>
-                <View style={styles.infoItem}>
-                  <Text style={styles.infoLabel}>Time</Text>
-                  <Text style={styles.infoValue}>{appointment.time}</Text>
-                </View>
-                <View style={styles.infoItem}>
-                  <Text style={styles.infoLabel}>Duration</Text>
-                  <Text style={styles.infoValue}>{appointment.duration}</Text>
-                </View>
+               
                 <View style={styles.infoItem}>
                   <Text style={styles.infoLabel}>Mode</Text>
-                  <Text style={styles.infoValue}>{appointment.preferredMode}</Text>
+                  <Text style={styles.infoValue}>{appointment.meetingType}</Text>
                 </View>
               </View>
 
-              <View style={styles.notesSection}>
-                <Text style={styles.sectionTitle}>Session Notes</Text>
-                <Text style={styles.notes}>{appointment.notes}</Text>
-              </View>
+             
 
               <View style={styles.contactSection}>
                 <Text style={styles.sectionTitle}>Contact Information</Text>
@@ -119,8 +160,52 @@ const PendingAppointments = () => {
                   <Text style={styles.contactDetail}>✉️ {appointment.email}</Text>
                 </View>
               </View>
-            </ScrollView>
+                 {/* Time Input */}
+                 <View style={styles.inputContainer}>
+                <Text style={styles.inputLabel}>Time</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter time (e.g., 10:00 AM)"
+                  value={time}
+                  onChangeText={setTime}
+                />
+              </View>
 
+              {/* Duration Input */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.inputLabel}>Duration</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter duration (e.g., 1 hour)"
+                  value={duration}
+                  onChangeText={setDuration}
+                />
+              </View>
+
+              {/* Conditionally render Venue or Meeting Link */}
+             
+              {selectedAppointment && selectedAppointment.meetingType === 'FaceToFace' ? (
+  <View style={styles.inputContainer}>
+    <Text style={styles.inputLabel}>Venue</Text>
+    <TextInput
+      style={styles.input}
+      placeholder="Enter venue"
+      value={venue}
+      onChangeText={setVenue}
+    />
+  </View>
+) : (
+  <View style={styles.inputContainer}>
+    <Text style={styles.inputLabel}>Meeting Link</Text>
+    <TextInput
+      style={styles.input}
+      placeholder="Enter meeting link"
+      value={meetingLink}
+      onChangeText={setMeetingLink}
+    />
+  </View>
+)}
+            </ScrollView>
             <View style={styles.actionButtons}>
               <TouchableOpacity
                 style={[styles.actionButton, styles.rescheduleButton]}
@@ -134,13 +219,14 @@ const PendingAppointments = () => {
               <TouchableOpacity
                 style={[styles.actionButton, styles.acceptButton]}
                 onPress={() => {
-                  // Implement accept logic
+                  handleAccept
                   onClose();
                 }}
               >
                 <Text style={styles.acceptButtonText}>Accept</Text>
               </TouchableOpacity>
             </View>
+
           </View>
         </View>
       </Modal>
@@ -152,39 +238,39 @@ const PendingAppointments = () => {
       key={appointment.id}
       style={styles.appointmentCard}
       onPress={() => {
-        setSelectedAppointment(appointment);
+        setSelectedAppointment(appointment);  // Correctly set the selected appointment
         setModalVisible(true);
       }}
     >
       <View style={styles.cardHeader}>
         <View style={styles.dateTimeContainer}>
-          <Text style={styles.appointmentDate}>
-            {format(new Date(appointment.date), 'EEE, MMM d')}
-          </Text>
-          <Text style={styles.appointmentTime}>{appointment.time}</Text>
+        <Text style={styles.appointmentDate}>
+  {formatDate(appointment.selectedDate)}
+</Text>
         </View>
-        <View style={[styles.urgencyBadge, { backgroundColor: getUrgencyColor(appointment.urgency) }]}>
-          <Text style={styles.urgencyText}>{appointment.urgency}</Text>
-        </View>
+       
       </View>
 
       <View style={styles.cardBody}>
-        <View style={styles.studentSection}>
-          <View style={styles.smallAvatar}>
-            <Text style={styles.smallAvatarText}>
-              {appointment.studentName.split(' ').map((n) => n[0]).join('')}
-            </Text>
-          </View>
+      <View style={styles.studentSection}>
+          {profileImages[appointment.email] ? (
+            <Image source={{ uri: profileImages[appointment.email] }} style={styles.smallAvatar} />
+          ) : (
+            <View style={styles.smallAvatar}>
+              <Text style={styles.smallAvatarText}>
+                {appointment.name.split(' ').map((n) => n[0]).join('')}
+              </Text>
+            </View>
+          )}
           <View style={styles.studentInfo}>
-            <Text style={styles.studentName}>{appointment.studentName}</Text>
-            <Text style={styles.appointmentType}>{appointment.subject}</Text>
+            <Text style={styles.studentName}>{appointment.name}</Text>
           </View>
         </View>
 
         <View style={styles.cardFooter}>
           <View style={styles.sessionInfo}>
-            <Text style={styles.duration}>{appointment.duration}</Text>
-            <Text style={styles.mode}>{appointment.preferredMode}</Text>
+           
+            <Text style={styles.mode}>{appointment.meetingType}</Text>
           </View>
           <TouchableOpacity style={styles.viewDetailsButton}>
             <Text style={styles.viewDetailsText}>View Details</Text>
@@ -195,34 +281,23 @@ const PendingAppointments = () => {
   );
 
   return (
-    <View style={styles.container}>
-      {/* Header Section */}
-      <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="#FFF" />
-        </TouchableOpacity>
-        <Text style={styles.header}>Pending Requests</Text>
-        <View style={styles.badgeContainer}>
-          <Text style={styles.badgeText}>{pendingAppointments.length}</Text>
-        </View>
-      </View>
-
-      {/* Appointments List */}
-      <ScrollView style={styles.appointmentsList}>
-        {pendingAppointments.map(renderAppointmentCard)}
-      </ScrollView>
-
+    <KeyboardAvoidingView
+    style={{ flex: 1 }}
+    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    keyboardVerticalOffset={100} // Adjust this value as needed
+  >
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+      {pendingAppointments.map((appointment) => renderAppointmentCard(appointment))}
       <AppointmentDetailsModal
         appointment={selectedAppointment}
         visible={modalVisible}
-        onClose={() => {
-          setModalVisible(false);
-          setSelectedAppointment(null);
-        }}
+        onClose={() => setModalVisible(false)}
       />
-    </View>
-  );
+    </ScrollView>
+  </KeyboardAvoidingView>
+);
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -486,6 +561,19 @@ const styles = StyleSheet.create({
   acceptButtonText: {
     color: '#FFF',
     fontWeight: 'bold',
+  },
+  inputContainer: {
+    marginVertical: 10,
+  },
+  inputLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    padding: 8,
+    borderRadius: 4,
   },
 });
 

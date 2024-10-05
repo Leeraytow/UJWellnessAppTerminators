@@ -5,13 +5,6 @@ import { collection, addDoc, query, where, getDocs, Timestamp } from 'firebase/f
 import { db, auth } from '../Configuration/firebase';
 import DatePicker from 'react-native-modern-datepicker';
 
-const therapistsByCampus = {
-  "APB": ["Dr. Manci Thobani", "Dr. Mukuta Dineo", "Dr. Naicker Michelle"],
-  "APK": ["Dr. Halana Vuyiswa", "Dr. Johnson Desiree", "Dr. Mostert Henk", "Dr. Ntantiso Mzamo", "Dr. Singh Reshmika"],
-  "DFC": ["Dr. Bujela Khanyisile", "Dr. Korope George", "Dr. Muhlanga Ntsakisi", "Dr. Tonono Melinda"],
-  "SWC": ["Dr. Gumbi Mbalenhle", "Dr. Masilela Bafana", "Dr. Ngesi Philani"],
-};
-
 const BookingForm = ({ navigation }) => {
   const [name, setName] = useState('');
   const [studentNumber, setStudentNumber] = useState('');
@@ -20,6 +13,7 @@ const BookingForm = ({ navigation }) => {
   const [campus, setCampus] = useState('');
   const [meetingType, setMeetingType] = useState('');
   const [email, setEmail] = useState('');
+  const [therapistEmail, setTherapistEmail] = useState('');
   const [therapist, setTherapist] = useState('');
   const [availableTherapists, setAvailableTherapists] = useState([]);
   const [selectedDate, setSelectedDate] = useState('');
@@ -48,13 +42,36 @@ const BookingForm = ({ navigation }) => {
 
     checkPendingAppointment();
   }, []);
-
+  
   useEffect(() => {
-    if (campus) {
-      setAvailableTherapists(therapistsByCampus[campus] || []);
-    } else {
-      setAvailableTherapists([]);
-    }
+    const fetchTherapists = async () => {
+      if (!campus) {
+        setAvailableTherapists([]);
+        return;
+      }
+  
+      try {
+        const q = query(collection(db, 'Students'));
+        const querySnapshot = await getDocs(q);
+        const therapistsList = querySnapshot.docs
+          .map(doc => doc.data()) // Get the data for each document
+          .filter(docData => 
+            docData.email && // Check if email exists
+            docData.email.endsWith('@gmail.com') && 
+            docData.campus === campus
+          ) 
+            .map(docData => ({
+            name: docData.name,
+            email: docData.email // Store the therapist's email
+          }));
+
+        setAvailableTherapists(therapistsList);
+      } catch (error) {
+        console.error('Error fetching therapists: ', error);
+      }
+    };
+  
+    fetchTherapists();
   }, [campus]);
 
   useEffect(() => {
@@ -93,12 +110,12 @@ const BookingForm = ({ navigation }) => {
       );
       return;
     }
-  
+
     if (!name || !studentNumber || !contactNumber || !campus || !email || !meetingType || !therapist || !selectedDate) {
       Alert.alert('Error', 'All fields are required!');
       return;
     }
-  
+
     try {
       // Adding booking to Firestore
       await addDoc(collection(db, 'Bookings'), {
@@ -108,13 +125,14 @@ const BookingForm = ({ navigation }) => {
         campus,
         meetingType,
         therapist,
+        therapistEmail,
         specialRequest,
         email,
         selectedDate,
         status: 'Pending',
         createdAt: Timestamp.now(),
       });
-      
+
       // Success Alert notification
       Alert.alert(
         'Booking Successful!',
@@ -122,7 +140,7 @@ const BookingForm = ({ navigation }) => {
         [
           {
             text: 'OK',
-            onPress: () => navigation.navigate("BookingCompleted"),
+            onPress: () => navigation.navigate("ScheduledAppointments"),
           }
         ]
       );
@@ -132,7 +150,6 @@ const BookingForm = ({ navigation }) => {
     }
   };
   
-
   return (
     <View style={styles.container}>
       {/* Fixed Header: Logo and Title */}
@@ -146,6 +163,7 @@ const BookingForm = ({ navigation }) => {
 
       {/* Scrollable Form */}
       <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {/* Input Fields */}
         <Text style={styles.label}>Name</Text>
         <TextInput
           style={styles.input}
@@ -153,7 +171,6 @@ const BookingForm = ({ navigation }) => {
           onChangeText={setName}
           placeholder="Enter your name"
         />
-
         <Text style={styles.label}>Student Number</Text>
         <TextInput
           style={styles.input}
@@ -162,7 +179,6 @@ const BookingForm = ({ navigation }) => {
           placeholder="Enter your student number"
           keyboardType="numeric"
         />
-
         <Text style={styles.label}>Contact Number</Text>
         <TextInput
           style={styles.input}
@@ -171,29 +187,26 @@ const BookingForm = ({ navigation }) => {
           placeholder="Enter your contact number"
           keyboardType="numeric"
         />
-
         <Text style={styles.label}>Select Date</Text>
         <DatePicker
-  mode="calendar"
-  selected={selectedDate}
-  onDateChange={setSelectedDate}
-  minimumDate={new Date().toISOString().split('T')[0]} // Disable past dates
-  options={{
-    disabledDates: (date) => {
-      const day = new Date(date).getDay();
-      return day === 0 || day === 6; // Disable weekends
-    },
-    textHeaderColor: "#000", // Keep header color consistent with design
-    textDefaultColor: "#000", // Keep default text color
-    selectedDayColor: "#F59B0A", // Orange for selected date
-    disabledDatesTextStyle: {
-      color: '#A9A9A9', // Gray out disabled weekends and past dates
-    },
-  }}
-  style={styles.datePicker}
-/>
-
-
+          mode="calendar"
+          selected={selectedDate}
+          onDateChange={setSelectedDate}
+          minimumDate={new Date().toISOString().split('T')[0]} // Disable past dates
+          options={{
+            disabledDates: (date) => {
+              const day = new Date(date).getDay();
+              return day === 0 || day === 6; // Disable weekends
+            },
+            textHeaderColor: "#000",
+            textDefaultColor: "#000",
+            selectedDayColor: "#F59B0A",
+            disabledDatesTextStyle: {
+              color: '#A9A9A9',
+            },
+          }}
+          style={styles.datePicker}
+        />
         <Text style={styles.label}>Campus</Text>
         <View style={styles.pickerContainer}>
           <Picker
@@ -215,12 +228,16 @@ const BookingForm = ({ navigation }) => {
             <View style={styles.pickerContainer}>
               <Picker
                 selectedValue={therapist}
-                onValueChange={(itemValue) => setTherapist(itemValue)}
+                onValueChange={(itemValue) => {
+                  const selectedTherapist = availableTherapists.find(t => t.name === itemValue);
+                  setTherapist(itemValue);
+                  setTherapistEmail(selectedTherapist ? selectedTherapist.email : '');
+                }}
                 style={styles.picker}
               >
                 <Picker.Item label="Select therapist" value="" />
                 {availableTherapists.map((therapist, index) => (
-                  <Picker.Item key={index} label={therapist} value={therapist} />
+                  <Picker.Item key={index} label={therapist.name} value={therapist.name} />
                 ))}
               </Picker>
             </View>
@@ -245,37 +262,39 @@ const BookingForm = ({ navigation }) => {
 
         <Text style={styles.label}>Special Request</Text>
         <TextInput
-          style={[styles.input, styles.specialRequestInput]}
+          style={styles.input}
           value={specialRequest}
           onChangeText={setSpecialRequest}
           placeholder="Enter any special requests"
-          multiline={true}
         />
 
-        {/* Submit Button */}
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-          <Text style={styles.submitButtonText}>Book</Text>
+       
+
+        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit} disabled={loading}>
+          <Text style={styles.submitButtonText}>Submit Booking</Text>
         </TouchableOpacity>
 
-        {/* Scheduled Appointments Section */}
-        {scheduledAppointments.length > 0 && (
-          <View style={styles.scheduledAppointmentsContainer}>
-            <Text style={styles.scheduledTitle}>Your Scheduled Appointments:</Text>
-            {scheduledAppointments.map(appointment => (
-              <View key={appointment.id} style={styles.appointmentCard}>
-                <Text style={styles.appointmentText}>{`${appointment.therapist} on ${appointment.selectedDate}`}</Text>
-              </View>
-            ))}
-          </View>
+         {/* Scheduled Appointments Section */}
+         <Text style={styles.label}>Scheduled Appointments</Text>
+        {scheduledAppointments.length > 0 ? (
+          scheduledAppointments.slice(0, 1).map((appointment, index) => (
+            <View key={index} style={styles.appointmentCard}>
+              <Text style={styles.appointmentText}>Date: {appointment.meetingDate}</Text>
+              <Text style={styles.appointmentText}>Time: {appointment.meetingTime}</Text>
+              <Text style={styles.appointmentText}>Venue: {appointment.venue}</Text>
+            </View>
+          ))
+        ) : (
+          <Text style={styles.noAppointmentsText}>No confirmed appointments available.</Text>
         )}
-
-        {/* Scheduled Appointment Button */}
-        <TouchableOpacity
+              {/* Scheduled Appointment Button */}
+              <TouchableOpacity
           style={styles.scheduledButton}
           onPress={() => navigation.navigate('ScheduledAppointments')}
         >
-          <Text style={styles.scheduledButtonText}>Scheduled Appointment</Text>
+          <Text style={styles.scheduledButtonText}>View All Appointments</Text>
         </TouchableOpacity>
+
       </ScrollView>
     </View>
   );
@@ -374,12 +393,19 @@ const styles = StyleSheet.create({
   },
   appointmentCard: {
     padding: 10,
-    backgroundColor: '#f8f9fa',
     borderRadius: 5,
-    marginBottom: 10,
+    backgroundColor: '#e6e6e6',
+    marginVertical: 5,
   },
   appointmentText: {
     fontSize: 16,
+    color: '#333',
+  },
+  noAppointmentsText: {
+    fontSize: 16,
+    color: '#888',
+    textAlign: 'center',
+    marginTop: 10,
   },
   scheduledButton: {
     backgroundColor: '#ff7f00', // Set scheduled button color to orange

@@ -1,55 +1,43 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
-import { format, addDays } from 'date-fns';
-import { useNavigation } from '@react-navigation/native'; // Import useNavigation
-import { Ionicons } from '@expo/vector-icons'; // Import Ionicons for the back arrow
+import { format, addDays, isSameDay } from 'date-fns';
+import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
+import { auth, db } from '../Configuration/firebase'; // Ensure your firebase configuration is correct
+import { collection, query, where, getDocs } from 'firebase/firestore';
 
 const Appointments = () => {
-  const navigation = useNavigation(); // Use the navigation hook
+  const navigation = useNavigation();
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [appointments, setAppointments] = useState([]);
 
-  // Sample appointment data
-  const appointments = [
-    {
-      id: '1',
-      studentName: 'Emma Thompson',
-      date: '2024-10-05',
-      time: '14:00',
-      avatar: 'https://i.pravatar.cc/100?img=1',
-      details: {
-        year: '2nd year',
-        major: 'Psychology',
-        concern: 'Anxiety management',
-        notes: 'Emma is seeking guidance for managing anxiety during exams.'
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        // Get the logged-in user's email
+        const therapistEmail = auth.currentUser.email; // Ensure this retrieves the correct email
+        
+        const bookingsCollection = collection(db, 'Bookings'); // Reference to your bookings collection
+        const confirmedQuery = query(
+          bookingsCollection,
+          where('status', '==', 'Confirmed'), 
+          where('therapistEmail', '==', therapistEmail) // Use therapistEmail for filtering
+        );
+
+        const confirmedSnapshot = await getDocs(confirmedQuery);
+        const fetchedAppointments = confirmedSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        setAppointments(fetchedAppointments); // Update appointments state with fetched data
+      } catch (error) {
+        console.error('Error fetching appointments: ', error);
       }
-    },
-    {
-      id: '2',
-      studentName: 'Liam Parker',
-      date: '2024-10-06',
-      time: '15:30',
-      avatar: 'https://i.pravatar.cc/100?img=2',
-      details: {
-        year: '3rd year',
-        major: 'Mechanical Engineering',
-        concern: 'Stress',
-        notes: 'Liam is experiencing stress related to coursework deadlines and time management.'
-      }
-    },
-    {
-      id: '3',
-      studentName: 'Sophia Chen',
-      date: '2024-10-07',
-      time: '10:00',
-      avatar: 'https://i.pravatar.cc/100?img=3',
-      details: {
-        year: '1st year',
-        major: 'Business Management',
-        concern: 'Homesickness',
-        notes: 'Sophia is struggling with homesickness and adjustment to university life.'
-      }
-    }
-  ];
+    };
+
+    fetchAppointments();
+  }, []); // Empty dependency array to run once on mount
 
   const renderDateNavigator = () => {
     const dates = [...Array(5)].map((_, index) => addDays(new Date(), index));
@@ -67,14 +55,14 @@ const Appointments = () => {
               key={date.toString()}
               style={[
                 styles.dateButton,
-                selectedDate.toDateString() === date.toDateString() && styles.selectedDate,
+                isSameDay(selectedDate, date) && styles.selectedDate,
               ]}
               onPress={() => setSelectedDate(date)}
             >
               <Text
                 style={[
                   styles.dayName,
-                  selectedDate.toDateString() === date.toDateString() && styles.selectedDateText,
+                  isSameDay(selectedDate, date) && styles.selectedDateText,
                 ]}
               >
                 {format(date, 'EEE')}
@@ -82,7 +70,7 @@ const Appointments = () => {
               <Text
                 style={[
                   styles.date,
-                  selectedDate.toDateString() === date.toDateString() && styles.selectedDateText,
+                  isSameDay(selectedDate, date) && styles.selectedDateText,
                 ]}
               >
                 {format(date, 'd')}
@@ -95,37 +83,37 @@ const Appointments = () => {
   };
 
   const renderAppointmentCard = (appointment) => (
-    <View key={appointment.id} style={styles.appointmentCard}>
-      <View style={styles.cardHeader}>
-        <Text style={styles.time}>{appointment.time}</Text>
-      </View>
-
-      <View style={styles.cardContent}>
-        <View style={styles.avatarContainer}>
-          {appointment.avatar ? (
-            <Image source={{ uri: appointment.avatar }} style={styles.avatar} />
-          ) : (
-            <View style={styles.avatarPlaceholder}>
-              <Text style={styles.avatarText}>
-                {appointment.studentName.split(' ').map((n) => n[0]).join('')}
-              </Text>
-            </View>
-          )}
+    isSameDay(new Date(appointment.date), selectedDate) && ( // Check if the appointment date matches the selected date
+      <View key={appointment.id} style={styles.appointmentCard}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.time}>{appointment.time}</Text>
         </View>
 
-        <View style={styles.detailsContainer}>
-          <Text style={styles.studentName}>{appointment.studentName}</Text>
-          <Text style={styles.detailText}>Year: {appointment.details.year}</Text>
-          <Text style={styles.detailText}>Major: {appointment.details.major}</Text>
-          <Text style={styles.detailText}>Concern: {appointment.details.concern}</Text>
-          <Text style={styles.detailText}>Notes: {appointment.details.notes}</Text>
-        </View>
-      </View>
+        <View style={styles.cardContent}>
+          <View style={styles.avatarContainer}>
+            {appointment.profileImage ? (
+              <Image source={{ uri: appointment.profileImage }} style={styles.avatar} />
+            ) : (
+              <View style={styles.avatarPlaceholder}>
+                <Text style={styles.avatarText}>
+                  {appointment.studentName.split(' ').map((n) => n[0]).join('')}
+                </Text>
+              </View>
+            )}
+          </View>
 
-      <TouchableOpacity style={styles.joinButton}>
-        <Text style={styles.joinButtonText}>Join Session</Text>
-      </TouchableOpacity>
-    </View>
+          <View style={styles.detailsContainer}>
+            <Text style={styles.studentName}>{appointment.studentName}</Text>
+            <Text style={styles.detailText}>Contacts: {appointment.details.contacts}</Text>
+            <Text style={styles.detailText}>Meeting Type: {appointment.details.meetingType}</Text>
+          </View>
+        </View>
+
+        <TouchableOpacity style={styles.joinButton}>
+          <Text style={styles.joinButtonText}>Join Session</Text>
+        </TouchableOpacity>
+      </View>
+    )
   );
 
   return (

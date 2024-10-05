@@ -25,16 +25,16 @@ const AdminHomeScreen = ({ navigation }) => {
           <TouchableOpacity style={styles.button} onPress={() => handleNavigation('UserFeedback')}>
             <Text style={styles.buttonText}>View User Feedback</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => handleNavigation('UserHistory')}>
+          <TouchableOpacity style={styles.button} onPress={() => handleNavigation('AdminVideos')}>
             <Text style={styles.buttonText}>User History</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => handleNavigation('Reports')}>
-            <Text style={styles.buttonText}>Generate Reports</Text>
+          <TouchableOpacity style={styles.button} onPress={() => handleNavigation('TherapistRegistration')}>
+            <Text style={styles.buttonText}>Therapist Registration</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('UserList')}>
-            <Text style={styles.buttonText}>View Chat</Text>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('MainPost')}>
+            <Text style={styles.buttonText}>Community</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => handleNavigation('AdminSettings')}>
+          <TouchableOpacity style={styles.button} onPress={() => handleNavigation('Profile')}>
             <Text style={styles.buttonText}>Admin Settings</Text>
           </TouchableOpacity>
           

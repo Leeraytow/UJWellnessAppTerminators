@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, Image, StyleSheet, Pressable, ScrollView, Alert, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, Alert, SafeAreaView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemeContext } from './ThemeContext';
@@ -19,40 +19,25 @@ const ProfileComponent = () => {
 
   useEffect(() => {
     fetchUserData();
-    fetchCurrentImage();
   }, []);
 
   const fetchUserData = async () => {
-    try {
-      const user = auth.currentUser;
-      if (user) {
-        const userRef = doc(db, 'Students', user.uid);
-        const docSnap = await getDoc(userRef);
-
-        if (docSnap.exists()) {
-          const userData = docSnap.data();
-          setUsername(userData.name || '');
-          setEmail(userData.email || '');
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching user data: ', error);
-    }
-  };
-
-  const fetchCurrentImage = async () => {
     const user = auth.currentUser;
     if (user) {
       try {
         const userRef = doc(db, 'Students', user.uid);
-        const docSnap = await getDoc(userRef);
+        const userSnap = await getDoc(userRef);
 
-        if (docSnap.exists()) {
-          const userData = docSnap.data();
+        if (userSnap.exists()) {
+          const userData = userSnap.data();
+          setUsername(userData.name || '');
+          setEmail(userData.email || '');
           setCurrentImage(userData.profileImage || null);
+        } else {
+          console.log('User not found in the Students collection.');
         }
       } catch (error) {
-        console.error('Error fetching user profile image: ', error);
+        console.error('Error fetching user data: ', error);
       }
     }
   };
@@ -97,7 +82,6 @@ const ProfileComponent = () => {
 
         const userRef = doc(db, 'Students', user.uid);
         await updateDoc(userRef, { profileImage: imageUrl });
-
         setCurrentImage(imageUrl);
         Alert.alert('Success', 'Profile image updated successfully!');
       } catch (error) {
@@ -119,8 +103,7 @@ const ProfileComponent = () => {
             try {
               const user = auth.currentUser;
               if (user) {
-                const userRef = doc(db, 'Students', user.uid);
-                await updateDoc(userRef, { active: false });
+                await updateDoc(doc(db, 'Students', user.uid), { active: false });
                 await signOut(auth);
                 navigation.replace('StudentLogin');
               }
@@ -147,8 +130,7 @@ const ProfileComponent = () => {
             try {
               const user = auth.currentUser;
               if (user) {
-                const userDocRef = doc(db, 'Students', user.uid);
-                await deleteDoc(userDocRef);
+                await deleteDoc(doc(db, 'Students', user.uid));
                 await deleteUser(user);
                 navigation.replace('StudentLogin');
               }
@@ -227,7 +209,6 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     marginTop: 40, 
     paddingHorizontal: 20,
-    
   },
   backButton: {
     marginRight: 16,
@@ -278,48 +259,50 @@ const styles = StyleSheet.create({
     width: '90%',
     backgroundColor: '#FFF',
     borderRadius: 12,
-    overflow: 'hidden',
+    padding: 16,
     marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 20,
+    justifyContent: 'space-between',
+    paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#FFE0B2',
+    borderBottomColor: '#E0E0E0',
   },
   menuItemText: {
-    flex: 1,
     fontSize: 16,
-    color: '#333',
-    marginLeft: 16,
+    color: '#000',
   },
   signOutButton: {
-    backgroundColor: '#FF9800',
-    paddingVertical: 10,
-    paddingHorizontal: 60,
+    backgroundColor: '#FF6F00',
+    paddingVertical: 12,
     borderRadius: 8,
-    marginTop: 20,
+    marginVertical: 10,
+    width: '90%',
+    alignItems: 'center',
   },
   signOutText: {
-    fontSize: 18,
+    color: '#FFFFFF',
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#FFF',
-    textAlign: 'center',
   },
   deleteAccountButton: {
-    backgroundColor: '#ff6347',
-    paddingVertical: 10,
-    paddingHorizontal: 30,
+    backgroundColor: '#D32F2F',
+    paddingVertical: 12,
     borderRadius: 8,
-    marginTop: 12,
+    width: '90%',
+    alignItems: 'center',
   },
   deleteAccountText: {
-    fontSize: 18,
+    color: '#FFFFFF',
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#FFF',
-    textAlign: 'center',
   },
 });
 

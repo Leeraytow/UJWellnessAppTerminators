@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, TextInput, Button, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, Button, Alert, ActivityIndicator, Platform } from 'react-native';
 import { collection, getDocs, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../Configuration/firebase';
 import { ThemeContext } from '../StudentProfile/ThemeContext';
@@ -10,6 +10,7 @@ const ConfirmMeeting = () => {
   const [loading, setLoading] = useState(true);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [venue, setVenue] = useState('');
+  const [meetingLink, setMeetingLink] = useState('');
   const [meetingTime, setMeetingTime] = useState(new Date());
   const [meetingDate, setMeetingDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -38,8 +39,29 @@ const ConfirmMeeting = () => {
   const verifyBooking = (booking) => {
     setSelectedBooking(booking);
     setVenue(booking.venue || '');
+    setMeetingLink(booking.googleMeetLink || '');
     setMeetingDate(new Date(booking.meetingDate));
     setMeetingTime(new Date(`1970-01-01T${booking.meetingTime}`));
+  };
+
+  const handleDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || meetingDate;
+    setShowDatePicker(Platform.OS === 'ios');
+    setMeetingDate(currentDate);
+  };
+
+  const handleTimeChange = (event, selectedTime) => {
+    const currentTime = selectedTime || meetingTime;
+    setShowTimePicker(Platform.OS === 'ios');
+    setMeetingTime(currentTime);
+  };
+
+  const formatDate = (date) => {
+    return date.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' });
+  };
+
+  const formatTime = (time) => {
+    return time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
   };
 
   const confirmBooking = async () => {
@@ -49,13 +71,13 @@ const ConfirmMeeting = () => {
       const bookingDoc = doc(db, 'Bookings', selectedBooking.id);
       await updateDoc(bookingDoc, {
         status: 'Confirmed',
-        venue: venue,
-        meetingTime: meetingTime.toLocaleTimeString(),
-        meetingDate: meetingDate.toDateString(),
+        venue: selectedBooking.meetingType === 'faceToFace' ? venue : '',
+        googleMeetLink: selectedBooking.meetingType === 'Online' ? meetingLink : '',
+        meetingTime: formatTime(meetingTime),
+        meetingDate: formatDate(meetingDate),
       });
       Alert.alert('Meeting confirmed!');
       setSelectedBooking(null); // Clear selection
-      // Optionally refresh bookings
     } catch (error) {
       console.error("Error confirming booking: ", error);
       Alert.alert('Failed to confirm booking.');
@@ -70,7 +92,6 @@ const ConfirmMeeting = () => {
       await deleteDoc(bookingDoc);
       Alert.alert('Meeting rejected and deleted.');
       setSelectedBooking(null); // Clear selection
-      // Optionally refresh bookings
     } catch (error) {
       console.error("Error rejecting booking: ", error);
       Alert.alert('Failed to reject booking.');
@@ -96,39 +117,44 @@ const ConfirmMeeting = () => {
       {selectedBooking && (
         <>
           <Text style={{ fontSize: 18, marginBottom: 10 }}>Verify Meeting Details:</Text>
-          {selectedBooking.meetingType === 'faceToFace' && (
+
+          {/* Conditional TextInput based on meeting type */}
+          {selectedBooking.meetingType === 'faceToFace' ? (
             <TextInput
               placeholder="Venue"
               value={venue}
               onChangeText={setVenue}
               style={{ borderBottomWidth: 1, marginBottom: 10 }}
             />
+          ) : (
+            <TextInput
+              placeholder="Insert Google Meet Link"
+              value={meetingLink}
+              onChangeText={setMeetingLink}
+              style={{ borderBottomWidth: 1, marginBottom: 10 }}
+            />
           )}
-          {/* Add Google Meet link input if online */}
+
           <Text>Meeting Date:</Text>
-          <Button title={`Select Date: ${meetingDate.toDateString()}`} onPress={() => setShowDatePicker(true)} />
+          <Button title={`Select Date: ${formatDate(meetingDate)}`} onPress={() => setShowDatePicker(true)} />
           {showDatePicker && (
             <DateTimePicker
               mode="date"
               value={meetingDate}
-              onChange={(event, date) => {
-                setShowDatePicker(false);
-                setMeetingDate(date || meetingDate);
-              }}
+              onChange={handleDateChange}
             />
           )}
-          <Text>Meeting Time:</Text>
-          <Button title={`Select Time: ${meetingTime.toLocaleTimeString()}`} onPress={() => setShowTimePicker(true)} />
+
+          <Text style={{ marginBottom: 10 }}>Meeting Time:</Text>
+          <Button title={`Select Time: ${formatTime(meetingTime)}`} onPress={() => setShowTimePicker(true)} />
           {showTimePicker && (
             <DateTimePicker
               mode="time"
               value={meetingTime}
-              onChange={(event, time) => {
-                setShowTimePicker(false);
-                setMeetingTime(time || meetingTime);
-              }}
+              onChange={handleTimeChange}
             />
           )}
+
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
             <Button title="Confirm Meeting" onPress={confirmBooking} />
             <Button title="Reject Meeting" color="red" onPress={rejectBooking} />

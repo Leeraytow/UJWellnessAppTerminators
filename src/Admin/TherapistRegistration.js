@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Image, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Image, ActivityIndicator, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { createUserWithEmailAndPassword, sendEmailVerification, signOut } from 'firebase/auth';
 import { collection, doc, setDoc } from 'firebase/firestore';
@@ -12,14 +12,14 @@ const Header = () => (
     </View>
     <View style={styles.textContainer}>
       <Text style={styles.title}>Create Your Account</Text>
-      <Text style={styles.subtitle}>Join us and let us help you on your journey to wellness</Text>
     </View>
   </View>
 );
 
-export default function StudentRegisterScreen() {
+export default function TherapistRegistration() {
   const navigation = useNavigation();
   const [username, setUsername] = useState('');
+  const [campus, setCampus] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -31,10 +31,17 @@ export default function StudentRegisterScreen() {
     return passwordPattern.test(inputText);
   };
 
+//   const validateEmail = (inputText) => {
+//     const emailPattern = /^[a-zA-Z]+@uj\.ac\.za$/;
+//     return emailPattern.test(inputText.trim());
+//   };
+
+
   const validateEmail = (inputText) => {
-    const emailPattern = /^[0-9]{9,}@student\.uj\.ac\.za/;
+    const emailPattern = /^[0-9]{9,}@student\.uj\.ac\.za$|^[a-zA-Z0-9._%+-]+@gmail\.com$/;
     return emailPattern.test(inputText.trim());
   };
+  
 
   let validateAndSet = (value, valueToCompare, setValue) => {
     if (value !== valueToCompare) {
@@ -52,7 +59,7 @@ export default function StudentRegisterScreen() {
     }
   
     if (!validateEmail(email)) {
-      setError('Please Enter Your Student Email');
+      setError('Please Enter Your Email');
       return;
     }
   
@@ -77,19 +84,38 @@ export default function StudentRegisterScreen() {
       await signOut(auth); // Log out user after verification
   
       // Step 3: Save user data to Firestore with the "active" field
-      const userRef = doc(collection(db, 'Students'), user.uid);
+      const userRef = doc(collection(db, 'Therapists'), user.uid);
       await setDoc(userRef, {
         name: username,
         email: email,
-        active: false,  // Set active to false during registration
+        active: false, 
+        campus: campus// Set active to false during registration
       });
   
-      navigation.navigate('RegEmailVerification', { userEmail: email, userName: username, uid: user.uid });
+      // Show success alert
+      Alert.alert(
+        "Success",
+        "Details posted successfully. Inform the therapist to verify their email.",
+        [
+          {
+            text: "OK",
+            onPress: () => navigation.navigate('EmailVerificationScreen'), // Navigate on press
+          }
+        ]
+      );
+  
+  
     } catch (error) {
       setError(error.message);
     } finally {
       setLoading(false);
     }
+   
+      
+  }
+  async function handleRegistration() {
+    await signOut(auth); // Sign out admin before registration
+    createAccount(); // Proceed with the registration
   }
   
 
@@ -105,8 +131,13 @@ export default function StudentRegisterScreen() {
           />
           <TextInput
             style={styles.input}
-            placeholder="Student Email"
+            placeholder="Work Email"
             onChangeText={(text) => setEmail(text)}
+          />
+            <TextInput
+            style={styles.input}
+            placeholder="Campus"
+            onChangeText={(text) => setCampus(text)}
           />
           <TextInput
             style={styles.input}
@@ -124,7 +155,7 @@ export default function StudentRegisterScreen() {
           />
           {loading && <ActivityIndicator size="large" color="#FFA500" />}
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
-          <TouchableOpacity style={styles.registerButton} onPress={createAccount}>
+          <TouchableOpacity style={styles.registerButton} onPress={handleRegistration}>
             <Text style={styles.registerButtonText}>Sign up</Text>
           </TouchableOpacity>
         
