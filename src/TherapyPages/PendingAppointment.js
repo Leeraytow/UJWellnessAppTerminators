@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { auth, db } from '../Configuration/firebase';
-import { collection, query, where, getDocs, updateDoc, doc } from 'firebase/firestore';
+import { collection, query, where, getDocs, updateDoc, doc,getDoc } from 'firebase/firestore';
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 
@@ -17,7 +17,32 @@ const PendingAppointments = () => {
   const [meetingLink, setMeetingLink] = useState('');
   const [profileImages, setProfileImages] = useState({});  // Store profile images here
   const navigation = useNavigation();
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const currentUserEmail = auth.currentUser.email;
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const user = auth.currentUser;
+        if (user) {
+          const userRef = doc(db, 'Students', user.uid);
+          const docSnap = await getDoc(userRef);
+
+          if (docSnap.exists()) {
+            const userData = docSnap.data();
+            setUsername(userData.name || ''); 
+            setEmail(userData.email || '');   
+          } else {
+            console.log('No such document!');
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching user data: ', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   useEffect(() => {
     const fetchPendingAppointments = async () => {
@@ -80,7 +105,7 @@ const PendingAppointments = () => {
           appToken: 'J0c1pKP0BvWqVKKpfRCi7L', // Your Native Notify app token
           subID: selectedAppointment.email, // Sending notification to this subID
           title: 'Appointment Confirmed!',
-          message: `Your appointment with ${currentUserEmail} has been confirmed.`,
+          message: `Your appointment with ${username} has been confirmed.`,
           link: meetingLink || 'https://yourapp.com', // Add your link or the meeting link here
           pushEnabled: 1,
         };
