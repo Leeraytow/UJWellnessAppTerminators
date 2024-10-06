@@ -4,6 +4,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { auth, db } from '../Configuration/firebase';
 import { collection, query, where, getDocs, updateDoc, doc } from 'firebase/firestore';
+import React, {useState, useEffect} from 'react';
 
 const PendingAppointments = () => {
   const [pendingAppointments, setPendingAppointments] = useState([]);

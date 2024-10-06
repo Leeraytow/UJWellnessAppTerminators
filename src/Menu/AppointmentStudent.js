@@ -52,7 +52,7 @@ const AppointmentsScreen = () => {
 
   const renderAppointment = ({ item }) => (
     <View style={styles.appointmentItem}>
-      <Text style={styles.dateText}>{item.date}</Text>
+      <Text style={styles.dateText}>{item.selectedDate}</Text>
       <View style={styles.detailsContainer}>
         <Text style={styles.timeText}>{item.time}</Text>
         <Text style={styles.sessionText}>{item.sessionType}</Text>
