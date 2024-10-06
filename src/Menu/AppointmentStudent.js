@@ -34,8 +34,8 @@ const AppointmentsScreen = () => {
           const data = doc.data();
           fetchedAppointments.push({
             id: doc.id,
-            date: data.meetingDate,
-            time: data.meetingTime,
+            date: data.selectedDate,
+            time: data.time,
             sessionType: data.meetingType, 
             meetingPlace: data.venue,// Make sure to map this field correctly
           });
