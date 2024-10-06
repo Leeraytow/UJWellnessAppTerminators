@@ -110,9 +110,10 @@ const MainScreen = () => {
           const data = doc.data();
           fetchedAppointments.push({
             id: doc.id,
-            date: data.meetingDate,
-            time: data.meetingTime,
+            date: data.selectedDate,
+            time: data.time,
             type: data.meetingType,
+            duration: data.duration
           });
         });
         console.log('Fetched Appointments:', fetchedAppointments); // Debugging output
@@ -182,6 +183,8 @@ const MainScreen = () => {
                         <Text style={styles.appointmentDate}>{appointment.date}</Text>
                         <Text style={styles.appointmentDetails}>{appointment.time}</Text>
                         <Text style={styles.appointmentDetails}>{appointment.type}</Text>
+                        <Text style={styles.appointmentDetails}>{appointment.duration}</Text>
+
                       </View>
                     ))}
                   </View>
