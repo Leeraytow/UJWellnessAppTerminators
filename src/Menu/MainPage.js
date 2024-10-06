@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
   },
   appointmentDetails: {
     fontSize: 14,
-    color: '',
+    color: 'black',
     marginTop: 5,
     textAlign: 'center',
   },
