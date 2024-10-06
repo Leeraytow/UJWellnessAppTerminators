@@ -10,6 +10,10 @@ import Header from '../Menu/Header';
 import { Ionicons } from '@expo/vector-icons'; 
 import { doc, getDoc, updateDoc, deleteDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { db, auth } from '../Configuration/firebase'; 
+import Bell from './NotBell';
+import registerNNPushToken from 'native-notify';
+import { getNotificationInbox } from 'native-notify';
+
 
 const MainScreen = () => {
   const navigation = useNavigation();
@@ -24,7 +28,13 @@ const MainScreen = () => {
   const [email, setEmail] = useState('');
   
 
-
+  const [data, setData] = useState([]);
+  registerNNPushToken(23885, 'J0c1pKP0BvWqVKKpfRCi7L');
+  useEffect(async () => {
+       let notifications = await getNotificationInbox(23885, 'J0c1pKP0BvWqVKKpfRCi7L');
+       console.log("notifications: ", notifications);
+       setData(notifications);
+  }, []);
 
 
   useEffect(() => {
@@ -146,7 +156,7 @@ const MainScreen = () => {
             <View style={styles.header}>
               <View style={styles.iconsContainer}>
                 <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
-                  <Feather name="bell" size={24} color="#FF5800" style={styles.icon} />
+                  <Bell/>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => navigation.navigate('GeminiChat')}>
                   <Feather name="message-circle" size={24} color="#FF5800" />

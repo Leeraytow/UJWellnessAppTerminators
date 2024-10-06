@@ -25,6 +25,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ce159c6f-c47b-4790-ba46-fdaa2142c1e2"
+      }
+    },
+    "owner": "lindelanixaba"
   }
 }

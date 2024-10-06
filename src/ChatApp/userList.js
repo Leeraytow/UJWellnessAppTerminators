@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Platform, StatusBar, TextInput } from 'react-native';
-import { collection, getDocs } from 'firebase/firestore';
+import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, TextInput } from 'react-native';
+import { collection, getDocs, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db, auth } from '../Configuration/firebase';
 import { ThemeContext } from '../StudentProfile/ThemeContext';
 import Header from '../Menu/Header';
@@ -19,13 +19,23 @@ const UserList = ({ navigation }) => {
           id: doc.id,
           ...doc.data()
         }));
-        setUsers(usersData);
+        // Filter for users who have volunteered for peer support
+        const volunteers = usersData.filter(user => user.volunteerForSupport);
+        setUsers(volunteers);
       } catch (error) {
         console.error("Error fetching users: ", error);
       }
     };
 
+    const updateLastSeen = async () => {
+      const userRef = doc(db, "Students", auth.currentUser.email); // Assuming the document ID is the email
+      await updateDoc(userRef, {
+        lastSeen: serverTimestamp(), // Update lastSeen to current timestamp
+      });
+    };
+
     fetchUsers();
+    updateLastSeen(); // Call the function to update last seen
   }, []);
 
   const handleUserPress = (user) => {
@@ -37,7 +47,7 @@ const UserList = ({ navigation }) => {
   };
 
   // Filter users based on the search query
-  const filteredUsers = users.filter(user => user.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredUsers = users.filter(user => (user.name || '').toLowerCase().includes(searchQuery.toLowerCase()));
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
@@ -56,7 +66,7 @@ const UserList = ({ navigation }) => {
         </Text>
         {/* Display the last seen timestamp */}
         <Text style={[styles.lastSeen, { color: isDarkMode ? '#AAA' : '#666' }]}>
-          Last seen {item.lastSeen || 'a few minutes ago'}
+          Last seen {item.lastSeen ? new Date(item.lastSeen.seconds * 1000).toLocaleString() : 'a few minutes ago'}
         </Text>
       </View>
       {item.active && <View style={styles.activeDot} />}
@@ -65,9 +75,8 @@ const UserList = ({ navigation }) => {
 
   return (
     <View style={[styles.container, { backgroundColor: isDarkMode ? '#222' : '#F5F5F5' }]}>
-      {/* Moved Header component to be immediately at the top */}
-     
-      {/* Search Bar */}
+   
+      
       <View style={styles.searchContainer}>
         <TextInput
           style={[styles.searchInput, { backgroundColor: isDarkMode ? '#444' : '#FFF', color: isDarkMode ? '#FFF' : '#333' }]}
@@ -93,7 +102,7 @@ const UserList = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 60, // Remove any padding from the top
+    paddingTop: 60,
   },
   searchContainer: {
     padding: 10,

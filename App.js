@@ -86,7 +86,7 @@ const Stack = createStackNavigator();
 export default function App() {
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState(null);
-  const [initialRoute, setInitialRoute] = useState("StudentLogin");
+  const [initialRoute, setInitialRoute] = useState("SplashScreen1");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -95,13 +95,11 @@ export default function App() {
         // Check email domain to set initial route
         if (user.email.endsWith('@gmail.com')) {
           setInitialRoute('TherapistLandingScreen');
-          }
-        // } else if(user.email.endsWith('@uj.ac.za')) {
-        //   setInitialRoute('TherapistLandingScreen');{
-        //   setInitialRoute('MainPage');
-        //   }
+        } else {
+          setInitialRoute('MainPage');
+        }
       } else {
-        setInitialRoute('StudentLogin');
+        setInitialRoute('SplashScreen1');
       }
       if (initializing) setInitializing(false);
     });
@@ -122,7 +120,7 @@ export default function App() {
     <ThemeProvider>
       <FontSizeProvider>
         <NavigationContainer>
-        <Stack.Navigator initialRouteName="SplashScreen1">
+        <Stack.Navigator initialRouteName={initialRoute}>
             <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} options={{ headerShown: false }} />
             <Stack.Screen name="StudentLogin" component={StudentLoginScreen} options={{ headerShown: false }} />
             <Stack.Screen name="StudentRegister" component={StudentRegister} options={{ headerShown: false }} />

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, FlatList, Alert, StyleSheet, ScrollView,Image } from 'react-native';
-import { collection, doc, updateDoc, onSnapshot, arrayUnion, getDoc } from 'firebase/firestore';
+import { View, Text, TextInput, Button, FlatList, Alert, StyleSheet, ScrollView, Image } from 'react-native';
+import { doc, updateDoc, onSnapshot, arrayUnion, getDoc } from 'firebase/firestore';
 import { auth, db } from '../Configuration/firebase';
+import axios from 'axios'; // Ensure axios is imported
 
 export default function CommentsScreen({ route }) {
   const { post } = route.params;
@@ -62,12 +63,35 @@ export default function CommentsScreen({ route }) {
             timestamp: new Date(),
           }),
         });
+
+        // Send notification to post owner
+        const title = `${username} Commented on your post`;
+        const message = `${newComment}`;
+        sendNotificationToUser(post.email, title, message);
+
         setNewComment('');
       } catch (error) {
         Alert.alert('Comment Error', 'Failed to add comment. Please try again.');
       }
     } else {
       Alert.alert('Comment Error', 'Comment cannot be empty.');
+    }
+  };
+
+  const sendNotificationToUser = async (subID, title, message) => {
+    try {
+      const response = await axios.post('https://app.nativenotify.com/api/indie/notification', {
+        subID: subID,
+        appId: 23885,
+        appToken: 'J0c1pKP0BvWqVKKpfRCi7L',
+        title: title,
+        message: message
+      });
+      if (response.status === 200) {
+        console.log('Notification sent successfully');
+      }
+    } catch (error) {
+      console.error('Error sending notification:', error);
     }
   };
 
@@ -86,11 +110,11 @@ export default function CommentsScreen({ route }) {
         <Text style={styles.postAuthor}>By {post.author}</Text>
     
         {post.image && (
-            <Image 
+          <Image 
             source={{ uri: post.image }} 
             style={styles.postImage} 
           />
-          )}
+        )}
       </View>
 
       {/* Comments Section */}

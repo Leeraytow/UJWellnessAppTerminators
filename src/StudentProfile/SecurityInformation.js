@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useMemo } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, SafeAreaView, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemeContext } from './ThemeContext';
@@ -41,7 +41,7 @@ const SecurityInfo = () => {
     }
   };
 
-  const PasswordInput = ({ value, onChangeText, placeholder, isVisible, setIsVisible }) => (
+  const PasswordInput = useMemo(() => ({ value, onChangeText, placeholder, isVisible, setIsVisible }) => (
     <View style={styles.inputContainer}>
       <TextInput
         style={styles.input}
@@ -50,12 +50,14 @@ const SecurityInfo = () => {
         secureTextEntry={!isVisible}
         placeholder={placeholder}
         placeholderTextColor="#999"
+        autoCorrect={false}
+        autoCapitalize="none"
       />
       <TouchableOpacity onPress={() => setIsVisible(!isVisible)} style={styles.eyeIcon}>
         <Ionicons name={isVisible ? 'eye-off' : 'eye'} size={24} color="#FF9800" />
       </TouchableOpacity>
     </View>
-  );
+  ), []);
 
   return (
     <SafeAreaView style={styles.container}>

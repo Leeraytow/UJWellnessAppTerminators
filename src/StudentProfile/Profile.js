@@ -16,6 +16,8 @@ const ProfileComponent = () => {
   const [currentImage, setCurrentImage] = useState(null);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
+  const [isVolunteer, setIsVolunteer] = useState(false); // State to track volunteer status
+  const [volunteerForSupport, setVolunteerForSupport] = useState(false);
 
   useEffect(() => {
     fetchUserData();
@@ -33,12 +35,32 @@ const ProfileComponent = () => {
           setUsername(userData.name || '');
           setEmail(userData.email || '');
           setCurrentImage(userData.profileImage || null);
+          setVolunteerForSupport(userData.volunteerForSupport || false);
         } else {
           console.log('User not found in the Students collection.');
         }
       } catch (error) {
         console.error('Error fetching user data: ', error);
       }
+    }
+  };
+
+  const toggleVolunteerStatus = async () => {
+    const user = auth.currentUser;
+    if (!user) {
+      Alert.alert('Error', 'No user is logged in.');
+      return;
+    }
+
+    try {
+      const newStatus = !isVolunteer;
+      const userRef = doc(db, 'Students', user.uid);
+      await updateDoc(userRef, { peerSupportVolunteer: newStatus }); // Update volunteer status in Firebase
+      setIsVolunteer(newStatus); // Update local state
+      Alert.alert('Success', newStatus ? 'You are now a peer support volunteer!' : 'You are no longer a peer support volunteer.');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to update volunteer status. Please try again.');
+      console.error('Error updating volunteer status: ', error);
     }
   };
 
@@ -145,6 +167,44 @@ const ProfileComponent = () => {
       { cancelable: true }
     );
   };
+  const handleVolunteerForSupport = async () => {
+    const user = auth.currentUser;
+    if (!user) {
+      Alert.alert('Error', 'No user is logged in.');
+      return;
+    }
+
+    try {
+      const userRef = doc(db, 'Students', user.uid);
+      const newVolunteerStatus = !volunteerForSupport;
+
+      // Show alert explaining what a peer supporter is
+      Alert.alert(
+        'Peer Supporter Information',
+        'A peer supporter is someone who provides support to others who may be experiencing challenges, sharing their own experiences and helping others feel less alone. Would you like to proceed?',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Proceed',
+            onPress: async () => {
+              await updateDoc(userRef, { volunteerForSupport: newVolunteerStatus });
+              setVolunteerForSupport(newVolunteerStatus);
+              Alert.alert('Success', `You have ${newVolunteerStatus ? 'volunteered' : 'opted out'} for peer support.`);
+            },
+          },
+        ],
+        { cancelable: true }
+      );
+    } catch (error) {
+      Alert.alert('Error', 'There was an issue updating your volunteer status. Please try again.');
+      console.error('Error updating volunteer status: ', error);
+    }
+  };
+
+
 
   const MenuItem = ({ icon, text, onPress }) => (
     <TouchableOpacity style={styles.menuItem} onPress={onPress}>
@@ -184,6 +244,15 @@ const ProfileComponent = () => {
           <MenuItem icon="chatbubble-outline" text="Feedback and Support" onPress={() => navigation.navigate('Feedback')} />
           <MenuItem icon="lock-closed-outline" text="Security Info" onPress={() => navigation.navigate('SecurityInfo')} />
         </View>
+        
+        <TouchableOpacity 
+          style={[styles.volunteerButton, { backgroundColor: volunteerForSupport ? '#4CAF50' : '#FF9800' }]} 
+          onPress={handleVolunteerForSupport}
+        >
+          <Text style={styles.volunteerText}>
+            {volunteerForSupport ? 'Opt Out of Peer Support' : 'Volunteer for Peer Support'}
+          </Text>
+        </TouchableOpacity>
 
         <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
           <Text style={styles.signOutText}>Sign Out</Text>
@@ -198,6 +267,19 @@ const ProfileComponent = () => {
 };
 
 const styles = StyleSheet.create({
+
+  volunteerButton: {
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginVertical: 10,
+    width: '90%',
+    alignItems: 'center',
+  },
+  volunteerText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
   container: {
     flex: 1,
     backgroundColor: '#FFF5E6',
