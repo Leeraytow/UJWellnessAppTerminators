@@ -56,7 +56,7 @@ const AppointmentsScreen = () => {
       <View style={styles.detailsContainer}>
         <Text style={styles.timeText}>{item.time}</Text>
         <Text style={styles.sessionText}>{item.sessionType}</Text>
-        <Text style={styles.sessionText}>{item.meetingPlace}</Text>
+        <Text style={styles.sessionText}>{item.venue}</Text>
 
       </View>
     </View>
