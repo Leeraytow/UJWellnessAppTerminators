@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, TextInput, Image, KeyboardAvoidingView, Platform } from 'react-native';
 import { format } from 'date-fns';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -63,14 +62,6 @@ const PendingAppointments = () => {
 
   const handleAccept = async () => {
     if (selectedAppointment) {
-      
-      if (!time || !duration || 
-          (selectedAppointment.meetingType === 'FaceToFace' && !venue) || 
-          (selectedAppointment.meetingType === 'online' && !meetingLink)) {
-        alert('Please fill in all required fields: Time, Duration, and Venue/Meeting Link.');
-        return; 
-      }
-  
       try {
         const appointmentRef = doc(db, 'Bookings', selectedAppointment.id);
         await updateDoc(appointmentRef, {
@@ -88,7 +79,6 @@ const PendingAppointments = () => {
       }
     }
   };
-  
   const getUrgencyColor = (urgency) => {
     const colors = {
       High: '#FF6B6B',
@@ -102,7 +92,6 @@ const PendingAppointments = () => {
     if (!appointment) return null;
 
     const profileImage = profileImages[appointment.email];  // Get profile image by email
-
 
     return (
       <Modal animationType="slide" transparent={true} visible={visible} onRequestClose={onClose}>
@@ -121,19 +110,18 @@ const PendingAppointments = () => {
             <ScrollView style={styles.modalBody}>
               <View style={styles.studentInfoSection}>
                 <View style={styles.avatarContainer}>
-                {profileImage ? (
+                  {profileImage ? (
                     <Image source={{ uri: profileImage }} style={styles.avatar} />  
                   ) : (
                     <View style={styles.avatar}>
                       <Text style={styles.avatarText}>
                         {appointment.name.split(' ').map((n) => n[0]).join('')}
                       </Text>
-                </View>
+                    </View>
                   )}
-                  </View>
+                </View>
                 <View style={styles.studentDetails}>
                   <Text style={styles.studentNameLarge}>{appointment.name}</Text>
-  
                 </View>
               </View>
 
@@ -141,8 +129,8 @@ const PendingAppointments = () => {
                 <View style={styles.infoItem}>
                   <Text style={styles.infoLabel}>Date</Text>
                   <Text style={styles.infoValue}>
-  {formatDate(appointment.selectedDate)}
-</Text>
+                    {formatDate(appointment.selectedDate)}
+                  </Text>
                 </View>
                
                 <View style={styles.infoItem}>
@@ -151,8 +139,6 @@ const PendingAppointments = () => {
                 </View>
               </View>
 
-             
-
               <View style={styles.contactSection}>
                 <Text style={styles.sectionTitle}>Contact Information</Text>
                 <View style={styles.contactInfo}>
@@ -160,8 +146,8 @@ const PendingAppointments = () => {
                   <Text style={styles.contactDetail}>✉️ {appointment.email}</Text>
                 </View>
               </View>
-                 {/* Time Input */}
-                 <View style={styles.inputContainer}>
+
+              <View style={styles.inputContainer}>
                 <Text style={styles.inputLabel}>Time</Text>
                 <TextInput
                   style={styles.input}
@@ -171,7 +157,6 @@ const PendingAppointments = () => {
                 />
               </View>
 
-              {/* Duration Input */}
               <View style={styles.inputContainer}>
                 <Text style={styles.inputLabel}>Duration</Text>
                 <TextInput
@@ -182,29 +167,27 @@ const PendingAppointments = () => {
                 />
               </View>
 
-              {/* Conditionally render Venue or Meeting Link */}
-             
               {selectedAppointment && selectedAppointment.meetingType === 'FaceToFace' ? (
-  <View style={styles.inputContainer}>
-    <Text style={styles.inputLabel}>Venue</Text>
-    <TextInput
-      style={styles.input}
-      placeholder="Enter venue"
-      value={venue}
-      onChangeText={setVenue}
-    />
-  </View>
-) : (
-  <View style={styles.inputContainer}>
-    <Text style={styles.inputLabel}>Meeting Link</Text>
-    <TextInput
-      style={styles.input}
-      placeholder="Enter meeting link"
-      value={meetingLink}
-      onChangeText={setMeetingLink}
-    />
-  </View>
-)}
+                <View style={styles.inputContainer}>
+                  <Text style={styles.inputLabel}>Venue</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter venue"
+                    value={venue}
+                    onChangeText={setVenue}
+                  />
+                </View>
+              ) : (
+                <View style={styles.inputContainer}>
+                  <Text style={styles.inputLabel}>Meeting Link</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter meeting link"
+                    value={meetingLink}
+                    onChangeText={setMeetingLink}
+                  />
+                </View>
+              )}
             </ScrollView>
             <View style={styles.actionButtons}>
               <TouchableOpacity
@@ -219,7 +202,7 @@ const PendingAppointments = () => {
               <TouchableOpacity
                 style={[styles.actionButton, styles.acceptButton]}
                 onPress={() => {
-                  handleAccept
+                  handleAccept();
                   onClose();
                 }}
               >
@@ -244,15 +227,14 @@ const PendingAppointments = () => {
     >
       <View style={styles.cardHeader}>
         <View style={styles.dateTimeContainer}>
-        <Text style={styles.appointmentDate}>
-  {formatDate(appointment.selectedDate)}
-</Text>
+          <Text style={styles.appointmentDate}>
+            {formatDate(appointment.selectedDate)}
+          </Text>
         </View>
-       
       </View>
 
       <View style={styles.cardBody}>
-      <View style={styles.studentSection}>
+        <View style={styles.studentSection}>
           {profileImages[appointment.email] ? (
             <Image source={{ uri: profileImages[appointment.email] }} style={styles.smallAvatar} />
           ) : (
@@ -269,7 +251,6 @@ const PendingAppointments = () => {
 
         <View style={styles.cardFooter}>
           <View style={styles.sessionInfo}>
-           
             <Text style={styles.mode}>{appointment.meetingType}</Text>
           </View>
           <TouchableOpacity style={styles.viewDetailsButton}>
@@ -282,22 +263,24 @@ const PendingAppointments = () => {
 
   return (
     <KeyboardAvoidingView
-    style={{ flex: 1 }}
-    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    keyboardVerticalOffset={100} // Adjust this value as needed
-  >
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-      {pendingAppointments.map((appointment) => renderAppointmentCard(appointment))}
-      <AppointmentDetailsModal
-        appointment={selectedAppointment}
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-      />
-    </ScrollView>
-  </KeyboardAvoidingView>
-);
-};
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
+    >
+      <ScrollView style={styles.container}>
+        <Text style={styles.title}>Pending Appointments</Text>
 
+        {pendingAppointments.map((appointment) => renderAppointmentCard(appointment))}
+
+        <AppointmentDetailsModal
+          appointment={selectedAppointment}
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+        />
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
