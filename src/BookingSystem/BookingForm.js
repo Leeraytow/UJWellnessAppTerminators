@@ -279,8 +279,8 @@ const BookingForm = ({ navigation }) => {
         {scheduledAppointments.length > 0 ? (
           scheduledAppointments.slice(0, 1).map((appointment, index) => (
             <View key={index} style={styles.appointmentCard}>
-              <Text style={styles.appointmentText}>Date: {appointment.meetingDate}</Text>
-              <Text style={styles.appointmentText}>Time: {appointment.meetingTime}</Text>
+              <Text style={styles.appointmentText}>Date: {appointment.selectedDate}</Text>
+              <Text style={styles.appointmentText}>Time: {appointment.time}</Text>
               <Text style={styles.appointmentText}>Venue: {appointment.venue}</Text>
             </View>
           ))

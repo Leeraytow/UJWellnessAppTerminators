@@ -331,13 +331,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   appointmentDate: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
-    color: '#FF5F1F',
+    color: 'orange',
   },
   appointmentDetails: {
     fontSize: 14,
-    color: '#FF5800',
+    color: '',
     marginTop: 5,
     textAlign: 'center',
   },

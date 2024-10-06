@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { auth, db } from '../Configuration/firebase';
 import { collection, query, where, getDocs, updateDoc, doc } from 'firebase/firestore';
 import React, {useState, useEffect} from 'react';
+import axios from 'axios';
 
 const PendingAppointments = () => {
   const [pendingAppointments, setPendingAppointments] = useState([]);
@@ -72,11 +73,25 @@ const PendingAppointments = () => {
           venue: selectedAppointment.meetingType === 'FaceToFace' ? venue : '',
           meetingLink: selectedAppointment.meetingType === 'online' ? meetingLink : ''
         });
+  
+        // API request to send notification
+        const notificationData = {
+          appId: '23885', // Your Native Notify app ID
+          appToken: 'J0c1pKP0BvWqVKKpfRCi7L', // Your Native Notify app token
+          subID: selectedAppointment.email, // Sending notification to this subID
+          title: 'Appointment Confirmed!',
+          message: `Your appointment with ${currentUserEmail} has been confirmed.`,
+          link: meetingLink || 'https://yourapp.com', // Add your link or the meeting link here
+          pushEnabled: 1,
+        };
+  
+        await axios.post('https://app.nativenotify.com/api/indie/notification', notificationData);
+  
+        alert('Appointment Confirmed and Notification Sent!');
         setModalVisible(false);
         setSelectedAppointment(null);
-        alert('Appointment Confirmed!');
       } catch (error) {
-        console.error('Error updating appointment:', error);
+        console.error('Error updating appointment or sending notification:', error);
       }
     }
   };
