@@ -45,13 +45,13 @@ const Header = () => {
                 <View style={styles.dropdownMenu}>
                   <TouchableOpacity
                     style={styles.menuItem}
-                    onPress={() => navigateTo('PsyCadVideos')}
+                    onPress={() => navigateTo('MainPost')}
                   >
                     <Text style={styles.menuItemText}>Podcast and Videos</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.menuItem}
-                    onPress={() => navigateTo('Therapy')}
+                    onPress={() => navigateTo('TherapyButton')}
                   >
                     <Text style={styles.menuItemText}>Therapy</Text>
                   </TouchableOpacity>
@@ -63,19 +63,19 @@ const Header = () => {
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.menuItem}
-                    onPress={() => navigateTo('ProfessionalMedicalHelp')}
+                    onPress={() => navigateTo('MedicalHelp')}
                   >
                     <Text style={styles.menuItemText}>Professional Medical Help</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.menuItem}
-                    onPress={() => navigateTo('CommunitySupport')}
+                    onPress={() => navigateTo('MainPost')}
                   >
                     <Text style={styles.menuItemText}>Community Support</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.menuItem}
-                    onPress={() => navigateTo('PeerToPeerSupport')}
+                    onPress={() => navigateTo('userList')}
                   >
                     <Text style={styles.menuItemText}>Peer-to-Peer Support</Text>
                   </TouchableOpacity>
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   header: {
-    backgroundColor: 'white',
+    backgroundColor: '#fff',
     padding: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
