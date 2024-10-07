@@ -26,7 +26,7 @@ const AdminHomeScreen = ({ navigation }) => {
             <Text style={styles.buttonText}>View User Feedback</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={() => handleNavigation('AdminVideos')}>
-            <Text style={styles.buttonText}>User History</Text>
+            <Text style={styles.buttonText}>Manage Videos</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={() => handleNavigation('TherapistRegistration')}>
             <Text style={styles.buttonText}>Therapist Registration</Text>
