@@ -50,24 +50,30 @@ const ScheduledAppointments = () => {
   };
 
   const renderItem = ({ item }) => {
-    const { meetingTime, venue, googleMeetLink, meetingType, status } = item;
+    const { time, venue, meetingLink, meetingType, status, therapist, duration, selectedDate, campus } = item;
 
-    const formattedMeetingTime = meetingTime
-      ? new Date(meetingTime.seconds * 1000).toLocaleString()
-      : 'N/A';
-
+  
     return (
       <View style={styles.itemContainer}>
-        <Text style={styles.itemText}>Meeting Time: {formattedMeetingTime}</Text>
-        {meetingType === 'faceToFace' && venue ? (
+        <Text style={styles.itemText}>Therapist: {therapist || 'N/A'}</Text>
+        <Text style={styles.itemText}>Date: {selectedDate || 'N/A'}</Text>
+        <Text style={styles.itemText}>Time: {time}</Text>
+        <Text style={styles.itemText}>Duration: {duration || 'N/A'}</Text>
+        <Text style={styles.itemText}>Campus: {campus || 'N/A'}</Text>
+        <Text style={styles.itemText}>Meeting Type: {meetingType || 'N/A'}</Text>
+
+
+        {meetingType === 'FaceToFace' && venue ? (
           <Text style={styles.itemText}>Venue: {venue}</Text>
         ) : null}
-        {meetingType === 'online' && googleMeetLink ? (
+
+        {meetingType === 'Online' && meetingLink ? (
           <Button 
             title="Join Google Meet" 
-            onPress={() => openMeetingLink(googleMeetLink)} 
+            onPress={() => openMeetingLink(meeetingLink)} 
           />
         ) : null}
+
         <Text style={styles.itemText}>Status: {status || 'N/A'}</Text>
       </View>
     );

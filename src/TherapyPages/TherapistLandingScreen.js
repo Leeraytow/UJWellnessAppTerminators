@@ -126,7 +126,7 @@ const Dashboard = ({ navigation }) => {
 
   const renderAppointment = (appointment) => (
     <TouchableOpacity
-      key={appointment.id}
+      key={appointment.id} // Ensure each appointment has a unique key
       style={styles.appointmentCard}
       onPress={() => navigation.navigate('Appointments')}
     >
@@ -154,11 +154,12 @@ const Dashboard = ({ navigation }) => {
             <Text style={styles.dateTime}>{formatTime(currentDate)}</Text>
           </View>
           <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-            <Image
-              source={{ uri: profileImage }}
-              style={styles.profilePic}
-            />
-          </TouchableOpacity>
+      <Image
+        source={{ uri: profileImage || 'https://i.pravatar.cc/100?img=1' }} // Use a default image if profileImage is empty
+        style={styles.profilePic}
+      />
+    </TouchableOpacity>
+
         </View>
 
         <View style={styles.statsContainer}>
@@ -194,7 +195,7 @@ const Dashboard = ({ navigation }) => {
             markedDates={markedDates}
             onDayPress={(day) => {
               setSelectedDate(day.dateString);
-              navigation.navigate('DailyAppointments', { date: day.dateString });
+              navigation.navigate('Appointments', { date: day.dateString });
             }}
             theme={{
               backgroundColor: '#FFF3E0',
@@ -215,9 +216,14 @@ const Dashboard = ({ navigation }) => {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Upcoming Appointments</Text>
-          {upcomingAppointments.map(renderAppointment)}
-        </View>
+  <Text style={styles.sectionTitle}>Upcoming Appointments</Text>
+  {upcomingAppointments.length === 0 ? (
+    <Text style={styles.noAppointmentsText}>No upcoming appointments</Text>
+  ) : (
+    upcomingAppointments.slice(0, 3).map(appointment => renderAppointment(appointment)) // Correctly pass appointment to renderAppointment
+  )}
+</View>
+
       </ScrollView>
       <Footer />
     </SafeAreaView>

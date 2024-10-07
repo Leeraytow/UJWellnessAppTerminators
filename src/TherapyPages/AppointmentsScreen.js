@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Linking } from 'react-native';
 import { format, addDays, isSameDay } from 'date-fns';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -14,30 +14,40 @@ const Appointments = () => {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        // Get the logged-in user's email
-        const therapistEmail = auth.currentUser.email; // Ensure this retrieves the correct email
+        const therapistEmail = auth.currentUser.email;
         
-        const bookingsCollection = collection(db, 'Bookings'); // Reference to your bookings collection
+        const bookingsCollection = collection(db, 'Bookings');
         const confirmedQuery = query(
           bookingsCollection,
           where('status', '==', 'Confirmed'), 
-          where('therapistEmail', '==', therapistEmail) // Use therapistEmail for filtering
+          where('therapistEmail', '==', therapistEmail)
         );
 
         const confirmedSnapshot = await getDocs(confirmedQuery);
-        const fetchedAppointments = confirmedSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+        const fetchedAppointments = confirmedSnapshot.docs.map(async doc => {
+          const appointmentData = { id: doc.id, ...doc.data() };
 
-        setAppointments(fetchedAppointments); // Update appointments state with fetched data
+          const studentsCollection = collection(db, 'Students');
+          const studentQuery = query(studentsCollection, where('email', '==', appointmentData.email));
+          const studentSnapshot = await getDocs(studentQuery);
+          
+          if (!studentSnapshot.empty) {
+            const studentData = studentSnapshot.docs[0].data();
+            appointmentData.profileImage = studentData.profileImage;
+          }
+
+          return appointmentData;
+        });
+
+        const appointmentsWithImages = await Promise.all(fetchedAppointments);
+        setAppointments(appointmentsWithImages);
       } catch (error) {
         console.error('Error fetching appointments: ', error);
       }
     };
 
     fetchAppointments();
-  }, []); // Empty dependency array to run once on mount
+  }, []);
 
   const renderDateNavigator = () => {
     const dates = [...Array(5)].map((_, index) => addDays(new Date(), index));
@@ -82,8 +92,10 @@ const Appointments = () => {
     );
   };
 
-  const renderAppointmentCard = (appointment) => (
-    isSameDay(new Date(appointment.date), selectedDate) && ( // Check if the appointment date matches the selected date
+  const renderAppointmentCard = (appointment) => {
+    const appointmentDate = new Date(appointment.selectedDate.replace(/\//g, '-'));
+
+    return isSameDay(appointmentDate, selectedDate) && (
       <View key={appointment.id} style={styles.appointmentCard}>
         <View style={styles.cardHeader}>
           <Text style={styles.time}>{appointment.time}</Text>
@@ -96,25 +108,46 @@ const Appointments = () => {
             ) : (
               <View style={styles.avatarPlaceholder}>
                 <Text style={styles.avatarText}>
-                  {appointment.studentName.split(' ').map((n) => n[0]).join('')}
+                  {appointment.name.split(' ').map((n) => n[0]).join('')}
                 </Text>
               </View>
             )}
           </View>
 
           <View style={styles.detailsContainer}>
-            <Text style={styles.studentName}>{appointment.studentName}</Text>
-            <Text style={styles.detailText}>Contacts: {appointment.details.contacts}</Text>
-            <Text style={styles.detailText}>Meeting Type: {appointment.details.meetingType}</Text>
+            <Text style={styles.studentName}>{appointment.name}</Text> 
+            <Text style={styles.detailText}>
+              Venue/Link: 
+              {appointment.meetingType === 'Online' ? (
+                <TouchableOpacity onPress={() => Linking.openURL(appointment.meetingLink)}>
+                  <Text style={[styles.linkText, { color: 'blue' }]}>
+                    {appointment.meetingLink || 'No Link Provided'}
+                  </Text>
+                </TouchableOpacity>
+              ) : (
+                appointment.venue || 'No Venue Provided'
+              )}
+            </Text>
+            <Text style={styles.detailText}>Status: {appointment.status}</Text>
+            <Text style={styles.detailText}>Email: {appointment.email}</Text>
+            <Text style={styles.detailText}>Duration: {appointment.duration}</Text>
+            <Text style={styles.detailText}>Special Request: {appointment.specialRequest}</Text>
+            <Text style={styles.detailText}>Meeting Type: {appointment.meetingType}</Text>
           </View>
         </View>
 
-        <TouchableOpacity style={styles.joinButton}>
-          <Text style={styles.joinButtonText}>Join Session</Text>
-        </TouchableOpacity>
+        {appointment.meetingType === 'Online' && (
+          <TouchableOpacity 
+            style={styles.joinButton}
+            onPress={() => Linking.openURL(appointment.meetingLink)}
+          >
+            <Text style={styles.joinButtonText}>Join Session</Text>
+          </TouchableOpacity>
+        )}
       </View>
-    )
-  );
+    );
+  };
+
 
   return (
     <View style={styles.container}>
@@ -131,6 +164,7 @@ const Appointments = () => {
         {appointments.map(renderAppointmentCard)}
       </ScrollView>
     </View>
+    
   );
 };
 
@@ -147,9 +181,9 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     marginTop: 45,
     paddingHorizontal: 10,
-    width: '140%',  // Stretch header to 140% of the screen width
-    position: 'relative', // Optional
-    left: '-2%',  // Move it left to center it
+    width: '140%',
+    position: 'relative',
+    left: '-2%',
   },
   backButton: {
     marginRight: 16,
@@ -230,6 +264,9 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
+  },
+  linkText: {
+    textDecorationLine: 'underline', 
   },
   avatarPlaceholder: {
     width: 50,

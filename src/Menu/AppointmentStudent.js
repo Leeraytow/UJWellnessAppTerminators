@@ -37,10 +37,10 @@ const AppointmentsScreen = () => {
             date: data.selectedDate,
             time: data.time,
             sessionType: data.meetingType, 
-            meetingPlace: data.venue,// Make sure to map this field correctly
+            meetingPlace: data.meetingType === 'Online' ? data.meetingLink : data.venue, 
           });
         });
-        console.log('Fetched Appointments:', fetchedAppointments); // Debugging output
+        console.log('Fetched Appointments:', fetchedAppointments); 
         setAppointments(fetchedAppointments);
       } catch (error) {
         console.error('Error fetching appointments:', error);
@@ -52,12 +52,11 @@ const AppointmentsScreen = () => {
 
   const renderAppointment = ({ item }) => (
     <View style={styles.appointmentItem}>
-      <Text style={styles.dateText}>{item.selectedDate}</Text>
+      <Text style={styles.dateText}>{item.date}</Text>
       <View style={styles.detailsContainer}>
         <Text style={styles.timeText}>{item.time}</Text>
         <Text style={styles.sessionText}>{item.sessionType}</Text>
         <Text style={styles.sessionText}>{item.meetingPlace}</Text>
-
       </View>
     </View>
   );

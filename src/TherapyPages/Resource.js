@@ -101,12 +101,7 @@ const ResourcesScreen = ({ navigation }) => {
             () => navigation.navigate('History'),
             '📚'
           )}
-          {renderToolCard(
-            'Therapy Techniques',
-            'Access therapeutic resources',
-            () => setActiveModal('TherapyTechniques'),
-            '🧠'
-          )}
+         
           {renderToolCard(
             'Community Support',
             'Generate session reports',

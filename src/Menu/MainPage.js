@@ -30,11 +30,16 @@ const MainScreen = () => {
 
   const [data, setData] = useState([]);
   registerNNPushToken(23885, 'J0c1pKP0BvWqVKKpfRCi7L');
-  useEffect(async () => {
-       let notifications = await getNotificationInbox(23885, 'J0c1pKP0BvWqVKKpfRCi7L');
-       console.log("notifications: ", notifications);
-       setData(notifications);
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      let notifications = await getNotificationInbox(23885, 'J0c1pKP0BvWqVKKpfRCi7L');
+      console.log("notifications: ", notifications);
+      setData(notifications);
+    };
+  
+    fetchNotifications();
   }, []);
+  
 
 
   useEffect(() => {
@@ -173,7 +178,7 @@ const MainScreen = () => {
             </View>
 
             {/* Appointments */}
-            <TouchableOpacity onPress={() => navigation.navigate('AppointmentStudent')}>
+            <TouchableOpacity onPress={() => navigation.navigate('ScheduledAppointments')}>
               <LinearGradient colors={['#FC9842', '#FBFBFB']} style={styles.appointmentsContainer}>
                 <Text style={styles.sectionTitle}>Next Appointments</Text>
                 {appointments.length > 0 ? (
@@ -333,11 +338,11 @@ const styles = StyleSheet.create({
   appointmentDate: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: 'orange',
+    color: 'white',
   },
   appointmentDetails: {
     fontSize: 14,
-    color: 'black',
+    color: 'white',
     marginTop: 5,
     textAlign: 'center',
   },

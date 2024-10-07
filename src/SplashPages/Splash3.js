@@ -41,8 +41,8 @@ export default function SplashPage1({ navigation }) {
         
         {/* Description section */}
         <Text style={styles.description}>
-          Welcome to our mental health app designed for students, offering a safe space to explore wellness 
-          strategies and seek support.
+        "Whether you're looking to manage stress, improve your mental well-being, or connect with others, we're here to guide you on your journey. 
+        Let's take the first step together!"
         </Text>
 
         {/* Skip and Arrow Buttons */}

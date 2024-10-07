@@ -98,6 +98,7 @@ const TherapistAppointments = () => {
               </View>
             </View>
           </Modal>
+              
         </>
       )}
     </View>

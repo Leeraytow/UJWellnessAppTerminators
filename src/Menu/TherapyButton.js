@@ -14,7 +14,7 @@ const TherapyButton = ({ navigation }) => {
     },
     {
       title: 'Online Therapy',
-      subtitle: 'Meet with a Professional on a Video Call',
+      subtitle: 'Book an appointment with a therapist',
       image: require('../images/OnlineTherapy.jpg'),
       route: 'BookingForm',
     },

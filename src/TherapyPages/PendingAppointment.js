@@ -1,23 +1,46 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, TextInput, Image, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, TextInput, Image, KeyboardAvoidingView, Platform, Alert, ActivityIndicator  } from 'react-native';
 import { format } from 'date-fns';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { auth, db } from '../Configuration/firebase';
-import { collection, query, where, getDocs, updateDoc, doc } from 'firebase/firestore';
-import React, {useState, useEffect} from 'react';
+import { collection, query, where, getDocs, updateDoc, doc, getDoc } from 'firebase/firestore';
 import axios from 'axios';
 
 const PendingAppointments = () => {
   const [pendingAppointments, setPendingAppointments] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [time, setTime] = useState('');
-  const [duration, setDuration] = useState('');
-  const [venue, setVenue] = useState('');
-  const [meetingLink, setMeetingLink] = useState('');
-  const [profileImages, setProfileImages] = useState({});  // Store profile images here
+  const [profileImages, setProfileImages] = useState({});
   const navigation = useNavigation();
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false); 
   const currentUserEmail = auth.currentUser.email;
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const user = auth.currentUser;
+        if (user) {
+          const userRef = doc(db, 'Students', user.uid);
+          const docSnap = await getDoc(userRef);
+
+          if (docSnap.exists()) {
+            const userData = docSnap.data();
+            setUsername(userData.name || ''); 
+            setEmail(userData.email || '');   
+          } else {
+            console.log('No such document!');
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching user data: ', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   useEffect(() => {
     const fetchPendingAppointments = async () => {
@@ -36,7 +59,6 @@ const PendingAppointments = () => {
 
         setPendingAppointments(appointments);
 
-        // Fetch profile images for each student
         const profileImagesPromises = appointments.map(async (appointment) => {
           const studentQuery = query(
             collection(db, 'Students'),
@@ -48,7 +70,7 @@ const PendingAppointments = () => {
         });
 
         const images = await Promise.all(profileImagesPromises);
-        setProfileImages(Object.assign({}, ...images));  // Store images by email
+        setProfileImages(Object.assign({}, ...images));
       } catch (error) {
         console.error('Error fetching appointments or images:', error);
       }
@@ -62,53 +84,99 @@ const PendingAppointments = () => {
     return isNaN(validDate) ? date : format(validDate, 'PPP');
   };
 
-  const handleAccept = async () => {
+  const handleAccept = async (appointmentDetails) => {
     if (selectedAppointment) {
       try {
         const appointmentRef = doc(db, 'Bookings', selectedAppointment.id);
         await updateDoc(appointmentRef, {
-          time: time,
-          duration: duration,
+          time: appointmentDetails.time,
+          duration: appointmentDetails.duration,
           status: 'Confirmed',
-          venue: selectedAppointment.meetingType === 'FaceToFace' ? venue : '',
-          meetingLink: selectedAppointment.meetingType === 'online' ? meetingLink : ''
+          venue: selectedAppointment.meetingType === 'FaceToFace' ? appointmentDetails.venue : '',
+          meetingLink: selectedAppointment.meetingType === 'online' ? appointmentDetails.meetingLink : ''
         });
-  
-        // API request to send notification
+
         const notificationData = {
-          appId: '23885', // Your Native Notify app ID
-          appToken: 'J0c1pKP0BvWqVKKpfRCi7L', // Your Native Notify app token
-          subID: selectedAppointment.email, // Sending notification to this subID
+          appId: '23885',
+          appToken: 'J0c1pKP0BvWqVKKpfRCi7L',
+          subID: selectedAppointment.email,
           title: 'Appointment Confirmed!',
-          message: `Your appointment with ${currentUserEmail} has been confirmed.`,
-          link: meetingLink || 'https://yourapp.com', // Add your link or the meeting link here
+          message: `Your appointment with ${username} has been confirmed`,
+          link: appointmentDetails.meetingLink || 'https://yourapp.com',
           pushEnabled: 1,
         };
-  
+
         await axios.post('https://app.nativenotify.com/api/indie/notification', notificationData);
-  
+
         alert('Appointment Confirmed and Notification Sent!');
         setModalVisible(false);
         setSelectedAppointment(null);
       } catch (error) {
         console.error('Error updating appointment or sending notification:', error);
+      } finally {
+        setLoading(false); 
       }
     }
   };
-  const getUrgencyColor = (urgency) => {
-    const colors = {
-      High: '#FF6B6B',
-      Medium: '#FF8C00',
-      Low: '#4CAF50',
-    };
-    return colors[urgency] || '#666';
-  };
 
   const AppointmentDetailsModal = ({ appointment, visible, onClose }) => {
+    const [localTime, setLocalTime] = useState('');
+    const [localDuration, setLocalDuration] = useState('');
+    const [localVenue, setLocalVenue] = useState('');
+    const [localMeetingLink, setLocalMeetingLink] = useState('');
+  
+    useEffect(() => {
+      if (appointment) {
+        setLocalTime(appointment.time || '');
+        setLocalDuration(appointment.duration || '');
+        setLocalVenue(appointment.venue || '');
+        setLocalMeetingLink(appointment.meetingLink || '');
+      }
+    }, [appointment]);
+  
     if (!appointment) return null;
-
-    const profileImage = profileImages[appointment.email];  // Get profile image by email
-
+  
+    const profileImage = profileImages[appointment.email];
+  
+    const handleLocalAccept = () => {
+      const isValidTime = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9]) (AM|PM)$/i.test(localTime);
+      
+      if (!localTime || !isValidTime) {
+        alert('Please enter a valid time (e.g., 10:00 AM)');
+        return;
+      }
+      
+      if (!localDuration) {
+        alert('Duration cannot be empty.');
+        return;
+      }
+  
+      if (selectedAppointment.meetingType === 'FaceToFace' && !localVenue) {
+        alert('Please enter the venue.');
+        return;
+      }
+      
+      if (selectedAppointment.meetingType === 'online' && !localMeetingLink) {
+        alert('Please enter the meeting link.');
+        return;
+      }
+  
+      
+      if (!localTime || !localDuration || 
+          (selectedAppointment.meetingType === 'FaceToFace' && !localVenue) || 
+          (selectedAppointment.meetingType === 'Online' && !localMeetingLink)) {
+        alert('Please ensure you input all necessary details');
+        return; 
+      }
+  
+      handleAccept({
+        time: localTime, 
+        duration: localDuration,
+        venue: localVenue,
+        meetingLink: localMeetingLink,
+      });
+    };
+  
     return (
       <Modal animationType="slide" transparent={true} visible={visible} onRequestClose={onClose}>
         <View style={styles.modalOverlay}>
@@ -122,7 +190,7 @@ const PendingAppointments = () => {
                 <Text style={styles.closeButtonText}>×</Text>
               </TouchableOpacity>
             </View>
-
+  
             <ScrollView style={styles.modalBody}>
               <View style={styles.studentInfoSection}>
                 <View style={styles.avatarContainer}>
@@ -140,7 +208,7 @@ const PendingAppointments = () => {
                   <Text style={styles.studentNameLarge}>{appointment.name}</Text>
                 </View>
               </View>
-
+  
               <View style={styles.infoGrid}>
                 <View style={styles.infoItem}>
                   <Text style={styles.infoLabel}>Date</Text>
@@ -154,7 +222,7 @@ const PendingAppointments = () => {
                   <Text style={styles.infoValue}>{appointment.meetingType}</Text>
                 </View>
               </View>
-
+  
               <View style={styles.contactSection}>
                 <Text style={styles.sectionTitle}>Contact Information</Text>
                 <View style={styles.contactInfo}>
@@ -162,35 +230,32 @@ const PendingAppointments = () => {
                   <Text style={styles.contactDetail}>✉️ {appointment.email}</Text>
                 </View>
               </View>
-
+  
               <View style={styles.inputContainer}>
                 <Text style={styles.inputLabel}>Time</Text>
                 <TextInput
                   style={styles.input}
                   placeholder="Enter time (e.g., 10:00 AM)"
-                  value={time}
-                  onChangeText={setTime}
+                  onChangeText={setLocalTime}
                 />
               </View>
-
+  
               <View style={styles.inputContainer}>
                 <Text style={styles.inputLabel}>Duration</Text>
                 <TextInput
                   style={styles.input}
                   placeholder="Enter duration (e.g., 1 hour)"
-                  value={duration}
-                  onChangeText={setDuration}
+                  onChangeText={setLocalDuration}
                 />
               </View>
-
-              {selectedAppointment && selectedAppointment.meetingType === 'FaceToFace' ? (
+  
+              {appointment.meetingType === 'FaceToFace' ? (
                 <View style={styles.inputContainer}>
                   <Text style={styles.inputLabel}>Venue</Text>
                   <TextInput
                     style={styles.input}
                     placeholder="Enter venue"
-                    value={venue}
-                    onChangeText={setVenue}
+                    onChangeText={setLocalVenue}
                   />
                 </View>
               ) : (
@@ -199,8 +264,7 @@ const PendingAppointments = () => {
                   <TextInput
                     style={styles.input}
                     placeholder="Enter meeting link"
-                    value={meetingLink}
-                    onChangeText={setMeetingLink}
+                    onChangeText={setLocalMeetingLink}
                   />
                 </View>
               )}
@@ -208,36 +272,34 @@ const PendingAppointments = () => {
             <View style={styles.actionButtons}>
               <TouchableOpacity
                 style={[styles.actionButton, styles.rescheduleButton]}
-                onPress={() => {
-                  // Implement reschedule logic
-                  onClose();
-                }}
+                onPress={onClose}
               >
-                <Text style={styles.rescheduleButtonText}>Reschedule</Text>
+                <Text style={styles.rescheduleButtonText}>Cancel</Text>
               </TouchableOpacity>
+              
               <TouchableOpacity
                 style={[styles.actionButton, styles.acceptButton]}
-                onPress={() => {
-                  handleAccept();
-                  onClose();
-                }}
+                onPress={handleLocalAccept}
               >
-                <Text style={styles.acceptButtonText}>Accept</Text>
+                {loading ? (  
+                  <ActivityIndicator color="#FFA500" />
+                ) : (
+                  <Text style={styles.acceptButtonText}>Accept</Text>
+                )}
               </TouchableOpacity>
             </View>
-
           </View>
         </View>
       </Modal>
     );
   };
-
+  
   const renderAppointmentCard = (appointment) => (
     <TouchableOpacity
       key={appointment.id}
       style={styles.appointmentCard}
       onPress={() => {
-        setSelectedAppointment(appointment);  // Correctly set the selected appointment
+        setSelectedAppointment(appointment);
         setModalVisible(true);
       }}
     >
@@ -344,6 +406,12 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     padding: 16,
     elevation: 2,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginTop: 50, // Adjust this value to move the title down
+    textAlign: 'center',
   },
   cardHeader: {
     flexDirection: 'row',

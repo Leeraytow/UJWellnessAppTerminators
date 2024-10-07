@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState ,useEffect} from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-
+import { doc, getDoc, updateDoc, deleteDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { db, auth } from '../Configuration/firebase'; 
 export default function SessionInfo() {
-  const [activeTab, setActiveTab] = useState('Information');
+
   const navigation = useNavigation();
 
   const [medications, setMedications] = useState({ med1: '', med2: '' });
@@ -15,6 +16,72 @@ export default function SessionInfo() {
   const [selectedReferral, setSelectedReferral] = useState({});
   const [recommendations, setRecommendations] = useState(Array(19).fill(-1));
 
+
+  const [emailthrapist, setEmailtherapist] = useState('');
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [date, setDate] = useState('');
+  const [activeTab, setActiveTab] = useState('Information');
+  const [currentImage, setCurrentImage] = useState('');
+  const [gender, setGender] = useState('');
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const user = auth.currentUser;
+        if (user) {
+          // Query the "Bookings" collection where the therapist email matches the current user's email
+          const bookingsQuery = query(
+            collection(db, 'Bookings'),
+            where('therapistEmail', '==', user.email)
+          );
+          
+          const querySnapshot = await getDocs(bookingsQuery);
+  
+          if (!querySnapshot.empty) {
+            // Assuming we only care about the first matching booking
+            const bookingData = querySnapshot.docs[0].data();
+            setEmailtherapist(bookingData.therapistemail || '');
+            setEmail(bookingData.email || '');
+            setName(bookingData.name ||'');
+            setDate(bookingData.selectedDate || '')
+          } else {
+            console.log('No matching bookings found');
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching booking data: ', error);
+      }
+    };
+  
+    fetchUserData();
+  }, []);
+
+
+  useEffect(() => {
+    const fetchCurrentImage = async () => {
+      if (email) {
+        try {
+          // Query the Students collection where the email matches the email from booking
+          const studentsQuery = query(collection(db, 'Students'), where('email', '==', email));
+          const querySnapshot = await getDocs(studentsQuery);
+
+          if (!querySnapshot.empty) {
+            const studentData = querySnapshot.docs[0].data();
+            setCurrentImage(studentData.profileImage || null);
+          } else {
+            console.log('No matching student found');
+          }
+        } catch (error) {
+          console.error('Error fetching user profile image: ', error);
+        }
+      }
+    };
+
+    fetchCurrentImage();
+  }, [email]);
+
+  
   const renderContent = () => {
     switch (activeTab) {
       case 'Medicine':
@@ -60,15 +127,15 @@ export default function SessionInfo() {
             <Text style={styles.subSectionTitle}>General</Text>
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>First name</Text>
-              <Text style={styles.infoText}>Edward</Text>
+              <Text style={styles.infoText}>{name}</Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Surname</Text>
-              <Text style={styles.infoText}>Molefi</Text>
+              <Text style={styles.infoLabel}>Email</Text>
+              <Text style={styles.infoText}>{email}</Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Date of Birth</Text>
-              <Text style={styles.infoText}>04/07/2003</Text>
+              <Text style={styles.infoLabel}>Session Date</Text>
+              <Text style={styles.infoText}>{date}</Text>
             </View>
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Gender</Text>
@@ -95,7 +162,7 @@ export default function SessionInfo() {
                 {reasonForVisit.map((reason, index) => (
                   <View key={index} style={styles.reasonRow}>
                     <CheckBox
-                      checked={selectedReferral[`reason${index}`] || false}
+                      checked={selectedReferral[`reason${index}`]|| false}
                       onPress={() => handleReferralChange(`reason${index}`)}
                       containerStyle={{ padding: 0, margin: 0 }}
                     />
@@ -216,12 +283,12 @@ export default function SessionInfo() {
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={styles.profileContainer}>
           <Image
-            source={{ uri: 'https://via.placeholder.com/150' }}
+            source={{ uri: currentImage }}
             style={styles.profileImage}
           />
           <View style={styles.profileInfo}>
-            <Text style={styles.name}>Edward Molefi</Text>
-            <Text style={styles.details}>20yrs · Depression · Takes meds</Text>
+            <Text style={styles.name}>{name}</Text>
+            
             <Text style={styles.date}>23 Sep 2024 11:30-12:00</Text>
           </View>
         </View>
@@ -447,4 +514,3 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-

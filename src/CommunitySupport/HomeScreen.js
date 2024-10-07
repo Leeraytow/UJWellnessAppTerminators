@@ -209,7 +209,6 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Header  style={styles.Heading}/> 
       <View style={styles.inputContainer}>
         <Image source={{ uri: profileImage }} style={styles.profileImage} />
         <TextInput
@@ -245,7 +244,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: '#fff',
-    bottom:40
+    top: 50,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -282,8 +281,8 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
     backgroundColor: '#FFF5E1',
-    borderWidth:2,
-    borderColor:'orange'
+    borderWidth: 2,
+    borderColor: 'orange',
   },
   profileImage: {
     width: 40,
@@ -346,7 +345,8 @@ const styles = StyleSheet.create({
   postList: {
     marginTop: 10,
   },
-  Heading:{
-    bottom:100
-  }
+  header: {
+    marginTop: 30,
+    marginBottom: 20,
+  },
 });

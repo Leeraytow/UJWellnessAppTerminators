@@ -182,7 +182,7 @@ const DigitalDiary = () => {
   }, []);
 
   return (
-    <LinearGradient colors={['#F58426', '#a45dff']} style={styles.container}>
+    <LinearGradient colors={['#FC9842', '#FE5F75']} style={styles.container}>
       <Header />
       <ScrollView contentContainerStyle={styles.scrollContainer}>
 

@@ -119,7 +119,7 @@ export default function StudentAuthScreen({ navigation }) {
   
       // Navigate based on email domain
       if (Email.endsWith('@gmail.com')) {
-        navigation.navigate('AdminHomeScreen');
+        navigation.navigate('TherapistLandingScreen');
       } else if (Email.endsWith('@uj.ac.za')) {
         navigation.navigate('TherapistLandingScreen');
       } else if (Email.endsWith('@student.uj.ac.za')) {
