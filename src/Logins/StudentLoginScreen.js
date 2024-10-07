@@ -118,10 +118,12 @@ export default function StudentAuthScreen({ navigation }) {
       await setDoc(userRef, { active: true }, { merge: true });
   
       // Navigate based on email domain
-      if (Email.endsWith('@gmail.com')) {
+      if (Email === 'webdevelopers@gmail.com') {
+        navigation.navigate('AdminHomeScreen');
+      } else if (Email.endsWith('@gmail.com')) {
         navigation.navigate('TherapistLandingScreen');
       } else if (Email.endsWith('@uj.ac.za')) {
-        navigation.navigate('TherapistLandingScreen');
+        navigation.navigate('TherapistLandingSceen');
       } else if (Email.endsWith('@student.uj.ac.za')) {
         const usersCollection = collection(db, 'Students');
         const q = query(usersCollection, where('email', '==', Email));
