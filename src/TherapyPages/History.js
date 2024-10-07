@@ -13,7 +13,7 @@ const History = () => {
   const sessionHistory = [
     {
       id: 1,
-      studentName: 'Sarah Johnson',
+      studentName: 'Lindelani Xaba',
       date: '2024-10-01',
       time: '2:00 PM',
       duration: '45 minutes',
@@ -27,7 +27,7 @@ const History = () => {
     },
     {
       id: 2,
-      studentName: 'Michael Chen',
+      studentName: 'Edward Mofokeng',
       date: '2024-09-30',
       time: '11:00 AM',
       duration: '60 minutes',

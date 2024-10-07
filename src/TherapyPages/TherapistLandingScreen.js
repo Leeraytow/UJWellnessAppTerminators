@@ -184,7 +184,7 @@ const Dashboard = ({ navigation }) => {
             onPress={() => navigation.navigate('History')}
           >
             <IconPlaceholder color="#FFB74D" />
-            <Text style={styles.statNumber}>45</Text>
+            <Text style={styles.statNumber}>2</Text>
             <Text style={styles.statLabel}>History</Text>
           </TouchableOpacity>
         </View>
